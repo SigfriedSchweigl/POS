@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLID – Aufgaben mit Lösungen</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #1f4b99;
+      color: white;
+      padding: 32px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 10px 0;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    nav {
+      background: #16386f;
+      padding: 12px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+      display: inline-block;
+      padding: 6px 8px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px 40px;
+    }
+
+    .intro {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #1f4b99;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e8f0ff;
+      color: #1f4b99;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #f5f5f5;
+      padding: 16px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .question {
+      font-weight: bold;
+      margin: 16px 0 10px;
+    }
+
+    button {
+      background: #1f4b99;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #16386f;
+    }
+
+    .solution {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      background: #eef7ee;
+      border-left: 5px solid #2e8b57;
+      border-radius: 8px;
+    }
+
+    .solution h3 {
+      margin-top: 0;
+      color: #1d5f3a;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: #16386f;
+      color: white;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 700px) {
+      nav a {
+        display: block;
+        margin: 6px 0;
+      }
+
+      header h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>SOLID – Aufgaben mit Lösungen</h1>
+    <p>Interaktive Übungsseite zu den fünf SOLID-Prinzipien</p>
+  </header>
+
+  <nav>
+    <a href="#srp">SRP</a>
+    <a href="#ocp">OCP</a>
+    <a href="#lsp">LSP</a>
+    <a href="#isp">ISP</a>
+    <a href="#dip">DIP</a>
+  </nav>
+
+  <main>
+    <section class="intro">
+      <h2>Willkommen</h2>
+      <p>
+        Auf dieser Seite findest du fünf typische Aufgaben zu den SOLID-Prinzipien.
+        Klicke jeweils auf <strong>„Lösung anzeigen“</strong>, um die Erklärung und eine mögliche Verbesserung zu sehen.
+      </p>
+    </section>
+
+    <section id="srp" class="card">
+      <div class="badge">S – Single Responsibility Principle</div>
+      <h2>1. Single Responsibility Prinzip</h2>
+
+      <div class="question">Aufgabe: Was ist das Problem an dieser Klasse?</div>
+
+      <pre>class Report {
+    void generate() {
+        // Daten für den Bericht sammeln und formatieren
+    }
+    void print() {
+        // Bericht auf dem Drucker ausgeben
+    }
+    void exportToPdf() {
+        // Bericht als PDF-Datei exportieren
+    }
+}</pre>
+
+      <button onclick="toggleSolution('solution-srp')">Lösung anzeigen</button>
+
+      <div id="solution-srp" class="solution">
+        <h3>Lösung</h3>
+        <p>
+          Diese Klasse verletzt das <strong>Single Responsibility Principle</strong>, weil sie
+          mehrere Verantwortlichkeiten besitzt:
+        </p>
+        <ul>
+          <li>Bericht erzeugen</li>
+          <li>Bericht drucken</li>
+          <li>Bericht als PDF exportieren</li>
+        </ul>
+        <p>
+          Eine Klasse sollte nur <strong>einen Grund zur Änderung</strong> haben.
+        </p>
+
+        <pre>class Report {
+    void generate() {
+        // Bericht erzeugen
+    }
+}
+
+class ReportPrinter {
+    void print(Report report) {
+        // Bericht drucken
+    }
+}
+
+class ReportPdfExporter {
+    void exportToPdf(Report report) {
+        // Bericht als PDF exportieren
+    }
+}</pre>
+      </div>
+    </section>
+
+    <section id="ocp" class="card">
+      <div class="badge">O – Open/Closed Principle</div>
+      <h2>2. Open/Closed Prinzip</h2>
+
+      <div class="question">Aufgabe: Warum verletzt diese Klasse das OCP?</div>
+
+      <pre>class ShippingCalculator {
+    public double calculate(String country) {
+        if (country.equals("Austria")) {
+            return 4.90;
+        } else if (country.equals("Germany")) {
+            return 6.50;
+        } else {
+            return 10.00;
+        }
+    }
+}</pre>
+
+      <button onclick="toggleSolution('solution-ocp')">Lösung anzeigen</button>
+
+      <div id="solution-ocp" class="solution">
+        <h3>Lösung</h3>
+        <p>
+          Diese Klasse verletzt das <strong>Open/Closed Principle</strong>, weil sie bei jeder
+          Erweiterung geändert werden muss. Wenn ein neues Land hinzukommt, muss die Methode
+          angepasst werden.
+        </p>
+        <p>
+          Klassen sollten für <strong>Erweiterung offen</strong>, aber für
+          <strong>Änderung geschlossen</strong> sein.
+        </p>
+
+        <pre>interface ShippingStrategy {
+    double calculate();
+}
+
+class AustriaShipping implements ShippingStrategy {
+    public double calculate() {
+        return 4.90;
+    }
+}
+
+class GermanyShipping implements ShippingStrategy {
+    public double calculate() {
+        return 6.50;
+    }
+}
+
+class DefaultShipping implements ShippingStrategy {
+    public double calculate() {
+        return 10.00;
+    }
+}
+
+class ShippingCalculator {
+    public double calculate(ShippingStrategy strategy) {
+        return strategy.calculate();
+    }
+}</pre>
+      </div>
+    </section>
+
+    <section id="lsp" class="card">
+      <div class="badge">L – Liskov Substitution Principle</div>
+      <h2>3. Liskovsches Substitutionsprinzip</h2>
+
+      <div class="question">Aufgabe: Warum ist diese Vererbung problematisch?</div>
+
+      <pre>class Account {
+    void withdraw(double amount) { ... }
+    void deposit(double amount) { ... }
+    double getBalance() { ... }
+}
+
+class ReadOnlyAccount extends Account {
+    void withdraw(double amount) {
+        throw new UnsupportedOperationException();
+    }
+    void deposit(double amount) {
+        throw new UnsupportedOperationException();
+    }
+    double getBalance() {
+        return ...;
+    }
+}</pre>
+
+      <button onclick="toggleSolution('solution-lsp')">Lösung anzeigen</button>
+
+      <div id="solution-lsp" class="solution">
+        <h3>Lösung</h3>
+        <p>
+          Das verletzt das <strong>Liskov Substitution Principle</strong>, weil ein
+          <code>ReadOnlyAccount</code> kein echter Ersatz für ein normales
+          <code>Account</code> ist.
+        </p>
+        <p>
+          Wer ein <code>Account</code> erwartet, rechnet damit, dass
+          <code>withdraw()</code> und <code>deposit()</code> funktionieren. Beim
+          <code>ReadOnlyAccount</code> kommt aber eine Exception.
+        </p>
+
+        <pre>interface ReadableAccount {
+    double getBalance();
+}
+
+interface WritableAccount extends ReadableAccount {
+    void withdraw(double amount);
+    void deposit(double amount);
+}
+
+class Account implements WritableAccount {
+    public void withdraw(double amount) { }
+    public void deposit(double amount) { }
+    public double getBalance() { return 0; }
+}
+
+class ReadOnlyAccount implements ReadableAccount {
+    public double getBalance() { return 0; }
+}</pre>
+      </div>
+    </section>
+
+    <section id="isp" class="card">
+      <div class="badge">I – Interface Segregation Principle</div>
+      <h2>4. Interface Segregation Prinzip</h2>
+
+      <div class="question">Aufgabe: Warum ist dieses Interface schlecht geschnitten?</div>
+
+      <pre>interface Vehicle {
+    void drive();
+    void fly();
+    void sail();
+}
+
+class Car implements Vehicle {
+    public void drive() {
+        System.out.println("Fährt auf der Straße.");
+    }
+    public void fly() {
+        throw new UnsupportedOperationException("Ein Auto kann nicht fliegen!");
+    }
+    public void sail() {
+        throw new UnsupportedOperationException("Ein Auto kann nicht segeln!");
+    }
+}</pre>
+
+      <button onclick="toggleSolution('solution-isp')">Lösung anzeigen</button>
+
+      <div id="solution-isp" class="solution">
+        <h3>Lösung</h3>
+        <p>
+          Das verletzt das <strong>Interface Segregation Principle</strong>, weil das Interface
+          zu groß ist. Eine Klasse wird gezwungen, Methoden zu implementieren, die sie gar nicht braucht.
+        </p>
+        <p>
+          Ein Auto kann fahren, aber nicht fliegen oder segeln.
+        </p>
+
+        <pre>interface Drivable {
+    void drive();
+}
+
+interface Flyable {
+    void fly();
+}
+
+interface Sailable {
+    void sail();
+}
+
+class Car implements Drivable {
+    public void drive() {
+        System.out.println("Fährt auf der Straße.");
+    }
+}</pre>
+      </div>
+    </section>
+
+    <section id="dip" class="card">
+      <div class="badge">D – Dependency Inversion Principle</div>
+      <h2>5. Dependency Inversion Prinzip</h2>
+
+      <div class="question">Aufgabe: Warum verletzt diese Klasse das DIP?</div>
+
+      <pre>class EmailSender {
+    public void send(String message) {
+        System.out.println("E-Mail gesendet: " + message);
+    }
+}
+
+class NotificationService {
+    private final EmailSender sender = new EmailSender();
+
+    public void notify(String message) {
+        sender.send(message);
+    }
+}</pre>
+
+      <button onclick="toggleSolution('solution-dip')">Lösung anzeigen</button>
+
+      <div id="solution-dip" class="solution">
+        <h3>Lösung</h3>
+        <p>
+          Das verletzt das <strong>Dependency Inversion Principle</strong>, weil
+          <code>NotificationService</code> direkt von der konkreten Klasse
+          <code>EmailSender</code> abhängt.
+        </p>
+        <p>
+          Besser ist die Abhängigkeit von einer <strong>Abstraktion</strong>, etwa einem Interface.
+        </p>
+
+        <pre>interface MessageSender {
+    void send(String message);
+}
+
+class EmailSender implements MessageSender {
+    public void send(String message) {
+        System.out.println("E-Mail gesendet: " + message);
+    }
+}
+
+class NotificationService {
+    private final MessageSender sender;
+
+    public NotificationService(MessageSender sender) {
+        this.sender = sender;
+    }
+
+    public void notify(String message) {
+        sender.send(message);
+    }
+}</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    SOLID Lernseite
+  </footer>
+
+  <script>
+    function toggleSolution(id) {
+      const element = document.getElementById(id);
+      if (element.style.display === "block") {
+        element.style.display = "none";
+      } else {
+        element.style.display = "block";
+      }
+    }
+  </script>
+
+</body>
+</html>
