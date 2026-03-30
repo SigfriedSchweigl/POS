@@ -145,6 +145,19 @@
       margin-top: 30px;
     }
 
+    .back-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        background: #007acc;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+    }
+    
+    .back-btn:hover {
+        background: #005f99;
+    }
+
     @media (max-width: 700px) {
       nav a {
         display: block;
@@ -362,7 +375,7 @@ class ReadOnlyAccount implements ReadableAccount {
       <div class="badge">I – Interface Segregation Principle</div>
       <h2>4. Interface Segregation Prinzip</h2>
 
-      <div class="question">Aufgabe: Warum ist dieses Interface schlecht geschnitten?</div>
+      <div class="question">Aufgabe: Was passt an diesem Interface nicht?</div>
 
       <pre>interface Vehicle {
     void drive();
@@ -473,7 +486,7 @@ class NotificationService {
   </main>
 
   <footer>
-    SOLID Lernseite
+    SOLID Lernseite <a href="index.html" class="back-btn">⬅ Zurück zur Startseite</a>
   </footer>
 
   <script>
