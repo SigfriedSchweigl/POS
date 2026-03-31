@@ -178,3 +178,18 @@ main a {
 main a:hover {
   text-decoration: underline;
 }
+
+main ul li {
+  margin: 12px 0;
+}
+
+main ul li a {
+  display: block;
+  padding: 12px;
+  background: #f0f4ff;
+  border-radius: 8px;
+}
+
+main ul li a:hover {
+  background: #e0eaff;
+}
