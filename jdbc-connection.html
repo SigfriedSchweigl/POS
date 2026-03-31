@@ -2,248 +2,235 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>JDBC – Aufgabe 1: Connection Test</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>JDBC – Aufgabe 1: Datenbankverbindung erstellen</h1>
-    <p>Verbindung zu H2 und SQL Server mit mehreren Schritten und Hinweisen</p>
-  </header>
+<header>
+  <h1>JDBC – Aufgabe 1: Datenbankverbindung testen</h1>
+  <p>Schrittweise Verbindung zu H2 und SQL Server mit Hinweisen</p>
+</header>
 
-  <nav>
-    <a href="index.html">Start</a>
-    <a href="jdbc.html">JDBC</a>
-    <a href="#h2">H2</a>
-    <a href="#sqlserver">SQL Server</a>
-  </nav>
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">H2</a>
+  <a href="#sql">SQL Server</a>
+</nav>
 
-  <main>
-    <section class="intro">
-      <h2>Ziel der Aufgabe</h2>
-      <p>
-        In dieser Aufgabe soll eine erste JDBC-Verbindung aufgebaut und getestet werden.
-        Es gibt zwei Varianten:
-      </p>
-      <ul>
-        <li><strong>H2</strong> als einfache lokale Testdatenbank</li>
-        <li><strong>SQL Server</strong> als Beispiel für eine externe Datenbank</li>
-      </ul>
-      <p>
-        Arbeite die Schritte nacheinander durch und versuche zuerst selbst eine Lösung zu entwickeln.
-        Die Hinweise helfen dir dabei, ohne sofort die komplette Lösung anzusehen.
-      </p>
-    </section>
+<main>
 
-    <section id="h2" class="card">
-      <div class="badge">Aufgabe 1A – H2 Connection Test</div>
-      <h2>Verbindung zu einer H2-Datenbank herstellen</h2>
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, eine Datenbankverbindung aufzubauen und Informationen über die Datenbank
+    mit <code>DatabaseMetaData</code> auszulesen.
+  </p>
+</section>
 
-      <div class="question">
-        Aufgabe:
-      </div>
-      <p>
-        Schreibe ein Java-Programm, das eine Verbindung zu einer H2-Datenbank aufbaut
-        und anschließend ausgibt, ob die Verbindung erfolgreich war.
-      </p>
+<!-- ===================== H2 ===================== -->
 
-      <h3>Schritt 1</h3>
-      <p>Lege ein Java-Projekt an und binde den H2-Treiber ein.</p>
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 1A – H2</div>
+  <h2>Connection zur H2-Datenbank</h2>
 
-      <h3>Schritt 2</h3>
-      <p>Verwende folgende Verbindungsdaten:</p>
+  <div class="question">Aufgabe:</div>
+  <p>
+    Stelle eine Verbindung zu einer H2-Datenbank her und gib Informationen über die Datenbank aus.
+  </p>
 
-      <pre>URL: jdbc:h2:~/test
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Maven Dependency hinzufügen</h3>
+  <p>Füge den H2-Treiber in deine <code>pom.xml</code> ein.</p>
+
+  <button onclick="toggleSolution('h2-hint1')">Hinweis anzeigen</button>
+  <div id="h2-hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Dependencies findest du auf der offiziellen Maven-Seite:
+    </p>
+    <p>
+      <a href="https://mvnrepository.com" target="_blank">Maven Repository</a>
+    </p>
+    <pre>&lt;dependency&gt;
+  &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+  &lt;artifactId&gt;h2&lt;/artifactId&gt;
+  &lt;version&gt;2.2.224&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: Verbindung definieren</h3>
+  <p>Verwende folgende Daten:</p>
+
+  <pre>jdbc:h2:~/test
 User: sa
 Passwort: </pre>
 
-      <h3>Schritt 3</h3>
-      <p>
-        Verwende <code>DriverManager.getConnection(...)</code>, um die Verbindung zu öffnen.
-      </p>
+  <button onclick="toggleSolution('h2-hint2')">Hinweis anzeigen</button>
+  <div id="h2-hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Die URL beginnt bei H2 immer mit <code>jdbc:h2:</code>
+    </p>
+  </div>
 
-      <h3>Schritt 4</h3>
-      <p>
-        Prüfe, ob das zurückgegebene <code>Connection</code>-Objekt nicht <code>null</code> ist,
-        und gib eine passende Meldung aus.
-      </p>
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Verbindung herstellen</h3>
+  <p>Nutze JDBC, um eine Verbindung aufzubauen.</p>
 
-      <h3>Schritt 5</h3>
-      <p>Schließe die Verbindung sauber wieder.</p>
+  <button onclick="toggleSolution('h2-hint3')">Hinweis anzeigen</button>
+  <div id="h2-hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende <code>DriverManager.getConnection(...)</code>
+    </p>
+  </div>
 
-      <button onclick="toggleSolution('hint-h2-1')">Hinweis 1 anzeigen</button>
-      <div id="hint-h2-1" class="solution">
-        <h3>Hinweis 1</h3>
-        <p>
-          Du brauchst meist diese Imports:
-        </p>
-        <pre>import java.sql.Connection;
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Datenbankinformationen ausgeben</h3>
+  <p>Gib Informationen über die Datenbank aus.</p>
+
+  <button onclick="toggleSolution('h2-hint4')">Hinweis anzeigen</button>
+  <div id="h2-hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Nutze <code>connection.getMetaData()</code>
+    </p>
+  </div>
+
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-h2')">Lösung anzeigen</button>
+  <div id="solution-h2" class="solution">
+    <h3>Lösung</h3>
+
+<pre>import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;</pre>
-      </div>
-
-      <button onclick="toggleSolution('hint-h2-2')">Hinweis 2 anzeigen</button>
-      <div id="hint-h2-2" class="solution">
-        <h3>Hinweis 2</h3>
-        <p>
-          Die zentrale Methode sieht so aus:
-        </p>
-        <pre>Connection connection = DriverManager.getConnection(url, user, password);</pre>
-      </div>
-
-      <button onclick="toggleSolution('hint-h2-3')">Hinweis 3 anzeigen</button>
-      <div id="hint-h2-3" class="solution">
-        <h3>Hinweis 3</h3>
-        <p>
-          Nutze am besten <code>try-with-resources</code>, damit die Verbindung automatisch
-          geschlossen wird.
-        </p>
-      </div>
-
-      <button onclick="toggleSolution('solution-h2')">Lösung anzeigen</button>
-      <div id="solution-h2" class="solution">
-        <h3>Mögliche Lösung</h3>
-        <pre>import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-public class H2ConnectionTest {
+public class H2Test {
     public static void main(String[] args) {
+
         String url = "jdbc:h2:~/test";
         String user = "sa";
         String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            if (connection != null) {
-                System.out.println("Verbindung zur H2-Datenbank erfolgreich hergestellt.");
-            }
+
+            System.out.println("Verbunden mit Datenbank...");
+
+            DatabaseMetaData dbmd = connection.getMetaData();
+
+            System.out.println("dbmd:driver version = " + dbmd.getDriverVersion());
+            System.out.println("dbmd:driver name = " + dbmd.getDriverName());
+            System.out.println("db name = " + dbmd.getDatabaseProductName());
+            System.out.println("db ver = " + dbmd.getDatabaseProductVersion());
+
         } catch (SQLException e) {
-            System.out.println("Fehler beim Verbinden mit H2.");
             e.printStackTrace();
         }
     }
 }</pre>
 
-        <p>
-          Diese Lösung verwendet <strong>try-with-resources</strong>. Dadurch wird die Verbindung
-          nach der Benutzung automatisch geschlossen.
-        </p>
-      </div>
-    </section>
+  </div>
 
-    <section id="sqlserver" class="card">
-      <div class="badge">Aufgabe 1B – SQL Server Connection Test</div>
-      <h2>Verbindung zu einem SQL Server herstellen</h2>
+</section>
 
-      <div class="question">
-        Aufgabe:
-      </div>
-      <p>
-        Schreibe ein Java-Programm, das eine Verbindung zu einem SQL Server herstellt
-        und danach eine Erfolgsmeldung ausgibt.
-      </p>
+<!-- ===================== SQL SERVER ===================== -->
 
-      <h3>Schritt 1</h3>
-      <p>Binde den JDBC-Treiber für SQL Server in dein Projekt ein.</p>
+<section id="sql" class="card">
+  <div class="badge">Aufgabe 1B – SQL Server</div>
+  <h2>Connection zu SQL Server</h2>
 
-      <h3>Schritt 2</h3>
-      <p>Verwende folgende Beispiel-Verbindungsdaten:</p>
+  <div class="question">Aufgabe:</div>
+  <p>
+    Stelle eine Verbindung zu einem SQL Server her und gib ebenfalls die Metadaten aus.
+  </p>
 
-      <pre>URL: jdbc:sqlserver://localhost:1433;databaseName=School;encrypt=true;trustServerCertificate=true
-User: sa
-Passwort: DeinPasswort</pre>
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Maven Dependency</h3>
 
-      <h3>Schritt 3</h3>
-      <p>
-        Baue mit <code>DriverManager.getConnection(...)</code> die Verbindung auf.
-      </p>
+  <button onclick="toggleSolution('sql-hint1')">Hinweis anzeigen</button>
+  <div id="sql-hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Suche nach:
+      <code>mssql-jdbc</code> auf mvnrepository.com
+    </p>
+  </div>
 
-      <h3>Schritt 4</h3>
-      <p>
-        Gib bei Erfolg eine Meldung aus, etwa:
-        <code>Verbindung erfolgreich hergestellt.</code>
-      </p>
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: Verbindungsdaten</h3>
 
-      <h3>Schritt 5</h3>
-      <p>
-        Fange mögliche Fehler mit <code>SQLException</code> ab.
-      </p>
+<pre>jdbc:sqlserver://localhost:1433;databaseName=School;encrypt=true;trustServerCertificate=true</pre>
 
-      <button onclick="toggleSolution('hint-sql-1')">Hinweis 1 anzeigen</button>
-      <div id="hint-sql-1" class="solution">
-        <h3>Hinweis 1</h3>
-        <p>
-          Der Unterschied zu H2 liegt vor allem in der URL und im verwendeten Treiber.
-        </p>
-      </div>
+  <button onclick="toggleSolution('sql-hint2')">Hinweis anzeigen</button>
+  <div id="sql-hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Achte darauf, dass dein SQL Server läuft.
+    </p>
+  </div>
 
-      <button onclick="toggleSolution('hint-sql-2')">Hinweis 2 anzeigen</button>
-      <div id="hint-sql-2" class="solution">
-        <h3>Hinweis 2</h3>
-        <p>
-          Achte darauf, dass der SQL Server läuft und dass Port, Datenbankname,
-          Benutzername und Passwort korrekt sind.
-        </p>
-      </div>
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Verbindung herstellen</h3>
 
-      <button onclick="toggleSolution('hint-sql-3')">Hinweis 3 anzeigen</button>
-      <div id="hint-sql-3" class="solution">
-        <h3>Hinweis 3</h3>
-        <p>
-          Falls Zertifikatsfehler auftreten, hilft in Testumgebungen oft:
-          <code>trustServerCertificate=true</code>
-        </p>
-      </div>
+  <button onclick="toggleSolution('sql-hint3')">Hinweis anzeigen</button>
+  <div id="sql-hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Gleiche Vorgehensweise wie bei H2.
+    </p>
+  </div>
 
-      <button onclick="toggleSolution('solution-sql')">Lösung anzeigen</button>
-      <div id="solution-sql" class="solution">
-        <h3>Mögliche Lösung</h3>
-        <pre>import java.sql.Connection;
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-sql')">Lösung anzeigen</button>
+  <div id="solution-sql" class="solution">
+    <h3>Lösung</h3>
+
+<pre>import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-public class SqlServerConnectionTest {
+public class SqlTest {
     public static void main(String[] args) {
+
         String url = "jdbc:sqlserver://localhost:1433;databaseName=School;encrypt=true;trustServerCertificate=true";
         String user = "sa";
         String password = "DeinPasswort";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
-            if (connection != null) {
-                System.out.println("Verbindung zum SQL Server erfolgreich hergestellt.");
-            }
+
+            System.out.println("Verbunden mit Datenbank...");
+
+            DatabaseMetaData dbmd = connection.getMetaData();
+
+            System.out.println("dbmd:driver version = " + dbmd.getDriverVersion());
+            System.out.println("dbmd:driver name = " + dbmd.getDriverName());
+            System.out.println("db name = " + dbmd.getDatabaseProductName());
+            System.out.println("db ver = " + dbmd.getDatabaseProductVersion());
+
         } catch (SQLException e) {
-            System.out.println("Fehler beim Verbinden mit dem SQL Server.");
             e.printStackTrace();
         }
     }
 }</pre>
 
-        <p>
-          In realen Projekten sollten Zugangsdaten nicht direkt im Code stehen,
-          sondern z. B. über eine <code>properties</code>-Datei geladen werden.
-        </p>
-      </div>
-    </section>
+  </div>
 
-    <section class="card">
-      <div class="badge">Zusatz</div>
-      <h2>Reflexionsfragen</h2>
-      <ul>
-        <li>Was ist der Unterschied zwischen H2 und SQL Server in diesem Beispiel?</li>
-        <li>Warum ist <code>try-with-resources</code> bei JDBC besonders sinnvoll?</li>
-        <li>Welche Probleme können bei einer Datenbankverbindung auftreten?</li>
-        <li>Warum sollte man Benutzerdaten und Passwörter nicht direkt in den Code schreiben?</li>
-      </ul>
-    </section>
-  </main>
+</section>
 
-  <footer>
-    <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
-  </footer>
+</main>
 
-  <script src="script.js"></script>
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
 </body>
 </html>
