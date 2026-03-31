@@ -4,168 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SOLID – Aufgaben mit Lösungen</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-      background: #f4f6f8;
-      color: #222;
-    }
-
-    header {
-      background: #1f4b99;
-      color: white;
-      padding: 32px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0 0 10px 0;
-      font-size: 2rem;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    nav {
-      background: #16386f;
-      padding: 12px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
-      font-weight: bold;
-      display: inline-block;
-      padding: 6px 8px;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: 30px auto;
-      padding: 0 20px 40px;
-    }
-
-    .intro {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #1f4b99;
-    }
-
-    .badge {
-      display: inline-block;
-      background: #e8f0ff;
-      color: #1f4b99;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-      font-weight: bold;
-    }
-
-    pre {
-      background: #1e1e1e;
-      color: #f5f5f5;
-      padding: 16px;
-      border-radius: 10px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-    }
-
-    .question {
-      font-weight: bold;
-      margin: 16px 0 10px;
-    }
-
-    button {
-      background: #1f4b99;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.95rem;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background: #16386f;
-    }
-
-    .solution {
-      display: none;
-      margin-top: 16px;
-      padding: 16px;
-      background: #eef7ee;
-      border-left: 5px solid #2e8b57;
-      border-radius: 8px;
-    }
-
-    .solution h3 {
-      margin-top: 0;
-      color: #1d5f3a;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      background: #16386f;
-      color: white;
-      margin-top: 30px;
-    }
-
-    .back-link {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    
-    .back-link:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 700px) {
-      nav a {
-        display: block;
-        margin: 6px 0;
-      }
-
-      header h1 {
-        font-size: 1.6rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -222,9 +61,7 @@
           <li>Bericht drucken</li>
           <li>Bericht als PDF exportieren</li>
         </ul>
-        <p>
-          Eine Klasse sollte nur <strong>einen Grund zur Änderung</strong> haben.
-        </p>
+        <p>Eine Klasse sollte nur <strong>einen Grund zur Änderung</strong> haben.</p>
 
         <pre>class Report {
     void generate() {
@@ -400,9 +237,7 @@ class Car implements Vehicle {
           Das verletzt das <strong>Interface Segregation Principle</strong>, weil das Interface
           zu groß ist. Eine Klasse wird gezwungen, Methoden zu implementieren, die sie gar nicht braucht.
         </p>
-        <p>
-          Ein Auto kann fahren, aber nicht fliegen oder segeln.
-        </p>
+        <p>Ein Auto kann fahren, aber nicht fliegen oder segeln.</p>
 
         <pre>interface Drivable {
     void drive();
@@ -486,16 +321,6 @@ class NotificationService {
     <a href="index.html" class="back-link">Zurück zur Startseite</a>
   </footer>
 
-  <script>
-    function toggleSolution(id) {
-      const element = document.getElementById(id);
-      if (element.style.display === "block") {
-        element.style.display = "none";
-      } else {
-        element.style.display = "block";
-      }
-    }
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
