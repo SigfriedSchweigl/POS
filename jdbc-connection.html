@@ -65,7 +65,7 @@
   <h3>Schritt 2: Verbindung definieren</h3>
   <p>Verwende folgende Daten:</p>
 
-  <pre>jdbc:h2:~/test
+  <pre>URL: jdbc:h2:mem:testdb
 User: sa
 Passwort: </pre>
 
@@ -74,6 +74,18 @@ Passwort: </pre>
     <h3>Hinweis</h3>
     <p>
       Die URL beginnt bei H2 immer mit <code>jdbc:h2:</code>
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('h2-extra')">Warum mem?</button>
+  <div id="h2-extra" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Diese Aufgabe verwendet eine In-Memory-Datenbank (<code>mem</code>),
+      damit keine Installation oder Konfiguration notwendig ist.
+    </p>
+    <p>
+      Die Datenbank existiert nur während das Programm läuft.
     </p>
   </div>
 
