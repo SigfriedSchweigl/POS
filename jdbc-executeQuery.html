@@ -75,8 +75,7 @@
   <div id="solution1" class="solution">
     <h3>Lösung: connection.properties</h3>
     <div class="code-container">
-      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
-      <pre>jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+      <pre class="copyable">jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
 jdbc_user=sa
 jdbc_pwd=</pre>
     </div>
@@ -101,8 +100,7 @@ jdbc_pwd=</pre>
   <div id="solution2" class="solution">
     <h3>Lösung: schema.sql</h3>
     <div class="code-container">
-      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
-      <pre>DROP TABLE IF EXISTS person;
+      <pre class="copyable">DROP TABLE IF EXISTS person;
 
 CREATE TABLE person (
     id INT PRIMARY KEY,
@@ -164,7 +162,6 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     </p>
 
     <div class="code-container">
-      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
       <pre>Statement stmt = conn.createStatement();</pre>
     </div>
 
@@ -173,7 +170,6 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     </p>
 
     <div class="code-container">
-      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
       <pre>SELECT * FROM person</pre>
     </div>
 
@@ -203,8 +199,7 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <div id="solution-java" class="solution">
     <h3>Lösung</h3>
     <div class="code-container">
-      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
-      <pre>import java.sql.Connection;
+      <pre class="copyable">import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
