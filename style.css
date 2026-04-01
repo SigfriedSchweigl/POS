@@ -199,6 +199,7 @@ main ul li a:hover {
 
 .code-container {
   position: relative;
+  margin-top: 20px;
 }
 
 .code-container pre {
@@ -207,7 +208,7 @@ main ul li a:hover {
 
 .copy-btn {
   position: absolute;
-  top: 4px;
+  top: -10px;
   right: 6px;
   z-index: 2;
 
