@@ -3,34 +3,46 @@ function toggleSolution(id) {
   element.classList.toggle("show");
 }
 
-function copyCode(button) {
-  const pre = button.parentElement.querySelector("pre");
-  const text = pre.innerText;
+document.addEventListener("DOMContentLoaded", () => {
+  const pres = document.querySelectorAll("pre.copyable");
 
-  navigator.clipboard.writeText(text).then(() => {
+  pres.forEach(pre => {
+    const container = document.createElement("div");
+    container.className = "code-container";
 
-    // alten Timer löschen
-    if (button._timeout) {
-      clearTimeout(button._timeout);
-    }
+    const button = document.createElement("button");
+    button.className = "copy-btn";
+    button.innerText = "Kopieren";
 
-    button.innerText = "Kopiert!";
+    button.addEventListener("click", () => {
+      navigator.clipboard.writeText(pre.innerText).then(() => {
 
-    // neuen Timer setzen
-    button._timeout = setTimeout(() => {
-      button.innerText = "Kopieren";
-    }, 1500);
+        if (button._timeout) {
+          clearTimeout(button._timeout);
+        }
 
-  }).catch(() => {
+        button.innerText = "Kopiert!";
 
-    if (button._timeout) {
-      clearTimeout(button._timeout);
-    }
+        button._timeout = setTimeout(() => {
+          button.innerText = "Kopieren";
+        }, 1500);
 
-    button.innerText = "Fehler";
+      }).catch(() => {
 
-    button._timeout = setTimeout(() => {
-      button.innerText = "Kopieren";
-    }, 1500);
+        if (button._timeout) {
+          clearTimeout(button._timeout);
+        }
+
+        button.innerText = "Fehler";
+
+        button._timeout = setTimeout(() => {
+          button.innerText = "Kopieren";
+        }, 1500);
+      });
+    });
+
+    pre.parentNode.insertBefore(container, pre);
+    container.appendChild(pre);
+    container.appendChild(button);
   });
-}
+});
