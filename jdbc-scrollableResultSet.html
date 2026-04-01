@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 6: Scrollable ResultSet</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 6: Scrollable ResultSet</h1>
+  <p>Im ResultSet vorwärts und rückwärts navigieren</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Aufgabe 6</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, ein scrollbares <code>ResultSet</code> zu verwenden und sich
+    darin gezielt zu bewegen. Dabei sollen Methoden wie
+    <code>first()</code>, <code>last()</code>, <code>previous()</code> und
+    <code>absolute(...)</code> verwendet werden.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 6 – Scrollable ResultSet</div>
+  <h2>Mit einem scrollbaren ResultSet navigieren</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm, das eine Verbindung zu einer H2-Datenbank
+    herstellt und Daten aus der Tabelle <code>person</code> ausliest.
+  </p>
+
+  <p>
+    Verwende dabei ein scrollbares <code>ResultSet</code>, sodass du dich nicht
+    nur mit <code>next()</code> vorwärts bewegen kannst, sondern auch gezielt
+    zum ersten, letzten oder zu einem bestimmten Datensatz springen kannst.
+  </p>
+
+  <p>
+    Gib jeweils den gefundenen Datensatz auf der Konsole aus.
+  </p>
+
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Properties-Datei verwenden</h3>
+  <p>
+    Verwende wieder eine Datei <code>connection.properties</code> mit den
+    Verbindungsdaten für H2.
+  </p>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Du kannst dieselbe Properties-Datei wie in den vorigen Aufgaben verwenden.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
+    <h3>Lösung: connection.properties</h3>
+    <pre class="copyable">jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+jdbc_user=sa
+jdbc_pwd=</pre>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: SQL-Datei erstellen</h3>
+  <p>
+    Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
+    <code>person</code> erstellen und einige Beispieldaten einfügen.
+  </p>
+
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder die Spalten <code>id</code>, <code>name</code> und <code>age</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
+    <h3>Lösung: schema.sql</h3>
+    <pre class="copyable">DROP TABLE IF EXISTS person;
+
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT
+);
+
+INSERT INTO person VALUES (1, 'Anna', 22);
+INSERT INTO person VALUES (2, 'Max', 25);
+INSERT INTO person VALUES (3, 'Lisa', 19);
+INSERT INTO person VALUES (4, 'Tom', 30);</pre>
+  </div>
+
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Verbindung herstellen</h3>
+  <p>
+    Lade die Properties-Datei und stelle eine Verbindung zur Datenbank her.
+  </p>
+
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder <code>Files.newInputStream(Path.of("connection.properties"))</code>
+      und <code>DriverManager.getConnection(...)</code>.
+    </p>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Scrollbares Statement erstellen</h3>
+  <p>
+    Erstelle ein <code>Statement</code>, das ein scrollbares
+    <code>ResultSet</code> erzeugt.
+  </p>
+
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Beim Erstellen des Statements kannst du zusätzlich den Typ des
+      <code>ResultSet</code> angeben.
+    </p>
+
+    <pre>Statement stmt = conn.createStatement(
+    ResultSet.TYPE_SCROLL_INSENSITIVE,
+    ResultSet.CONCUR_READ_ONLY
+);</pre>
+
+    <p>
+      <code>TYPE_SCROLL_INSENSITIVE</code> bedeutet, dass du dich im
+      ResultSet vor- und zurückbewegen kannst.
+    </p>
+  </div>
+
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: Abfrage ausführen</h3>
+  <p>
+    Führe eine SELECT-Abfrage auf der Tabelle <code>person</code> aus.
+  </p>
+
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende zum Beispiel:
+    </p>
+
+    <pre>SELECT * FROM person</pre>
+
+    <p>
+      Speichere das Ergebnis in einem <code>ResultSet</code>.
+    </p>
+
+    <pre>ResultSet rs = stmt.executeQuery(sql);</pre>
+  </div>
+
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: Zum ersten Datensatz springen</h3>
+  <p>
+    Springe gezielt zum ersten Datensatz und gib ihn aus.
+  </p>
+
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende:
+    </p>
+
+    <pre>if (rs.first()) {
+    System.out.println(rs.getInt("id"));
+}</pre>
+
+    <p>
+      Mit <code>first()</code> springst du direkt zum ersten Datensatz.
+    </p>
+  </div>
+
+  <!-- Schritt 7 -->
+  <h3>Schritt 7: Zum letzten Datensatz springen</h3>
+  <p>
+    Springe gezielt zum letzten Datensatz und gib ihn aus.
+  </p>
+
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende:
+    </p>
+
+    <pre>if (rs.last()) {
+    System.out.println(rs.getString("name"));
+}</pre>
+
+    <p>
+      Mit <code>last()</code> springst du direkt zum letzten Datensatz.
+    </p>
+  </div>
+
+  <!-- Schritt 8 -->
+  <h3>Schritt 8: Zu einem bestimmten Datensatz springen</h3>
+  <p>
+    Springe gezielt zum zweiten oder dritten Datensatz und gib ihn aus.
+  </p>
+
+  <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
+  <div id="hint8" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende <code>absolute(...)</code>:
+    </p>
+
+    <pre>if (rs.absolute(2)) {
+    System.out.println(rs.getString("name"));
+}</pre>
+
+    <p>
+      <code>absolute(2)</code> bedeutet: gehe zum zweiten Datensatz.
+    </p>
+  </div>
+
+  <!-- Schritt 9 -->
+  <h3>Schritt 9: Einen Schritt zurückgehen</h3>
+  <p>
+    Bewege dich vom aktuellen Datensatz einen Schritt zurück und gib ihn aus.
+  </p>
+
+  <button onclick="toggleSolution('hint9')">Hinweis anzeigen</button>
+  <div id="hint9" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende:
+    </p>
+
+    <pre>if (rs.previous()) {
+    System.out.println(rs.getString("name"));
+}</pre>
+
+    <p>
+      Mit <code>previous()</code> gehst du einen Datensatz zurück.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('extra1')">Was bedeutet scrollable?</button>
+  <div id="extra1" class="solution">
+    <h3>Erklärung</h3>
+    <p>
+      Standardmäßig wird ein <code>ResultSet</code> oft nur vorwärts gelesen.
+      Dann kannst du nur mit <code>next()</code> arbeiten.
+    </p>
+    <p>
+      Ein scrollbares <code>ResultSet</code> erlaubt zusätzlich:
+    </p>
+    <ul>
+      <li><code>first()</code> → zum ersten Datensatz</li>
+      <li><code>last()</code> → zum letzten Datensatz</li>
+      <li><code>previous()</code> → einen Datensatz zurück</li>
+      <li><code>absolute(n)</code> → direkt zu Datensatz n</li>
+    </ul>
+    <p>
+      Das ist nützlich, wenn man sich gezielt im Ergebnis bewegen will.
+    </p>
+  </div>
+
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class JdbcScrollableResultSetExample {
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+        Path path = Path.of("connection.properties");
+
+        if (!Files.exists(path)) {
+            System.out.println("Properties-Datei nicht gefunden!");
+            return;
+        }
+
+        try (InputStream is = Files.newInputStream(path)) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd);
+                 Statement stmt = conn.createStatement(
+                         ResultSet.TYPE_SCROLL_INSENSITIVE,
+                         ResultSet.CONCUR_READ_ONLY)) {
+
+                String sql = "SELECT * FROM person";
+                ResultSet rs = stmt.executeQuery(sql);
+
+                if (rs.first()) {
+                    System.out.println("Erster Datensatz:");
+                    printPerson(rs);
+                }
+
+                if (rs.last()) {
+                    System.out.println("Letzter Datensatz:");
+                    printPerson(rs);
+                }
+
+                if (rs.absolute(2)) {
+                    System.out.println("Zweiter Datensatz:");
+                    printPerson(rs);
+                }
+
+                if (rs.previous()) {
+                    System.out.println("Ein Datensatz zurück:");
+                    printPerson(rs);
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Fehler bei der Datenbankoperation:");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden der Properties:");
+            e.printStackTrace();
+        }
+    }
+
+    private static void printPerson(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+        int age = rs.getInt("age");
+
+        System.out.println(id + " | " + name + " | " + age);
+        System.out.println();
+    }
+}</pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
