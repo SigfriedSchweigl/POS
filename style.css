@@ -163,11 +163,6 @@ footer {
   }
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-}
-
 li {
   margin: 10px 0;
 }
@@ -181,6 +176,10 @@ main a {
 
 main a:hover {
   text-decoration: underline;
+}
+
+main ul {
+  padding-left: 20px;
 }
 
 main ul li {
@@ -202,10 +201,14 @@ main ul li a:hover {
   position: relative;
 }
 
+.code-container pre {
+  padding-top: 24px;
+}
+
 .copy-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 4px;
+  right: 6px;
 
   padding: 6px 10px;
   font-size: 12px;
