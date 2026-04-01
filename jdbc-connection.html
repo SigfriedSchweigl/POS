@@ -25,8 +25,9 @@
 <section class="intro">
   <h2>Ziel</h2>
   <p>
-    Ziel ist es, eine Datenbankverbindung aufzubauen und Informationen über die Datenbank
-    mit <code>DatabaseMetaData</code> auszulesen.
+    Ziel ist es, eine Verbindung zu einer Datenbank herzustellen und mit
+    <code>DatabaseMetaData</code> Informationen über die Datenbank und den JDBC-Treiber
+    auszulesen.
   </p>
 </section>
 
@@ -38,8 +39,15 @@
 
   <div class="question">Aufgabe:</div>
   <p>
-    Stelle eine Verbindung zu einer H2-Datenbank her und gib Informationen über die Datenbank aus.
+    Stelle eine Verbindung zu einer H2-Datenbank her. Lies anschließend die Metadaten
+    der Verbindung aus und gib mindestens folgende Informationen auf der Konsole aus:
   </p>
+  <ul>
+    <li>Name des JDBC-Treibers</li>
+    <li>Version des JDBC-Treibers</li>
+    <li>Name des Datenbankprodukts</li>
+    <li>Version des Datenbankprodukts</li>
+  </ul>
 
   <!-- Schritt 1 -->
   <h3>Schritt 1: Maven Dependency hinzufügen</h3>
@@ -62,8 +70,8 @@
   </div>
 
   <!-- Schritt 2 -->
-  <h3>Schritt 2: Verbindung definieren</h3>
-  <p>Verwende folgende Daten:</p>
+  <h3>Schritt 2: Verbindungsdaten festlegen</h3>
+  <p>Verwende folgende Daten für die Verbindung:</p>
 
   <pre>URL: jdbc:h2:mem:testdb
 User: sa
@@ -73,43 +81,62 @@ Passwort: </pre>
   <div id="h2-hint2" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Die URL beginnt bei H2 immer mit <code>jdbc:h2:</code>
+      Die URL beginnt bei H2 immer mit <code>jdbc:h2:</code>.
     </p>
   </div>
 
-  <button onclick="toggleSolution('h2-extra')">Was bedeutet 'mem'?</button>
+  <button onclick="toggleSolution('h2-extra')">Was bedeutet <code>mem</code>?</button>
   <div id="h2-extra" class="solution">
-    <h3>Hinweis</h3>
+    <h3>Erklärung</h3>
     <p>
-      Diese Aufgabe verwendet eine In-Memory-Datenbank (<code>mem</code>),
-      damit keine Installation oder Konfiguration notwendig ist.
+      <code>mem</code> bedeutet, dass H2 eine In-Memory-Datenbank verwendet.
     </p>
     <p>
-      Die Datenbank existiert nur während das Programm läuft.
+      Die Datenbank liegt nur im Arbeitsspeicher und benötigt daher keine Datei
+      auf der Festplatte.
+    </p>
+    <p>
+      Sie existiert nur, solange das Programm läuft.
     </p>
   </div>
 
   <!-- Schritt 3 -->
   <h3>Schritt 3: Verbindung herstellen</h3>
-  <p>Nutze JDBC, um eine Verbindung aufzubauen.</p>
+  <p>Nutze JDBC, um eine Verbindung zur Datenbank aufzubauen.</p>
 
   <button onclick="toggleSolution('h2-hint3')">Hinweis anzeigen</button>
   <div id="h2-hint3" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende <code>DriverManager.getConnection(...)</code>
+      Verwende <code>DriverManager.getConnection(...)</code>.
     </p>
   </div>
 
   <!-- Schritt 4 -->
   <h3>Schritt 4: Datenbankinformationen ausgeben</h3>
-  <p>Gib Informationen über die Datenbank aus.</p>
+  <p>
+    Lies die Metadaten der Verbindung aus und gib mindestens folgende Informationen aus:
+  </p>
+  <ul>
+    <li>Treibername</li>
+    <li>Treiberversion</li>
+    <li>Datenbankname</li>
+    <li>Datenbankversion</li>
+  </ul>
 
   <button onclick="toggleSolution('h2-hint4')">Hinweis anzeigen</button>
   <div id="h2-hint4" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Nutze <code>connection.getMetaData()</code>
+      Verwende <code>connection.getMetaData()</code>, um ein
+      <code>DatabaseMetaData</code>-Objekt zu erhalten.
+    </p>
+    <p>
+      Mit Methoden wie <code>getDriverName()</code>,
+      <code>getDriverVersion()</code>,
+      <code>getDatabaseProductName()</code> und
+      <code>getDatabaseProductVersion()</code>
+      kannst du die Informationen auslesen.
     </p>
   </div>
 
@@ -136,10 +163,10 @@ public class H2Test {
 
             DatabaseMetaData dbmd = connection.getMetaData();
 
-            System.out.println("dbmd:driver version = " + dbmd.getDriverVersion());
-            System.out.println("dbmd:driver name = " + dbmd.getDriverName());
-            System.out.println("db name = " + dbmd.getDatabaseProductName());
-            System.out.println("db ver = " + dbmd.getDatabaseProductVersion());
+            System.out.println("Treibername = " + dbmd.getDriverName());
+            System.out.println("Treiberversion = " + dbmd.getDriverVersion());
+            System.out.println("Datenbankname = " + dbmd.getDatabaseProductName());
+            System.out.println("Datenbankversion = " + dbmd.getDatabaseProductVersion());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -159,43 +186,78 @@ public class H2Test {
 
   <div class="question">Aufgabe:</div>
   <p>
-    Stelle eine Verbindung zu einem SQL Server her und gib ebenfalls die Metadaten aus.
+    Stelle eine Verbindung zu einem SQL Server her. Lies anschließend die Metadaten
+    der Verbindung aus und gib mindestens folgende Informationen auf der Konsole aus:
   </p>
+  <ul>
+    <li>Name des JDBC-Treibers</li>
+    <li>Version des JDBC-Treibers</li>
+    <li>Name des Datenbankprodukts</li>
+    <li>Version des Datenbankprodukts</li>
+  </ul>
 
   <!-- Schritt 1 -->
-  <h3>Schritt 1: Maven Dependency</h3>
+  <h3>Schritt 1: Maven Dependency hinzufügen</h3>
+  <p>Füge den JDBC-Treiber für SQL Server in deine <code>pom.xml</code> ein.</p>
 
   <button onclick="toggleSolution('sql-hint1')">Hinweis anzeigen</button>
   <div id="sql-hint1" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Suche nach:
-      <code>mssql-jdbc</code> auf mvnrepository.com
+      Suche auf mvnrepository.com nach:
+      <code>mssql-jdbc</code>
     </p>
   </div>
 
   <!-- Schritt 2 -->
-  <h3>Schritt 2: Verbindungsdaten</h3>
+  <h3>Schritt 2: Verbindungsdaten festlegen</h3>
+  <p>Verwende eine JDBC-URL nach folgendem Muster:</p>
 
-<pre>jdbc:sqlserver://localhost:1433;databaseName=DBNAME;encrypt=true;trustServerCertificate=true</pre>
+  <pre>jdbc:sqlserver://localhost:1433;databaseName=DBNAME;encrypt=true;trustServerCertificate=true</pre>
 
   <button onclick="toggleSolution('sql-hint2')">Hinweis anzeigen</button>
   <div id="sql-hint2" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Achte darauf, dass dein SQL Server läuft und die Portnummer richtig ist.<BR>
-      Verwende für DBNAME deinen Datenbanknamen.
+      Achte darauf, dass dein SQL Server läuft und die Portnummer richtig ist.
+      Ersetze <code>DBNAME</code> durch den Namen deiner Datenbank.
     </p>
   </div>
 
   <!-- Schritt 3 -->
   <h3>Schritt 3: Verbindung herstellen</h3>
+  <p>Nutze JDBC, um eine Verbindung zum SQL Server aufzubauen.</p>
 
   <button onclick="toggleSolution('sql-hint3')">Hinweis anzeigen</button>
   <div id="sql-hint3" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Gleiche Vorgehensweise wie bei H2.
+      Die Vorgehensweise ist gleich wie bei H2:
+      <code>DriverManager.getConnection(...)</code>
+    </p>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Datenbankinformationen ausgeben</h3>
+  <p>
+    Lies die Metadaten der Verbindung aus und gib mindestens folgende Informationen aus:
+  </p>
+  <ul>
+    <li>Treibername</li>
+    <li>Treiberversion</li>
+    <li>Datenbankname</li>
+    <li>Datenbankversion</li>
+  </ul>
+
+  <button onclick="toggleSolution('sql-hint4')">Hinweis anzeigen</button>
+  <div id="sql-hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende auch hier <code>connection.getMetaData()</code>, um ein
+      <code>DatabaseMetaData</code>-Objekt zu erhalten.
+    </p>
+    <p>
+      Die benötigten Informationen kannst du mit denselben Methoden wie bei H2 auslesen.
     </p>
   </div>
 
@@ -214,7 +276,7 @@ public class SqlTest {
 
         String url = "jdbc:sqlserver://localhost:1433;databaseName=DBNAME;encrypt=true;trustServerCertificate=true";
         String user = "sa";
-        String password = "DeinPasswort";
+        String password = "";
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
 
@@ -222,10 +284,10 @@ public class SqlTest {
 
             DatabaseMetaData dbmd = connection.getMetaData();
 
-            System.out.println("dbmd:driver version = " + dbmd.getDriverVersion());
-            System.out.println("dbmd:driver name = " + dbmd.getDriverName());
-            System.out.println("db name = " + dbmd.getDatabaseProductName());
-            System.out.println("db ver = " + dbmd.getDatabaseProductVersion());
+            System.out.println("Treibername = " + dbmd.getDriverName());
+            System.out.println("Treiberversion = " + dbmd.getDriverVersion());
+            System.out.println("Datenbankname = " + dbmd.getDatabaseProductName());
+            System.out.println("Datenbankversion = " + dbmd.getDatabaseProductVersion());
 
         } catch (SQLException e) {
             e.printStackTrace();
