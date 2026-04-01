@@ -10,15 +10,13 @@
 
 <header>
   <h1>JDBC – Aufgabe 2: Statement und executeQuery</h1>
-  <p>Eine SQL-Datei automatisch ausführen und Daten mit executeQuery auslesen</p>
+  <p>Properties-Datei verwenden, SQL-Skript ausführen und Daten auslesen</p>
 </header>
 
 <nav>
   <a href="index.html">Start</a>
   <a href="jdbc.html">JDBC</a>
-  <a href="#properties">Properties</a>
-  <a href="#sqlfile">SQL-Datei</a>
-  <a href="#java">Java</a>
+  <a href="#h2">Aufgabe 2</a>
 </nav>
 
 <main>
@@ -26,108 +24,82 @@
 <section class="intro">
   <h2>Ziel</h2>
   <p>
-    Ziel ist es, eine JDBC-Verbindung über eine Properties-Datei herzustellen,
-    beim Start automatisch ein SQL-Skript auszuführen und anschließend Daten
-    mit <code>Statement</code> und <code>executeQuery()</code> aus einer Tabelle auszulesen.
+    Ziel ist es, eine Verbindung zu einer H2-Datenbank über eine
+    <code>connection.properties</code>-Datei herzustellen, automatisch ein
+    SQL-Skript auszuführen und anschließend mit
+    <code>Statement</code> und <code>executeQuery()</code> Daten aus einer Tabelle auszulesen.
   </p>
 </section>
 
-<section class="card">
-  <div class="badge">Aufgabe 2</div>
-  <h2>Statement und executeQuery mit H2</h2>
+<!-- ===================== AUFGABE 2 ===================== -->
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 2 – H2 mit Statement</div>
+  <h2>Daten mit Statement und executeQuery auslesen</h2>
 
   <div class="question">Aufgabe:</div>
   <p>
-    Erstelle ein Java-Programm, das eine Verbindung zu einer H2-Datenbank herstellt.
-    Die Verbindungsdaten sollen aus einer Properties-Datei geladen werden.
-    Über die JDBC-URL soll beim Verbindungsaufbau automatisch ein SQL-Skript ausgeführt werden,
-    das eine Tabelle erstellt und Beispieldaten einfügt.
+    Erstelle ein Java-Programm, das die Verbindungsdaten aus einer
+    <code>connection.properties</code>-Datei lädt und damit eine Verbindung zu einer
+    H2-Datenbank herstellt.
   </p>
 
   <p>
-    Lies danach mit einem <code>Statement</code> und <code>executeQuery()</code>
-    alle Datensätze aus der Tabelle aus und gib sie auf der Konsole aus.
+    Über die JDBC-URL soll beim Verbindungsaufbau automatisch ein SQL-Skript
+    ausgeführt werden. Dieses Skript soll eine Tabelle erstellen und Beispieldaten einfügen.
   </p>
-
-  <h3>Teilaufgaben</h3>
-  <ul>
-    <li>Eine <code>connection.properties</code>-Datei anlegen</li>
-    <li>Eine <code>schema.sql</code>-Datei erstellen</li>
-    <li>Ein Java-Programm schreiben, das die Properties lädt</li>
-    <li>Eine Verbindung zur H2-Datenbank aufbauen</li>
-    <li>Mit <code>Statement</code> eine SELECT-Abfrage ausführen</li>
-    <li>Die Daten mit <code>ResultSet</code> ausgeben</li>
-  </ul>
-</section>
-
-<!-- ===================== PROPERTIES ===================== -->
-
-<section id="properties" class="card">
-  <div class="badge">Schritt 1</div>
-  <h2>Properties-Datei erstellen</h2>
 
   <p>
-    Lege eine Datei mit dem Namen <code>connection.properties</code> an.
-    In dieser Datei sollen die Verbindungsdaten für die H2-Datenbank stehen.
+    Lies anschließend mit einem <code>Statement</code> und
+    <code>executeQuery()</code> alle Datensätze aus der Tabelle aus und gib sie auf
+    der Konsole aus.
   </p>
 
-  <button onclick="toggleSolution('hint-props')">Hinweis anzeigen</button>
-  <div id="hint-props" class="solution">
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Properties-Datei erstellen</h3>
+  <p>
+    Lege eine Datei <code>connection.properties</code> an und speichere darin die
+    Verbindungsdaten für H2.
+  </p>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Die JDBC-URL enthält zusätzlich den Parameter
+      Verwende in der JDBC-URL zusätzlich
       <code>INIT=RUNSCRIPT FROM 'schema.sql'</code>.
     </p>
     <p>
-      Dadurch wird beim Aufbau der Verbindung automatisch die Datei
-      <code>schema.sql</code> ausgeführt.
+      Dadurch wird beim Aufbau der Verbindung automatisch das SQL-Skript ausgeführt.
     </p>
   </div>
 
-  <button onclick="toggleSolution('solution-props')">Lösung anzeigen</button>
-  <div id="solution-props" class="solution">
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
     <h3>Lösung: connection.properties</h3>
 <pre>jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
 jdbc_user=sa
 jdbc_pwd=</pre>
   </div>
-</section>
 
-<!-- ===================== SQL FILE ===================== -->
-
-<section id="sqlfile" class="card">
-  <div class="badge">Schritt 2</div>
-  <h2>SQL-Datei erstellen</h2>
-
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: SQL-Datei erstellen</h3>
   <p>
-    Lege eine Datei mit dem Namen <code>schema.sql</code> an.
-    Diese Datei soll:
+    Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
+    erstellen und Beispieldaten einfügen.
   </p>
 
-  <ul>
-    <li>eine Tabelle erstellen</li>
-    <li>mehrere Datensätze einfügen</li>
-  </ul>
-
-  <p>
-    Dadurch stehen nach dem Verbindungsaufbau sofort Daten zum Auslesen bereit.
-  </p>
-
-  <button onclick="toggleSolution('hint-sql')">Hinweis anzeigen</button>
-  <div id="hint-sql" class="solution">
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende zum Beispiel eine Tabelle <code>person</code> mit den Spalten:
+      Erstelle zum Beispiel eine Tabelle <code>person</code> mit den Spalten
+      <code>id</code>, <code>name</code> und <code>age</code>.
     </p>
-    <ul>
-      <li><code>id</code></li>
-      <li><code>name</code></li>
-      <li><code>age</code></li>
-    </ul>
   </div>
 
-  <button onclick="toggleSolution('solution-sql')">Lösung anzeigen</button>
-  <div id="solution-sql" class="solution">
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
     <h3>Lösung: schema.sql</h3>
 <pre>DROP TABLE IF EXISTS person;
 
@@ -141,42 +113,34 @@ INSERT INTO person VALUES (1, 'Anna', 22);
 INSERT INTO person VALUES (2, 'Max', 25);
 INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   </div>
-</section>
 
-<!-- ===================== JAVA ===================== -->
-
-<section id="java" class="card">
-  <div class="badge">Schritt 3</div>
-  <h2>Properties-Datei im Java-Programm laden</h2>
-
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Properties-Datei im Java-Programm laden</h3>
   <p>
-    Lade die Datei <code>connection.properties</code> mit Hilfe eines
-    <code>InputStream</code> und eines <code>Properties</code>-Objekts.
+    Lade die Datei <code>connection.properties</code> mit einem
+    <code>Properties</code>-Objekt.
   </p>
 
-  <button onclick="toggleSolution('hint-java1')">Hinweis anzeigen</button>
-  <div id="hint-java1" class="solution">
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Du kannst dafür <code>Files.newInputStream(Path.of(...))</code> verwenden.
+      Verwende <code>Files.newInputStream(Path.of("connection.properties"))</code>.
     </p>
   </div>
-</section>
 
-<section class="card">
-  <div class="badge">Schritt 4</div>
-  <h2>Verbindung aufbauen</h2>
-
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Verbindung herstellen</h3>
   <p>
     Lies die Werte aus der Properties-Datei aus und verwende sie für
     <code>DriverManager.getConnection(...)</code>.
   </p>
 
-  <button onclick="toggleSolution('hint-java2')">Hinweis anzeigen</button>
-  <div id="hint-java2" class="solution">
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Du brauchst die drei Werte:
+      Du brauchst die Werte:
     </p>
     <ul>
       <li><code>jdbc_url</code></li>
@@ -184,55 +148,43 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
       <li><code>jdbc_pwd</code></li>
     </ul>
   </div>
-</section>
 
-<section class="card">
-  <div class="badge">Schritt 5</div>
-  <h2>SELECT-Abfrage mit Statement ausführen</h2>
-
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: SELECT-Abfrage mit Statement ausführen</h3>
   <p>
     Erstelle ein <code>Statement</code> und führe mit
-    <code>executeQuery()</code> eine Abfrage auf der Tabelle
+    <code>executeQuery()</code> eine SELECT-Abfrage auf der Tabelle
     <code>person</code> aus.
   </p>
 
-  <button onclick="toggleSolution('hint-java3')">Hinweis anzeigen</button>
-  <div id="hint-java3" class="solution">
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende eine SQL-Abfrage wie:
+      Verwende eine SQL-Anweisung wie:
     </p>
     <pre>SELECT * FROM person</pre>
   </div>
-</section>
 
-<section class="card">
-  <div class="badge">Schritt 6</div>
-  <h2>Ergebnisse ausgeben</h2>
-
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: Ergebnisse ausgeben</h3>
   <p>
     Durchlaufe das <code>ResultSet</code> und gib alle Datensätze auf der Konsole aus.
   </p>
 
-  <button onclick="toggleSolution('hint-java4')">Hinweis anzeigen</button>
-  <div id="hint-java4" class="solution">
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende eine <code>while (rs.next())</code>-Schleife.
+      Verwende eine Schleife mit <code>while (rs.next())</code>.
     </p>
     <p>
-      Die Werte kannst du z. B. mit
-      <code>getInt(...)</code> und <code>getString(...)</code> auslesen.
+      Die Spalten kannst du mit <code>getInt(...)</code> und
+      <code>getString(...)</code> auslesen.
     </p>
   </div>
-</section>
 
-<!-- ===================== GESAMTLÖSUNG ===================== -->
-
-<section class="card">
-  <div class="badge">Gesamtlösung</div>
-  <h2>Java-Code</h2>
-
+  <!-- Lösung -->
   <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
   <div id="solution-java" class="solution">
     <h3>Lösung: JdbcStatementExample.java</h3>
@@ -296,20 +248,7 @@ public class JdbcStatementExample {
     }
 }</pre>
   </div>
-</section>
 
-<section class="card">
-  <div class="badge">Zusatz</div>
-  <h2>Was wird hier gelernt?</h2>
-
-  <ul>
-    <li><code>Properties</code> aus einer Datei laden</li>
-    <li>JDBC-Verbindungsdaten auslagern</li>
-    <li>Ein SQL-Skript automatisch ausführen</li>
-    <li><code>Statement</code> verwenden</li>
-    <li><code>executeQuery()</code> für SELECT-Abfragen einsetzen</li>
-    <li>Mit <code>ResultSet</code> Datensätze durchlaufen</li>
-  </ul>
 </section>
 
 </main>
