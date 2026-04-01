@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 2: Statement und executeQuery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 2: Statement und executeQuery</h1>
+  <p>Eine SQL-Datei automatisch ausführen und Daten mit executeQuery auslesen</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#properties">Properties</a>
+  <a href="#sqlfile">SQL-Datei</a>
+  <a href="#java">Java</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, eine JDBC-Verbindung über eine Properties-Datei herzustellen,
+    beim Start automatisch ein SQL-Skript auszuführen und anschließend Daten
+    mit <code>Statement</code> und <code>executeQuery()</code> aus einer Tabelle auszulesen.
+  </p>
+</section>
+
+<section class="card">
+  <div class="badge">Aufgabe 2</div>
+  <h2>Statement und executeQuery mit H2</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm, das eine Verbindung zu einer H2-Datenbank herstellt.
+    Die Verbindungsdaten sollen aus einer Properties-Datei geladen werden.
+    Über die JDBC-URL soll beim Verbindungsaufbau automatisch ein SQL-Skript ausgeführt werden,
+    das eine Tabelle erstellt und Beispieldaten einfügt.
+  </p>
+
+  <p>
+    Lies danach mit einem <code>Statement</code> und <code>executeQuery()</code>
+    alle Datensätze aus der Tabelle aus und gib sie auf der Konsole aus.
+  </p>
+
+  <h3>Teilaufgaben</h3>
+  <ul>
+    <li>Eine <code>connection.properties</code>-Datei anlegen</li>
+    <li>Eine <code>schema.sql</code>-Datei erstellen</li>
+    <li>Ein Java-Programm schreiben, das die Properties lädt</li>
+    <li>Eine Verbindung zur H2-Datenbank aufbauen</li>
+    <li>Mit <code>Statement</code> eine SELECT-Abfrage ausführen</li>
+    <li>Die Daten mit <code>ResultSet</code> ausgeben</li>
+  </ul>
+</section>
+
+<!-- ===================== PROPERTIES ===================== -->
+
+<section id="properties" class="card">
+  <div class="badge">Schritt 1</div>
+  <h2>Properties-Datei erstellen</h2>
+
+  <p>
+    Lege eine Datei mit dem Namen <code>connection.properties</code> an.
+    In dieser Datei sollen die Verbindungsdaten für die H2-Datenbank stehen.
+  </p>
+
+  <button onclick="toggleSolution('hint-props')">Hinweis anzeigen</button>
+  <div id="hint-props" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Die JDBC-URL enthält zusätzlich den Parameter
+      <code>INIT=RUNSCRIPT FROM 'schema.sql'</code>.
+    </p>
+    <p>
+      Dadurch wird beim Aufbau der Verbindung automatisch die Datei
+      <code>schema.sql</code> ausgeführt.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution-props')">Lösung anzeigen</button>
+  <div id="solution-props" class="solution">
+    <h3>Lösung: connection.properties</h3>
+<pre>jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+jdbc_user=sa
+jdbc_pwd=</pre>
+  </div>
+</section>
+
+<!-- ===================== SQL FILE ===================== -->
+
+<section id="sqlfile" class="card">
+  <div class="badge">Schritt 2</div>
+  <h2>SQL-Datei erstellen</h2>
+
+  <p>
+    Lege eine Datei mit dem Namen <code>schema.sql</code> an.
+    Diese Datei soll:
+  </p>
+
+  <ul>
+    <li>eine Tabelle erstellen</li>
+    <li>mehrere Datensätze einfügen</li>
+  </ul>
+
+  <p>
+    Dadurch stehen nach dem Verbindungsaufbau sofort Daten zum Auslesen bereit.
+  </p>
+
+  <button onclick="toggleSolution('hint-sql')">Hinweis anzeigen</button>
+  <div id="hint-sql" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende zum Beispiel eine Tabelle <code>person</code> mit den Spalten:
+    </p>
+    <ul>
+      <li><code>id</code></li>
+      <li><code>name</code></li>
+      <li><code>age</code></li>
+    </ul>
+  </div>
+
+  <button onclick="toggleSolution('solution-sql')">Lösung anzeigen</button>
+  <div id="solution-sql" class="solution">
+    <h3>Lösung: schema.sql</h3>
+<pre>DROP TABLE IF EXISTS person;
+
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT
+);
+
+INSERT INTO person VALUES (1, 'Anna', 22);
+INSERT INTO person VALUES (2, 'Max', 25);
+INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
+  </div>
+</section>
+
+<!-- ===================== JAVA ===================== -->
+
+<section id="java" class="card">
+  <div class="badge">Schritt 3</div>
+  <h2>Properties-Datei im Java-Programm laden</h2>
+
+  <p>
+    Lade die Datei <code>connection.properties</code> mit Hilfe eines
+    <code>InputStream</code> und eines <code>Properties</code>-Objekts.
+  </p>
+
+  <button onclick="toggleSolution('hint-java1')">Hinweis anzeigen</button>
+  <div id="hint-java1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Du kannst dafür <code>Files.newInputStream(Path.of(...))</code> verwenden.
+    </p>
+  </div>
+</section>
+
+<section class="card">
+  <div class="badge">Schritt 4</div>
+  <h2>Verbindung aufbauen</h2>
+
+  <p>
+    Lies die Werte aus der Properties-Datei aus und verwende sie für
+    <code>DriverManager.getConnection(...)</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint-java2')">Hinweis anzeigen</button>
+  <div id="hint-java2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Du brauchst die drei Werte:
+    </p>
+    <ul>
+      <li><code>jdbc_url</code></li>
+      <li><code>jdbc_user</code></li>
+      <li><code>jdbc_pwd</code></li>
+    </ul>
+  </div>
+</section>
+
+<section class="card">
+  <div class="badge">Schritt 5</div>
+  <h2>SELECT-Abfrage mit Statement ausführen</h2>
+
+  <p>
+    Erstelle ein <code>Statement</code> und führe mit
+    <code>executeQuery()</code> eine Abfrage auf der Tabelle
+    <code>person</code> aus.
+  </p>
+
+  <button onclick="toggleSolution('hint-java3')">Hinweis anzeigen</button>
+  <div id="hint-java3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende eine SQL-Abfrage wie:
+    </p>
+    <pre>SELECT * FROM person</pre>
+  </div>
+</section>
+
+<section class="card">
+  <div class="badge">Schritt 6</div>
+  <h2>Ergebnisse ausgeben</h2>
+
+  <p>
+    Durchlaufe das <code>ResultSet</code> und gib alle Datensätze auf der Konsole aus.
+  </p>
+
+  <button onclick="toggleSolution('hint-java4')">Hinweis anzeigen</button>
+  <div id="hint-java4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende eine <code>while (rs.next())</code>-Schleife.
+    </p>
+    <p>
+      Die Werte kannst du z. B. mit
+      <code>getInt(...)</code> und <code>getString(...)</code> auslesen.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== GESAMTLÖSUNG ===================== -->
+
+<section class="card">
+  <div class="badge">Gesamtlösung</div>
+  <h2>Java-Code</h2>
+
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung: JdbcStatementExample.java</h3>
+<pre>import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.SQLException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class JdbcStatementExample {
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+
+        Path path = Path.of("connection.properties");
+
+        if (!Files.exists(path)) {
+            System.out.println("Properties-Datei nicht gefunden!");
+            return;
+        }
+
+        try (InputStream is = Files.newInputStream(path)) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd);
+                 Statement stmt = conn.createStatement()) {
+
+                System.out.println("Verbindung erfolgreich!");
+
+                String sql = "SELECT * FROM person";
+
+                ResultSet rs = stmt.executeQuery(sql);
+
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    int age = rs.getInt("age");
+
+                    System.out.println(id + " | " + name + " | " + age);
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Fehler bei der Datenbankverbindung:");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden der Properties:");
+            e.printStackTrace();
+        }
+    }
+}</pre>
+  </div>
+</section>
+
+<section class="card">
+  <div class="badge">Zusatz</div>
+  <h2>Was wird hier gelernt?</h2>
+
+  <ul>
+    <li><code>Properties</code> aus einer Datei laden</li>
+    <li>JDBC-Verbindungsdaten auslagern</li>
+    <li>Ein SQL-Skript automatisch ausführen</li>
+    <li><code>Statement</code> verwenden</li>
+    <li><code>executeQuery()</code> für SELECT-Abfragen einsetzen</li>
+    <li>Mit <code>ResultSet</code> Datensätze durchlaufen</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
