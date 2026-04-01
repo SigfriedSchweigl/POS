@@ -214,12 +214,24 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <div id="hint7" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Eine unsichere Variante könnte so aussehen:
+      Bei der unsicheren Variante wird der Benutzerwert direkt in den SQL-String
+      eingebaut.
     </p>
+  
     <pre>String input = "' OR '1'='1";
-String sql = "SELECT * FROM person WHERE name = '" + input + "'";</pre>
+  String sql = "SELECT * FROM person WHERE name = '" + input + "'";</pre>
+  
     <p>
-      Dabei wird der Benutzerwert direkt in die SQL-Anweisung eingebaut.
+      Diese SQL-Anweisung wird anschließend mit einem normalen
+      <code>Statement</code> ausgeführt:
+    </p>
+  
+    <pre>Statement stmt = conn.createStatement();
+  ResultSet rs = stmt.executeQuery(sql);</pre>
+  
+    <p>
+      So kann man sehen, warum String-Verkettung problematisch ist und warum
+      <code>PreparedStatement</code> sicherer ist.
     </p>
   </div>
 
