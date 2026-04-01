@@ -177,18 +177,17 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   </div>
 
   <!-- Schritt 6 -->
-  <h3>Schritt 6: Abfrage ausführen</h3>
+  <h3>Schritt 6: Sichere Abfrage ausführen</h3>
   <p>
-    Führe die Abfrage mit <code>executeQuery()</code> aus und lies das
-    <code>ResultSet</code> aus.
+    Führe die Abfrage mit dem <code>PreparedStatement</code> aus und lies das Ergebnis aus.
   </p>
-
+  
   <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
   <div id="hint6" class="solution">
     <h3>Hinweis</h3>
   
     <p>
-      Führe die Abfrage mit dem PreparedStatement aus:
+      Führe die Abfrage mit:
     </p>
   
     <pre>ResultSet rs = pstmt.executeQuery();</pre>
@@ -200,11 +199,10 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
     <pre>while (rs.next()) {
       String name = rs.getString("name");
   }</pre>
-  
   </div>
 
   <!-- Schritt 7 -->
-  <h3>Schritt 7: Unsichere Variante verstehen</h3>
+  <h3>Schritt 7: Unsichere Abfrage mit Statement</h3>
   <p>
     Betrachte zusätzlich eine unsichere Abfrage, bei der ein Benutzerwert direkt
     in den SQL-String eingefügt wird.
@@ -257,18 +255,34 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   </div>
 
   <!-- Schritt 8 -->
-  <h3>Schritt 8: Sichere Variante ausführen</h3>
+  <h3>Schritt 8: Vergleich der beiden Varianten</h3>
   <p>
-    Führe dieselbe Suche mit <code>PreparedStatement</code> aus und beobachte,
-    dass die Eingabe als normaler Wert behandelt wird.
+    Vergleiche das Verhalten der beiden Abfragen.
   </p>
 
-  <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
   <div id="hint8" class="solution">
     <h3>Hinweis</h3>
+  
     <p>
-      Mit <code>PreparedStatement</code> bleibt die SQL-Struktur unverändert,
-      auch wenn die Eingabe Sonderzeichen enthält.
+      Bei der unsicheren Variante kann die Eingabe die SQL-Anweisung verändern.
+    </p>
+  
+    <p>
+      Beispiel:
+    </p>
+  
+    <pre>' OR '1'='1</pre>
+  
+    <p>
+      Dadurch wird die WHERE-Bedingung immer wahr → alle Datensätze werden zurückgegeben.
+    </p>
+  
+    <p>
+      Beim <code>PreparedStatement</code> wird die Eingabe nur als Wert behandelt.
+    </p>
+  
+    <p>
+      👉 Deshalb ist <code>PreparedStatement</code> die sichere Standardlösung.
     </p>
   </div>
 
