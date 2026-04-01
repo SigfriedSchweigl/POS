@@ -31,8 +31,6 @@
   </p>
 </section>
 
-<!-- ===================== AUFGABE 2 ===================== -->
-
 <section id="h2" class="card">
   <div class="badge">Aufgabe 2 – H2 mit Statement</div>
   <h2>Daten mit Statement und executeQuery auslesen</h2>
@@ -55,7 +53,6 @@
     der Konsole aus.
   </p>
 
-  <!-- Schritt 1 -->
   <h3>Schritt 1: Properties-Datei erstellen</h3>
   <p>
     Lege eine Datei <code>connection.properties</code> an und speichere darin die
@@ -77,12 +74,14 @@
   <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
   <div id="solution1" class="solution">
     <h3>Lösung: connection.properties</h3>
-<pre>jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      <pre>jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
 jdbc_user=sa
 jdbc_pwd=</pre>
+    </div>
   </div>
 
-  <!-- Schritt 2 -->
   <h3>Schritt 2: SQL-Datei erstellen</h3>
   <p>
     Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
@@ -101,7 +100,9 @@ jdbc_pwd=</pre>
   <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
   <div id="solution2" class="solution">
     <h3>Lösung: schema.sql</h3>
-<pre>DROP TABLE IF EXISTS person;
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      <pre>DROP TABLE IF EXISTS person;
 
 CREATE TABLE person (
     id INT PRIMARY KEY,
@@ -112,9 +113,9 @@ CREATE TABLE person (
 INSERT INTO person VALUES (1, 'Anna', 22);
 INSERT INTO person VALUES (2, 'Max', 25);
 INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
+    </div>
   </div>
 
-  <!-- Schritt 3 -->
   <h3>Schritt 3: Properties-Datei im Java-Programm laden</h3>
   <p>
     Lade die Datei <code>connection.properties</code> mit einem
@@ -129,7 +130,6 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     </p>
   </div>
 
-  <!-- Schritt 4 -->
   <h3>Schritt 4: Verbindung herstellen</h3>
   <p>
     Lies die Werte aus der Properties-Datei mit <code>getProperty(...)</code> aus und verwende sie für
@@ -140,7 +140,7 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <div id="hint4" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Du brauchst folgende Parameter für getProperty:
+      Du brauchst folgende Parameter für <code>getProperty(...)</code>:
     </p>
     <ul>
       <li><code>jdbc_url</code></li>
@@ -149,7 +149,6 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     </ul>
   </div>
 
-  <!-- Schritt 5 -->
   <h3>Schritt 5: SELECT-Abfrage mit Statement ausführen</h3>
   <p>
     Erstelle ein <code>Statement</code> und führe mit
@@ -163,21 +162,26 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     <p>
       Erstelle zuerst ein <code>Statement</code>-Objekt:
     </p>
-  
-    <pre>Statement stmt = conn.createStatement();</pre>
-  
+
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      <pre>Statement stmt = conn.createStatement();</pre>
+    </div>
+
     <p>
       Führe anschließend eine SQL-Abfrage aus:
     </p>
-  
-    <pre>SELECT * FROM person</pre>
-  
+
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      <pre>SELECT * FROM person</pre>
+    </div>
+
     <p>
       Verwende dafür <code>stmt.executeQuery(...)</code>.
     </p>
   </div>
 
-  <!-- Schritt 6 -->
   <h3>Schritt 6: Ergebnisse ausgeben</h3>
   <p>
     Durchlaufe das <code>ResultSet</code> und gib alle Datensätze auf der Konsole aus.
@@ -195,11 +199,12 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
     </p>
   </div>
 
-  <!-- Lösung -->
   <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
   <div id="solution-java" class="solution">
     <h3>Lösung</h3>
-<pre>import java.sql.Connection;
+    <div class="code-container">
+      <button class="copy-btn" onclick="copyCode(this)">Kopieren</button>
+      <pre>import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -258,6 +263,7 @@ public class JdbcStatementExample {
         }
     }
 }</pre>
+    </div>
   </div>
 
 </section>
