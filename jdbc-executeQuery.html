@@ -161,9 +161,20 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <div id="hint5" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende eine SQL-Anweisung wie:
+      Erstelle zuerst ein <code>Statement</code>-Objekt:
     </p>
+  
+    <pre>Statement stmt = conn.createStatement();</pre>
+  
+    <p>
+      Führe anschließend eine SQL-Abfrage aus:
+    </p>
+  
     <pre>SELECT * FROM person</pre>
+  
+    <p>
+      Verwende dafür <code>stmt.executeQuery(...)</code>.
+    </p>
   </div>
 
   <!-- Schritt 6 -->
