@@ -7,3 +7,15 @@ function toggleSolution(id) {
     element.style.display = "block";
   }
 }
+
+function copyCode(button) {
+  const code = button.nextElementSibling.innerText;
+
+  navigator.clipboard.writeText(code).then(() => {
+    button.innerText = "Kopiert!";
+    
+    setTimeout(() => {
+      button.innerText = "Kopieren";
+    }, 1500);
+  });
+}
