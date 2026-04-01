@@ -8,16 +8,28 @@ function copyCode(button) {
   const text = pre.innerText;
 
   navigator.clipboard.writeText(text).then(() => {
-    const originalText = button.innerText;
+
+    // alten Timer löschen
+    if (button._timeout) {
+      clearTimeout(button._timeout);
+    }
+
     button.innerText = "Kopiert!";
 
-    setTimeout(() => {
-      button.innerText = originalText;
+    // neuen Timer setzen
+    button._timeout = setTimeout(() => {
+      button.innerText = "Kopieren";
     }, 1500);
+
   }).catch(() => {
+
+    if (button._timeout) {
+      clearTimeout(button._timeout);
+    }
+
     button.innerText = "Fehler";
 
-    setTimeout(() => {
+    button._timeout = setTimeout(() => {
       button.innerText = "Kopieren";
     }, 1500);
   });
