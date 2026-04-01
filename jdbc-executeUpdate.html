@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 3: executeUpdate</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 3: executeUpdate</h1>
+  <p>Daten mit Statement einfügen, ändern und löschen</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Aufgabe 3</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, mit <code>Statement</code> und <code>executeUpdate()</code>
+    SQL-Anweisungen auszuführen, die Daten in einer Tabelle verändern.
+    Dabei soll auch der Rückgabewert von <code>executeUpdate()</code>
+    ausgewertet werden.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 3 – H2 mit executeUpdate</div>
+  <h2>Daten einfügen, ändern und löschen</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm, das die Verbindungsdaten aus einer
+    <code>connection.properties</code>-Datei lädt und damit eine Verbindung zu einer
+    H2-Datenbank herstellt.
+  </p>
+
+  <p>
+    Über die JDBC-URL soll beim Verbindungsaufbau automatisch ein SQL-Skript
+    ausgeführt werden. Dieses Skript soll eine Tabelle erstellen und Beispieldaten einfügen.
+  </p>
+
+  <p>
+    Führe anschließend mit einem <code>Statement</code> und
+    <code>executeUpdate()</code> nacheinander folgende Aktionen aus:
+  </p>
+
+  <ul>
+    <li>einen neuen Datensatz einfügen</li>
+    <li>einen bestehenden Datensatz ändern</li>
+    <li>einen Datensatz löschen</li>
+  </ul>
+
+  <p>
+    Gib nach jeder Anweisung aus, wie viele Zeilen geändert wurden.
+  </p>
+
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Properties-Datei verwenden</h3>
+  <p>
+    Verwende wieder eine Datei <code>connection.properties</code> mit den
+    Verbindungsdaten für H2.
+  </p>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Du kannst dieselbe Properties-Datei wie in Aufgabe 2 verwenden.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
+    <h3>Lösung: connection.properties</h3>
+    <pre class="copyable">jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+jdbc_user=sa
+jdbc_pwd=</pre>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: SQL-Datei erstellen</h3>
+  <p>
+    Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
+    <code>person</code> erstellen und einige Beispieldaten einfügen.
+  </p>
+
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder die Spalten <code>id</code>, <code>name</code> und <code>age</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
+    <h3>Lösung: schema.sql</h3>
+    <pre class="copyable">DROP TABLE IF EXISTS person;
+
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT
+);
+
+INSERT INTO person VALUES (1, 'Anna', 22);
+INSERT INTO person VALUES (2, 'Max', 25);
+INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
+  </div>
+
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Verbindung herstellen</h3>
+  <p>
+    Lade die Properties-Datei und stelle eine Verbindung zur Datenbank her.
+  </p>
+
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder <code>Files.newInputStream(Path.of("connection.properties"))</code>
+      und <code>DriverManager.getConnection(...)</code>.
+    </p>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Statement erstellen</h3>
+  <p>
+    Erstelle ein <code>Statement</code>-Objekt, mit dem du SQL-Anweisungen ausführen kannst.
+  </p>
+
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende:
+    </p>
+    <pre>Statement stmt = conn.createStatement();</pre>
+  </div>
+
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: Datensatz einfügen</h3>
+  <p>
+    Füge mit <code>executeUpdate()</code> einen neuen Datensatz in die Tabelle
+    <code>person</code> ein.
+  </p>
+
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Eine mögliche SQL-Anweisung ist:
+    </p>
+    <pre>INSERT INTO person VALUES (4, 'Tom', 30)</pre>
+    <p>
+      <code>executeUpdate()</code> liefert die Anzahl der geänderten Zeilen zurück.
+    </p>
+  </div>
+
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: Datensatz ändern</h3>
+  <p>
+    Ändere mit <code>executeUpdate()</code> das Alter einer Person.
+  </p>
+
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Eine mögliche SQL-Anweisung ist:
+    </p>
+    <pre>UPDATE person SET age = 26 WHERE id = 2</pre>
+  </div>
+
+  <!-- Schritt 7 -->
+  <h3>Schritt 7: Datensatz löschen</h3>
+  <p>
+    Lösche mit <code>executeUpdate()</code> einen Datensatz aus der Tabelle.
+  </p>
+
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Eine mögliche SQL-Anweisung ist:
+    </p>
+    <pre>DELETE FROM person WHERE id = 1</pre>
+  </div>
+
+  <!-- Schritt 8 -->
+  <h3>Schritt 8: Rückgabewert ausgeben</h3>
+  <p>
+    Gib nach jeder SQL-Anweisung aus, wie viele Zeilen geändert wurden.
+  </p>
+
+  <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
+  <div id="hint8" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Speichere den Rückgabewert von <code>executeUpdate()</code> in einer Variablen
+      vom Typ <code>int</code>.
+    </p>
+  </div>
+
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.sql.SQLException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class JdbcExecuteUpdateExample {
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+        Path path = Path.of("connection.properties");
+
+        if (!Files.exists(path)) {
+            System.out.println("Properties-Datei nicht gefunden!");
+            return;
+        }
+
+        try (InputStream is = Files.newInputStream(path)) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd);
+                 Statement stmt = conn.createStatement()) {
+
+                System.out.println("Verbindung erfolgreich!");
+
+                int insertedRows = stmt.executeUpdate(
+                        "INSERT INTO person VALUES (4, 'Tom', 30)");
+                System.out.println("Eingefügte Zeilen: " + insertedRows);
+
+                int updatedRows = stmt.executeUpdate(
+                        "UPDATE person SET age = 26 WHERE id = 2");
+                System.out.println("Geänderte Zeilen: " + updatedRows);
+
+                int deletedRows = stmt.executeUpdate(
+                        "DELETE FROM person WHERE id = 1");
+                System.out.println("Gelöschte Zeilen: " + deletedRows);
+
+            } catch (SQLException e) {
+                System.out.println("Fehler bei der Datenbankoperation:");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden der Properties:");
+            e.printStackTrace();
+        }
+    }
+}</pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
