@@ -193,3 +193,24 @@ main ul li a {
 main ul li a:hover {
   background: #e0eaff;
 }
+
+.code-container {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  background: #16386f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.copy-btn:hover {
+  background: #0f2a52;
+}
