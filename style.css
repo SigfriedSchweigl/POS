@@ -202,13 +202,14 @@ main ul li a:hover {
 }
 
 .code-container pre {
-  padding-top: 24px;
+  padding-top: 20px;
 }
 
 .copy-btn {
   position: absolute;
   top: 4px;
   right: 6px;
+  z-index: 2;
 
   padding: 6px 10px;
   font-size: 12px;
