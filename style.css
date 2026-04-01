@@ -199,31 +199,27 @@ main ul li a:hover {
 
 .code-container {
   position: relative;
-  margin-top: 20px;
+  margin: 15px 0;
 }
 
 .code-container pre {
-  padding-top: 20px;
+  padding-top: 16px;
 }
 
 .copy-btn {
   position: absolute;
-  top: -10px;
-  right: 6px;
+  top: 8px;
+  right: 8px;
   z-index: 2;
 
-  padding: 6px 10px;
+  padding: 5px 10px;
   font-size: 12px;
-
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   color: white;
-
   border: none;
   border-radius: 6px;
-
   cursor: pointer;
-
-  opacity: 0.8;
+  opacity: 0.9;
   transition: all 0.2s ease;
 }
 
@@ -231,3 +227,4 @@ main ul li a:hover {
   opacity: 1;
   transform: scale(1.05);
 }
+
