@@ -135,10 +135,22 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
   <div id="hint4" class="solution">
     <h3>Hinweis</h3>
+  
     <p>
-      Verwende in der SQL-Anweisung ein <code>?</code> als Platzhalter.
+      Erstelle zuerst eine SQL-Abfrage mit einem Platzhalter:
     </p>
+  
     <pre>SELECT * FROM person WHERE name = ?</pre>
+  
+    <p>
+      Verwende diese Abfrage, um ein <code>PreparedStatement</code> zu erzeugen:
+    </p>
+  
+    <pre>PreparedStatement pstmt = conn.prepareStatement(sql);</pre>
+  
+    <p>
+      Speichere die SQL-Anweisung dazu vorher in einer String-Variable.
+    </p>
   </div>
 
   <!-- Schritt 5 -->
