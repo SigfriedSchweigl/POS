@@ -18,10 +18,17 @@ function copyCode(button) {
   const text = pre.innerText;
 
   navigator.clipboard.writeText(text).then(() => {
-    const oldText = button.innerText;
+    const originalText = button.innerText;
     button.innerText = "Kopiert!";
+
     setTimeout(() => {
-      button.innerText = oldText;
+      button.innerText = originalText;
+    }, 1500);
+  }).catch(() => {
+    button.innerText = "Fehler";
+
+    setTimeout(() => {
+      button.innerText = "Kopieren";
     }, 1500);
   });
 }
