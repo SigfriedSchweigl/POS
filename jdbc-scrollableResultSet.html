@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JDBC – Aufgabe 6: Scrollable ResultSet</title>
+  <title>JDBC – Aufgabe 6: Scrollable und Updatable ResultSet</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <header>
-  <h1>JDBC – Aufgabe 6: Scrollable ResultSet</h1>
-  <p>Im ResultSet vorwärts und rückwärts navigieren</p>
+  <h1>JDBC – Aufgabe 6: Scrollable und Updatable ResultSet</h1>
+  <p>Im ResultSet navigieren und Datensätze direkt ändern</p>
 </header>
 
 <nav>
@@ -24,16 +24,15 @@
 <section class="intro">
   <h2>Ziel</h2>
   <p>
-    Ziel ist es, ein scrollbares <code>ResultSet</code> zu verwenden und sich
-    darin gezielt zu bewegen. Dabei sollen Methoden wie
-    <code>first()</code>, <code>last()</code>, <code>previous()</code> und
-    <code>absolute(...)</code> verwendet werden.
+    Ziel ist es, ein <code>ResultSet</code> zu verwenden, in dem man sich gezielt
+    vorwärts und rückwärts bewegen kann. Zusätzlich soll gezeigt werden, wie man
+    einen Datensatz direkt über ein <code>updatable ResultSet</code> ändern kann.
   </p>
 </section>
 
 <section id="h2" class="card">
-  <div class="badge">Aufgabe 6 – Scrollable ResultSet</div>
-  <h2>Mit einem scrollbaren ResultSet navigieren</h2>
+  <div class="badge">Aufgabe 6 – Scrollable und Updatable ResultSet</div>
+  <h2>Im ResultSet navigieren und Daten ändern</h2>
 
   <div class="question">Aufgabe:</div>
   <p>
@@ -42,13 +41,26 @@
   </p>
 
   <p>
-    Verwende dabei ein scrollbares <code>ResultSet</code>, sodass du dich nicht
-    nur mit <code>next()</code> vorwärts bewegen kannst, sondern auch gezielt
-    zum ersten, letzten oder zu einem bestimmten Datensatz springen kannst.
+    Verwende dabei ein <strong>scrollbares</strong> und <strong>änderbares</strong>
+    <code>ResultSet</code>. Du sollst:
+  </p>
+
+  <ul>
+    <li>zum ersten Datensatz springen</li>
+    <li>zum letzten Datensatz springen</li>
+    <li>zu einem bestimmten Datensatz springen</li>
+    <li>einen Schritt zurückgehen</li>
+    <li>einen Datensatz direkt im ResultSet ändern</li>
+  </ul>
+
+  <p>
+    Gib die jeweils gefundenen oder geänderten Daten auf der Konsole aus.
   </p>
 
   <p>
-    Gib jeweils den gefundenen Datensatz auf der Konsole aus.
+    <strong>Hinweis:</strong> Ein normales <code>ResultSet</code> erlaubt oft nur
+    <code>next()</code>. Für diese Aufgabe brauchst du ein scrollbares und
+    änderbares ResultSet.
   </p>
 
   <!-- Schritt 1 -->
@@ -122,28 +134,34 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   </div>
 
   <!-- Schritt 4 -->
-  <h3>Schritt 4: Scrollbares Statement erstellen</h3>
+  <h3>Schritt 4: Scrollbares und änderbares Statement erstellen</h3>
   <p>
-    Erstelle ein <code>Statement</code>, das ein scrollbares
+    Erstelle ein <code>Statement</code>, das ein scrollbares und änderbares
     <code>ResultSet</code> erzeugt.
   </p>
 
   <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
   <div id="hint4" class="solution">
     <h3>Hinweis</h3>
+
     <p>
-      Beim Erstellen des Statements kannst du zusätzlich den Typ des
-      <code>ResultSet</code> angeben.
+      Standardmäßig ist ein <code>ResultSet</code> oft nur vorwärts lesbar
+      (<code>next()</code>) und nicht direkt änderbar.
+    </p>
+
+    <p>
+      Damit du dich vorwärts und rückwärts bewegen und Daten ändern kannst,
+      musst du das Statement speziell erstellen:
     </p>
 
     <pre>Statement stmt = conn.createStatement(
     ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_READ_ONLY
+    ResultSet.CONCUR_UPDATABLE
 );</pre>
 
     <p>
-      <code>TYPE_SCROLL_INSENSITIVE</code> bedeutet, dass du dich im
-      ResultSet vor- und zurückbewegen kannst.
+      <strong>TYPE_SCROLL_INSENSITIVE</strong> → erlaubt Vor- und Zurückspringen<br>
+      <strong>CONCUR_UPDATABLE</strong> → erlaubt Änderungen über das ResultSet
     </p>
   </div>
 
@@ -172,37 +190,36 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <!-- Schritt 6 -->
   <h3>Schritt 6: Zum ersten Datensatz springen</h3>
   <p>
-    Springe gezielt zum ersten Datensatz und gib ihn aus.
+    Springe direkt zum ersten Datensatz und gib ihn aus.
   </p>
 
   <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
   <div id="hint6" class="solution">
     <h3>Hinweis</h3>
-    <p>
-      Verwende:
-    </p>
+
+    <p>Springe direkt zum ersten Datensatz:</p>
 
     <pre>if (rs.first()) {
-    System.out.println(rs.getInt("id"));
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
 }</pre>
 
     <p>
-      Mit <code>first()</code> springst du direkt zum ersten Datensatz.
+      <code>first()</code> positioniert den Cursor auf den ersten Datensatz.
     </p>
   </div>
 
   <!-- Schritt 7 -->
   <h3>Schritt 7: Zum letzten Datensatz springen</h3>
   <p>
-    Springe gezielt zum letzten Datensatz und gib ihn aus.
+    Springe direkt zum letzten Datensatz und gib ihn aus.
   </p>
 
   <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
   <div id="hint7" class="solution">
     <h3>Hinweis</h3>
-    <p>
-      Verwende:
-    </p>
+
+    <p>Verwende:</p>
 
     <pre>if (rs.last()) {
     System.out.println(rs.getString("name"));
@@ -216,23 +233,26 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <!-- Schritt 8 -->
   <h3>Schritt 8: Zu einem bestimmten Datensatz springen</h3>
   <p>
-    Springe gezielt zum zweiten oder dritten Datensatz und gib ihn aus.
+    Springe gezielt zu einem bestimmten Datensatz und gib ihn aus.
   </p>
 
   <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
   <div id="hint8" class="solution">
     <h3>Hinweis</h3>
+
     <p>
-      Verwende <code>absolute(...)</code>:
+      Mit <code>absolute(n)</code> springst du direkt zu einer bestimmten Position:
+    </p>
+
+    <pre>rs.absolute(2);</pre>
+
+    <p>
+      → bedeutet: gehe zum 2. Datensatz
     </p>
 
     <pre>if (rs.absolute(2)) {
     System.out.println(rs.getString("name"));
 }</pre>
-
-    <p>
-      <code>absolute(2)</code> bedeutet: gehe zum zweiten Datensatz.
-    </p>
   </div>
 
   <!-- Schritt 9 -->
@@ -244,9 +264,8 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <button onclick="toggleSolution('hint9')">Hinweis anzeigen</button>
   <div id="hint9" class="solution">
     <h3>Hinweis</h3>
-    <p>
-      Verwende:
-    </p>
+
+    <p>Verwende:</p>
 
     <pre>if (rs.previous()) {
     System.out.println(rs.getString("name"));
@@ -257,24 +276,86 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
     </p>
   </div>
 
-  <button onclick="toggleSolution('extra1')">Was bedeutet scrollable?</button>
+  <!-- Schritt 10 -->
+  <h3>Schritt 10: Datensatz direkt im ResultSet ändern</h3>
+  <p>
+    Ändere das Alter einer Person direkt über das <code>ResultSet</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint10')">Hinweis anzeigen</button>
+  <div id="hint10" class="solution">
+    <h3>Hinweis</h3>
+
+    <p>
+      Springe zuerst zu einem Datensatz, zum Beispiel zum zweiten:
+    </p>
+
+    <pre>rs.absolute(2);</pre>
+
+    <p>
+      Ändere dann eine Spalte:
+    </p>
+
+    <pre>rs.updateInt("age", 99);</pre>
+
+    <p>
+      Übernimm die Änderung mit:
+    </p>
+
+    <pre>rs.updateRow();</pre>
+  </div>
+
+  <!-- Schritt 11 -->
+  <h3>Schritt 11: Änderung überprüfen</h3>
+  <p>
+    Gib den geänderten Datensatz erneut aus.
+  </p>
+
+  <button onclick="toggleSolution('hint11')">Hinweis anzeigen</button>
+  <div id="hint11" class="solution">
+    <h3>Hinweis</h3>
+
+    <p>
+      Lies nach <code>updateRow()</code> die Werte erneut aus oder springe
+      nochmals zu diesem Datensatz.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('extra1')">Was bedeutet scrollable und updatable?</button>
   <div id="extra1" class="solution">
     <h3>Erklärung</h3>
+
     <p>
-      Standardmäßig wird ein <code>ResultSet</code> oft nur vorwärts gelesen.
-      Dann kannst du nur mit <code>next()</code> arbeiten.
+      Ohne spezielle Einstellungen kann ein <code>ResultSet</code> oft nur vorwärts
+      gelesen werden:
     </p>
+
+    <pre>rs.next();</pre>
+
     <p>
-      Ein scrollbares <code>ResultSet</code> erlaubt zusätzlich:
+      Ein scrollbares ResultSet erlaubt zusätzliche Bewegungen:
     </p>
+
     <ul>
-      <li><code>first()</code> → zum ersten Datensatz</li>
-      <li><code>last()</code> → zum letzten Datensatz</li>
-      <li><code>previous()</code> → einen Datensatz zurück</li>
-      <li><code>absolute(n)</code> → direkt zu Datensatz n</li>
+      <li><code>first()</code> → erster Datensatz</li>
+      <li><code>last()</code> → letzter Datensatz</li>
+      <li><code>previous()</code> → zurück</li>
+      <li><code>absolute(n)</code> → direkt zu Position n</li>
     </ul>
+
     <p>
-      Das ist nützlich, wenn man sich gezielt im Ergebnis bewegen will.
+      Ein updatable ResultSet erlaubt außerdem direkte Änderungen:
+    </p>
+
+    <ul>
+      <li><code>updateString(...)</code></li>
+      <li><code>updateInt(...)</code></li>
+      <li><code>updateRow()</code></li>
+    </ul>
+
+    <p>
+      👉 Der Cursor bewegt sich also frei innerhalb der Ergebnismenge und
+      Änderungen können direkt auf den aktuellen Datensatz angewendet werden.
     </p>
   </div>
 
@@ -292,7 +373,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class JdbcScrollableResultSetExample {
+public class JdbcScrollableUpdatableResultSetExample {
 
     public static void main(String[] args) {
 
@@ -315,7 +396,7 @@ public class JdbcScrollableResultSetExample {
             try (Connection conn = DriverManager.getConnection(url, user, pwd);
                  Statement stmt = conn.createStatement(
                          ResultSet.TYPE_SCROLL_INSENSITIVE,
-                         ResultSet.CONCUR_READ_ONLY)) {
+                         ResultSet.CONCUR_UPDATABLE)) {
 
                 String sql = "SELECT * FROM person";
                 ResultSet rs = stmt.executeQuery(sql);
@@ -337,6 +418,17 @@ public class JdbcScrollableResultSetExample {
 
                 if (rs.previous()) {
                     System.out.println("Ein Datensatz zurück:");
+                    printPerson(rs);
+                }
+
+                if (rs.absolute(2)) {
+                    System.out.println("Datensatz vor der Änderung:");
+                    printPerson(rs);
+
+                    rs.updateInt("age", 99);
+                    rs.updateRow();
+
+                    System.out.println("Datensatz nach der Änderung:");
                     printPerson(rs);
                 }
 
