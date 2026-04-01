@@ -8,14 +8,20 @@ function toggleSolution(id) {
   }
 }
 
-function copyCode(button) {
-  const code = button.nextElementSibling.innerText;
+function toggleSolution(id) {
+  const element = document.getElementById(id);
+  element.classList.toggle("show");
+}
 
-  navigator.clipboard.writeText(code).then(() => {
+function copyCode(button) {
+  const pre = button.parentElement.querySelector("pre");
+  const text = pre.innerText;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const oldText = button.innerText;
     button.innerText = "Kopiert!";
-    
     setTimeout(() => {
-      button.innerText = "Kopieren";
+      button.innerText = oldText;
     }, 1500);
   });
 }
