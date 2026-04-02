@@ -77,7 +77,7 @@
   <div id="hint1" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Du kannst dieselbe Struktur wie in den vorigen Aufgaben verwenden.
+      Du kannst dieselbe Properties-Datei wie in den vorigen Aufgaben verwenden. 
     </p>
   </div>
 
@@ -145,8 +145,8 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <div id="hint4" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Standardmäßig ist bei JDBC oft <code>autoCommit = true</code>.
-      Dann wird jede SQL-Anweisung sofort gespeichert.
+      Standardmäßig ist bei JDBC <code>autoCommit = true</code>.
+      Das bedeutet: Jede SQL-Anweisung wird sofort dauerhaft in der Datenbank gespeichert.
     </p>
     <p>
       Für Transaktionen musst du daher <code>setAutoCommit(false)</code> verwenden.
@@ -157,26 +157,65 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <!-- Schritt 5 -->
   <h3>Schritt 5: Erste Transaktion erfolgreich durchführen</h3>
   <p>
-    Füge eine neue Person ein und lösche danach eine andere Person.
-    Wenn beide Operationen erfolgreich sind, soll <code>commit()</code> aufgerufen werden.
+    Führe nun zwei zusammengehörige SQL-Anweisungen aus:
   </p>
-
+  
+  <ul>
+    <li>eine neue Person einfügen</li>
+    <li>eine bestehende Person löschen</li>
+  </ul>
+  
+  <p>
+    Beide Anweisungen sollen innerhalb einer Transaktion ausgeführt werden.
+  </p>
+  
+  <p>
+    Verwende dafür <code>executeUpdate()</code>, da Daten verändert werden.
+  </p>
+  
+  <p>
+    Wenn beide Befehle erfolgreich sind, sollen die Änderungen mit 
+    <code>commit()</code> dauerhaft gespeichert werden.
+  </p>
+  
   <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
   <div id="hint5" class="solution">
     <h3>Hinweis</h3>
+  
     <p>
       Verwende zwei SQL-Anweisungen:
     </p>
-
+  
     <pre class="copyable">INSERT INTO person VALUES (?, ?, ?)</pre>
-
+  
     <pre class="copyable">DELETE FROM person WHERE id = ?</pre>
-
+  
     <p>
-      Wenn beide Befehle erfolgreich waren:
+      Führe die Anweisungen mit <code>executeUpdate()</code> aus:
     </p>
-
+  
+    <pre class="copyable">insertStmt.executeUpdate();
+  deleteStmt.executeUpdate();</pre>
+  
+    <p>
+      <code>executeUpdate()</code> wird verwendet für:
+    </p>
+  
+    <ul>
+      <li>INSERT</li>
+      <li>UPDATE</li>
+      <li>DELETE</li>
+    </ul>
+  
+    <p>
+      Wenn beide Befehle erfolgreich waren, rufe am Ende <code>commit()</code> auf:
+    </p>
+  
     <pre class="copyable">conn.commit();</pre>
+  
+    <p>
+      Dadurch werden beide Änderungen dauerhaft in der Datenbank gespeichert.
+    </p>
   </div>
 
   <!-- Schritt 6 -->
@@ -263,11 +302,6 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
       <li><code>commit()</code> → speichert alle Änderungen dauerhaft</li>
       <li><code>rollback()</code> → macht alle Änderungen der Transaktion rückgängig</li>
     </ul>
-
-    <p>
-      Man spricht deshalb oft vom Prinzip:
-      <strong>Alles oder nichts</strong>.
-    </p>
   </div>
 
   <!-- Lösung -->
