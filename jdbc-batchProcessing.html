@@ -205,8 +205,8 @@ long end = System.nanoTime();</pre>
     </p>
   
     <pre class="copyable">insertStmt.setInt(1, i);
-  insertStmt.setString(2, "Person_" + i);
-  insertStmt.setInt(3, 18 + (i % 50));</pre>
+insertStmt.setString(2, "Person_" + i);
+insertStmt.setInt(3, 18 + (i % 50));</pre>
   
     <p>
       Statt <code>executeUpdate()</code> aufzurufen, fügst du die Anweisung zur Batch-Liste hinzu:
@@ -286,25 +286,23 @@ System.out.println("Mit Batch: " + duration + " ms");</pre>
     </p>
   </div>
 
-  <button onclick="toggleSolution('extra2')">Wann verwendet man executeUpdate() und wann executeBatch()?</button>
-  <div id="extra2" class="solution">
-    <h3>Erklärung</h3>
-
-    <p>
-      <code>executeUpdate()</code> verwendet man, wenn man eine einzelne
-      SQL-Anweisung ausführen möchte, die Daten verändert.
-    </p>
-
+  <button onclick="toggleSolution('extraBatch')">Weitere Batch-Methoden</button>
+  <div id="extraBatch" class="solution">
+    <h3>Weitere Methoden</h3>
+  
     <ul>
-      <li><code>INSERT</code></li>
-      <li><code>UPDATE</code></li>
-      <li><code>DELETE</code></li>
+      <li><code>addBatch()</code> → fügt eine Anweisung zur Batch-Liste hinzu</li>
+      <li><code>executeBatch()</code> → führt alle gesammelten Anweisungen aus</li>
+      <li><code>clearBatch()</code> → löscht alle gesammelten Anweisungen</li>
+      <li><code>executeLargeBatch()</code> → wie executeBatch(), aber für sehr große Datenmengen</li>
     </ul>
-
+  
     <p>
-      <code>executeBatch()</code> verwendet man, wenn mehrere solcher
-      Anweisungen gesammelt und gemeinsam ausgeführt werden sollen.
+      Bei <code>Statement</code> gibt es außerdem:
     </p>
+  
+    <pre class="copyable">stmt.addBatch("INSERT INTO ...");
+  stmt.executeBatch();</pre>
   </div>
 
   <!-- Lösung -->
