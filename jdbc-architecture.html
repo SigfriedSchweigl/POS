@@ -546,7 +546,7 @@ public class JdbcActorRepository implements ActorRepository {
     }
 
     @Override
-    public List<Actor> findAll() throws SQLException {
+    public List&lt;Actor&gt; findAll() throws SQLException {
         String sql = "SELECT * FROM actor ORDER BY act_id";
         List<Actor> result = new ArrayList<>();
 
@@ -562,7 +562,7 @@ public class JdbcActorRepository implements ActorRepository {
     }
 
     @Override
-    public List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException {
+    public List&lt;Actor&gt; findAllByLastNameStartsWith(String prefix) throws SQLException {
         String sql = """
                 SELECT * FROM actor
                 WHERE act_lastname LIKE ?
