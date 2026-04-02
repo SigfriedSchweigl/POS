@@ -281,7 +281,7 @@ System.out.println("Mit Batch: " + duration + " ms");</pre>
 stmt.executeBatch();</pre>
 
     <p>
-      Bei <code>Statement</code> können SQL-Befehle auch als String (hardcoded) übergeben.
+      Bei einem <code>Statement</code> können SQL-Befehle direkt als String (hardcoded) an <code>addBatch()</code> übergeben werden.
       Mit <code>PreparedStatement</code> ist das aber sicherer und übersichtlicher,
       da Platzhalter (<code>?</code>) verwendet werden.
     </p>
