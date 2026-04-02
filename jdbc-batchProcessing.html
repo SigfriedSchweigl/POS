@@ -262,30 +262,6 @@ System.out.println("Mit Batch: " + duration + " ms");</pre>
     </p>
   </div>
 
-  <button onclick="toggleSolution('extra1')">Was ist Batch Processing?</button>
-  <div id="extra1" class="solution">
-    <h3>Erklärung</h3>
-
-    <p>
-      Beim Batch Processing werden mehrere SQL-Anweisungen gesammelt und
-      anschließend gemeinsam ausgeführt.
-    </p>
-
-    <p>
-      Häufig verwendete Methoden sind:
-    </p>
-
-    <ul>
-      <li><code>addBatch()</code> → fügt eine Anweisung zur Batch-Liste hinzu</li>
-      <li><code>executeBatch()</code> → führt alle gesammelten Anweisungen aus</li>
-    </ul>
-
-    <p>
-      Das ist besonders nützlich, wenn sehr viele Datensätze eingefügt,
-      geändert oder gelöscht werden sollen.
-    </p>
-  </div>
-
   <button onclick="toggleSolution('extraBatch')">Weitere Batch-Methoden</button>
   <div id="extraBatch" class="solution">
     <h3>Weitere Methoden</h3>
@@ -302,7 +278,13 @@ System.out.println("Mit Batch: " + duration + " ms");</pre>
     </p>
   
     <pre class="copyable">stmt.addBatch("INSERT INTO ...");
-  stmt.executeBatch();</pre>
+stmt.executeBatch();</pre>
+
+    <p>
+      Bei <code>Statement</code> können SQL-Befehle auch als String (hardcoded) übergeben.
+      Mit <code>PreparedStatement</code> ist das aber sicherer und übersichtlicher,
+      da Platzhalter (<code>?</code>) verwendet werden.
+    </p>
   </div>
 
   <!-- Lösung -->
