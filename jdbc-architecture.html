@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 8: Architecture mit Repository</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 8: Architecture mit Repository</h1>
+  <p>Domain, Persistence und App sauber trennen</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Aufgabe 8</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, eine kleine Anwendung mit einer einfachen Architektur aufzubauen.
+    Dabei werden die Klassen in die Bereiche <code>domain</code>,
+    <code>persistence</code> und <code>app</code> aufgeteilt.
+  </p>
+  <p>
+    Zusätzlich soll gezeigt werden, wie ein <code>Repository</code>-Interface
+    definiert und mit einer JDBC-Klasse umgesetzt wird.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 8 – Architecture mit Repository</div>
+  <h2>ActorApp mit Domain- und Persistence-Schicht</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm mit folgender Struktur:
+  </p>
+
+  <ul>
+    <li><code>architecture.domain.Actor</code> mit den Attributen <code>id</code>, <code>firstName</code> und <code>lastName</code></li>
+    <li><code>architecture.persistence.ActorRepository</code> als Interface</li>
+    <li><code>architecture.persistence.JdbcActorRepository</code> als JDBC-Implementierung</li>
+    <li><code>architecture.app.ActorApp</code> als Hauptklasse</li>
+  </ul>
+
+  <p>
+    Die Anwendung soll eine Verbindung zur H2-Datenbank herstellen und die
+    Methoden des Repositories aufrufen.
+  </p>
+
+  <p>
+    Verwendet werden sollen:
+  </p>
+
+  <ul>
+    <li><code>findAll()</code></li>
+    <li><code>findAllByLastNameStartsWith(String prefix)</code></li>
+    <li><code>findById(Integer id)</code></li>
+    <li><code>save(Actor actor)</code></li>
+  </ul>
+
+  <p>
+    Voraussetzung: Die Datenbank wird über <code>connection.properties</code>
+    aufgebaut, dabei wird das SQL-Skript <code>schema.sql</code> geladen.
+  </p>
+
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Projektstruktur anlegen</h3>
+  <p>
+    Lege zuerst die Packages für die drei Bereiche an:
+  </p>
+
+  <ul>
+    <li><code>architecture.domain</code></li>
+    <li><code>architecture.persistence</code></li>
+    <li><code>architecture.app</code></li>
+  </ul>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Die Idee dahinter ist, dass nicht alles in einer einzigen Klasse steht.
+    </p>
+    <p>
+      So wird der Code übersichtlicher:
+    </p>
+    <ul>
+      <li><code>domain</code> → Fachobjekte</li>
+      <li><code>persistence</code> → Datenbankzugriff</li>
+      <li><code>app</code> → Programmstart</li>
+    </ul>
+  </div>
+
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
+    <h3>Lösung: mögliche Struktur</h3>
+    <pre class="copyable">src
+└── architecture
+    ├── app
+    │   └── ActorApp.java
+    ├── domain
+    │   └── Actor.java
+    └── persistence
+        ├── ActorRepository.java
+        └── JdbcActorRepository.java</pre>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: Properties-Datei verwenden</h3>
+  <p>
+    Verwende wieder eine Datei <code>connection.properties</code> mit den
+    Verbindungsdaten für H2.
+  </p>
+
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder die gleiche Struktur wie in den vorigen Aufgaben
+      mit <code>jdbc_url</code>, <code>jdbc_user</code> und <code>jdbc_pwd</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
+    <h3>Lösung: connection.properties</h3>
+    <pre class="copyable">jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+jdbc_user=sa
+jdbc_pwd=</pre>
+  </div>
+
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: SQL-Datei erstellen</h3>
+  <p>
+    Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
+    <code>actor</code> erstellen und einige Beispieldaten einfügen.
+  </p>
+
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Die Tabelle soll zu den Attributen der Klasse <code>Actor</code> passen.
+    </p>
+    <p>
+      Verwende also die Spalten <code>act_id</code>, <code>act_firstname</code>
+      und <code>act_lastname</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution3')">Lösung anzeigen</button>
+  <div id="solution3" class="solution">
+    <h3>Lösung: schema.sql</h3>
+    <pre class="copyable">DROP TABLE IF EXISTS actor;
+
+CREATE TABLE actor (
+    act_id INT PRIMARY KEY,
+    act_firstname VARCHAR(50),
+    act_lastname VARCHAR(50)
+);
+
+INSERT INTO actor VALUES (1, 'Tom', 'Hanks');
+INSERT INTO actor VALUES (2, 'Emma', 'Stone');
+INSERT INTO actor VALUES (3, 'Chris', 'Evans');
+INSERT INTO actor VALUES (4, 'Scarlett', 'Johansson');</pre>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Domain-Klasse Actor erstellen</h3>
+  <p>
+    Erstelle nun die Klasse <code>Actor</code> im Package
+    <code>architecture.domain</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Die Klasse soll die Attribute <code>id</code>, <code>firstName</code>
+      und <code>lastName</code> enthalten.
+    </p>
+    <p>
+      Ergänze außerdem Konstruktor, Getter und eine sinnvolle
+      <code>toString()</code>-Methode.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution4')">Lösung anzeigen</button>
+  <div id="solution4" class="solution">
+    <h3>Lösung: Actor.java</h3>
+    <pre class="copyable">package architecture.domain;
+
+public class Actor {
+    private Integer id;
+    private String firstName;
+    private String lastName;
+
+    public Actor(Integer id, String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public String toString() {
+        return id + " | " + firstName + " | " + lastName;
+    }
+}</pre>
+  </div>
+
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: Repository-Interface definieren</h3>
+  <p>
+    Erstelle nun das Interface <code>ActorRepository</code> im Package
+    <code>architecture.persistence</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Das Interface beschreibt nur, <strong>was</strong> möglich sein soll,
+      aber noch nicht, <strong>wie</strong> es umgesetzt wird.
+    </p>
+    <p>
+      Verwende die Methoden:
+    </p>
+    <ul>
+      <li><code>findAll()</code></li>
+      <li><code>findAllByLastNameStartsWith(String prefix)</code></li>
+      <li><code>findById(Integer id)</code></li>
+      <li><code>save(Actor actor)</code></li>
+    </ul>
+  </div>
+
+  <button onclick="toggleSolution('solution5')">Lösung anzeigen</button>
+  <div id="solution5" class="solution">
+    <h3>Lösung: ActorRepository.java</h3>
+    <pre class="copyable">package architecture.persistence;
+
+import architecture.domain.Actor;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+public interface ActorRepository {
+    List<Actor> findAll() throws SQLException;
+
+    List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException;
+
+    Optional<Actor> findById(Integer id) throws SQLException;
+
+    Actor save(Actor actor) throws SQLException;
+}</pre>
+  </div>
+
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: JDBC-Repository erstellen</h3>
+  <p>
+    Erstelle nun die Klasse <code>JdbcActorRepository</code>, die das Interface
+    <code>ActorRepository</code> implementiert.
+  </p>
+
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Übergib die <code>Connection</code> im Konstruktor an das Repository.
+    </p>
+    <p>
+      So kann die Klasse später alle SQL-Befehle über dieselbe Verbindung ausführen.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution6')">Lösung anzeigen</button>
+  <div id="solution6" class="solution">
+    <h3>Lösung: Grundgerüst</h3>
+    <pre class="copyable">package architecture.persistence;
+
+import java.sql.Connection;
+
+public class JdbcActorRepository implements ActorRepository {
+
+    private final Connection conn;
+
+    public JdbcActorRepository(Connection conn) {
+        this.conn = conn;
+    }
+}</pre>
+  </div>
+
+  <!-- Schritt 7 -->
+  <h3>Schritt 7: Methode findAll() umsetzen</h3>
+  <p>
+    Implementiere die Methode <code>findAll()</code>. Sie soll alle Schauspieler
+    aus der Tabelle <code>actor</code> laden.
+  </p>
+
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Führe eine <code>SELECT</code>-Abfrage aus und speichere die Ergebnisse
+      in einer <code>List&lt;Actor&gt;</code>.
+    </p>
+    <pre class="copyable">SELECT * FROM actor ORDER BY act_id</pre>
+  </div>
+
+  <!-- Schritt 8 -->
+  <h3>Schritt 8: Methode findAllByLastNameStartsWith() umsetzen</h3>
+  <p>
+    Implementiere die Methode <code>findAllByLastNameStartsWith(String prefix)</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
+  <div id="hint8" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende eine <code>WHERE</code>-Bedingung mit <code>LIKE</code>.
+    </p>
+    <pre class="copyable">SELECT * FROM actor
+WHERE act_lastname LIKE ?
+ORDER BY act_id</pre>
+    <p>
+      Den Platzhalter setzt du zum Beispiel mit:
+    </p>
+    <pre class="copyable">pstmt.setString(1, prefix + "%");</pre>
+  </div>
+
+  <!-- Schritt 9 -->
+  <h3>Schritt 9: Methode findById() umsetzen</h3>
+  <p>
+    Implementiere die Methode <code>findById(Integer id)</code>.
+  </p>
+
+  <button onclick="toggleSolution('hint9')">Hinweis anzeigen</button>
+  <div id="hint9" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Da ein Schauspieler mit dieser ID entweder gefunden wird oder nicht,
+      eignet sich hier <code>Optional&lt;Actor&gt;</code>.
+    </p>
+    <pre class="copyable">SELECT * FROM actor WHERE act_id = ?</pre>
+  </div>
+
+  <!-- Schritt 10 -->
+  <h3>Schritt 10: Methode save() umsetzen</h3>
+  <p>
+    Implementiere die Methode <code>save(Actor actor)</code>. Sie soll einen
+    neuen Schauspieler in der Datenbank speichern.
+  </p>
+
+  <button onclick="toggleSolution('hint10')">Hinweis anzeigen</button>
+  <div id="hint10" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende ein <code>INSERT</code> mit <code>PreparedStatement</code>.
+    </p>
+    <pre class="copyable">INSERT INTO actor (act_id, act_firstname, act_lastname)
+VALUES (?, ?, ?)</pre>
+    <p>
+      Führe die Anweisung mit <code>executeUpdate()</code> aus.
+    </p>
+  </div>
+
+  <!-- Schritt 11 -->
+  <h3>Schritt 11: ActorApp erstellen</h3>
+  <p>
+    Erstelle nun die Hauptklasse <code>ActorApp</code>. Sie soll die Verbindung
+    aufbauen, ein Repository erzeugen und die Methoden testen.
+  </p>
+
+  <button onclick="toggleSolution('hint11')">Hinweis anzeigen</button>
+  <div id="hint11" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Lade die Datei <code>connection.properties</code> wie in den vorigen Aufgaben
+      und stelle mit <code>DriverManager.getConnection(...)</code> eine Verbindung her.
+    </p>
+    <p>
+      Erzeuge danach:
+    </p>
+    <pre class="copyable">ActorRepository repo = new JdbcActorRepository(conn);</pre>
+  </div>
+
+  <!-- Schritt 12 -->
+  <h3>Schritt 12: Methoden des Repositories aufrufen</h3>
+  <p>
+    Rufe nun alle Methoden auf und gib die Ergebnisse auf der Konsole aus.
+  </p>
+
+  <button onclick="toggleSolution('hint12')">Hinweis anzeigen</button>
+  <div id="hint12" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Teste zum Beispiel in dieser Reihenfolge:
+    </p>
+    <ul>
+      <li><code>findAll()</code></li>
+      <li><code>findAllByLastNameStartsWith("J")</code></li>
+      <li><code>findById(2)</code></li>
+      <li><code>save(...)</code></li>
+      <li>danach nochmals <code>findAll()</code></li>
+    </ul>
+  </div>
+
+  <button onclick="toggleSolution('extra1')">Was bringt diese Architektur?</button>
+  <div id="extra1" class="solution">
+    <h3>Erklärung</h3>
+    <p>
+      Durch die Aufteilung in <code>domain</code>, <code>persistence</code> und
+      <code>app</code> wird der Code klarer strukturiert.
+    </p>
+    <ul>
+      <li><code>Actor</code> beschreibt das Fachobjekt</li>
+      <li><code>ActorRepository</code> beschreibt die verfügbaren Operationen</li>
+      <li><code>JdbcActorRepository</code> enthält den konkreten JDBC-Code</li>
+      <li><code>ActorApp</code> startet das Programm</li>
+    </ul>
+    <p>
+      Dadurch ist der Code leichter zu verstehen, zu testen und später zu erweitern.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('extra2')">Warum ein Interface verwenden?</button>
+  <div id="extra2" class="solution">
+    <h3>Erklärung</h3>
+    <p>
+      Das Interface trennt die Beschreibung der Methoden von der eigentlichen
+      Umsetzung.
+    </p>
+    <p>
+      Später könnte man zum Beispiel statt <code>JdbcActorRepository</code>
+      auch eine andere Implementierung schreiben, ohne die App zu ändern.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung: Actor.java</h3>
+    <pre class="copyable">package architecture.domain;
+
+public class Actor {
+    private Integer id;
+    private String firstName;
+    private String lastName;
+
+    public Actor(Integer id, String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public String toString() {
+        return id + " | " + firstName + " | " + lastName;
+    }
+}</pre>
+
+    <h3>Lösung: ActorRepository.java</h3>
+    <pre class="copyable">package architecture.persistence;
+
+import architecture.domain.Actor;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+public interface ActorRepository {
+    List<Actor> findAll() throws SQLException;
+
+    List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException;
+
+    Optional<Actor> findById(Integer id) throws SQLException;
+
+    Actor save(Actor actor) throws SQLException;
+}</pre>
+
+    <h3>Lösung: JdbcActorRepository.java</h3>
+    <pre class="copyable">package architecture.persistence;
+
+import architecture.domain.Actor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class JdbcActorRepository implements ActorRepository {
+
+    private final Connection conn;
+
+    public JdbcActorRepository(Connection conn) {
+        this.conn = conn;
+    }
+
+    @Override
+    public List<Actor> findAll() throws SQLException {
+        String sql = "SELECT * FROM actor ORDER BY act_id";
+        List<Actor> result = new ArrayList<>();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                result.add(mapRow(rs));
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException {
+        String sql = """
+                SELECT * FROM actor
+                WHERE act_lastname LIKE ?
+                ORDER BY act_id
+                """;
+
+        List<Actor> result = new ArrayList<>();
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, prefix + "%");
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapRow(rs));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Optional<Actor> findById(Integer id) throws SQLException {
+        String sql = "SELECT * FROM actor WHERE act_id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRow(rs));
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Actor save(Actor actor) throws SQLException {
+        String sql = """
+                INSERT INTO actor (act_id, act_firstname, act_lastname)
+                VALUES (?, ?, ?)
+                """;
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, actor.getId());
+            pstmt.setString(2, actor.getFirstName());
+            pstmt.setString(3, actor.getLastName());
+            pstmt.executeUpdate();
+        }
+
+        return actor;
+    }
+
+    private Actor mapRow(ResultSet rs) throws SQLException {
+        Integer id = rs.getInt("act_id");
+        String firstName = rs.getString("act_firstname");
+        String lastName = rs.getString("act_lastname");
+        return new Actor(id, firstName, lastName);
+    }
+}</pre>
+
+    <h3>Lösung: ActorApp.java</h3>
+    <pre class="copyable">package architecture.app;
+
+import architecture.domain.Actor;
+import architecture.persistence.ActorRepository;
+import architecture.persistence.JdbcActorRepository;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.Properties;
+
+public class ActorApp {
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+        Path path = Path.of("connection.properties");
+
+        if (!Files.exists(path)) {
+            System.out.println("Properties-Datei nicht gefunden!");
+            return;
+        }
+
+        try (InputStream is = Files.newInputStream(path)) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd)) {
+
+                ActorRepository repo = new JdbcActorRepository(conn);
+
+                System.out.println("=== Alle Schauspieler ===");
+                for (Actor actor : repo.findAll()) {
+                    System.out.println(actor);
+                }
+
+                System.out.println();
+                System.out.println("=== Nachname beginnt mit J ===");
+                for (Actor actor : repo.findAllByLastNameStartsWith("J")) {
+                    System.out.println(actor);
+                }
+
+                System.out.println();
+                System.out.println("=== Schauspieler mit ID 2 ===");
+                System.out.println(repo.findById(2).orElse(null));
+
+                System.out.println();
+                System.out.println("=== Neuer Schauspieler wird gespeichert ===");
+                Actor newActor = new Actor(5, "Jennifer", "Lawrence");
+                repo.save(newActor);
+                System.out.println(newActor);
+
+                System.out.println();
+                System.out.println("=== Alle Schauspieler nach save() ===");
+                for (Actor actor : repo.findAll()) {
+                    System.out.println(actor);
+                }
+
+            } catch (Exception e) {
+                System.out.println("Fehler bei der Datenbankoperation:");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden der Properties:");
+            e.printStackTrace();
+        }
+    }
+}</pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
