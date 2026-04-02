@@ -2,247 +2,371 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JDBC – Aufgabe 7: Transaktionen</title>
   <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
 
 <header>
   <h1>JDBC – Aufgabe 7: Transaktionen</h1>
-  <p>Mehrere Datenbankoperationen sicher zusammenfassen</p>
+  <p>Alles oder nichts – commit und rollback</p>
 </header>
 
 <nav>
   <a href="index.html">Start</a>
   <a href="jdbc.html">JDBC</a>
-  <a href="#h2">Aufgabe 7</a>
+  <a href="#aufgabe">Aufgabe</a>
+  <a href="#ziel">Ziel</a>
+  <a href="#dateien">Dateien</a>
+  <a href="#code">Code</a>
+  <a href="#ablauf">Ablauf</a>
+  <a href="#fragen">Fragen</a>
 </nav>
 
 <main>
 
-<section class="intro">
-  <h2>Ziel</h2>
-  <p>
-    Ziel ist es, mehrere Datenbankoperationen zu einer Transaktion
-    zusammenzufassen. Dabei soll gezeigt werden, wie Änderungen entweder
-    vollständig übernommen (<code>commit()</code>) oder bei Fehlern
-    zurückgesetzt (<code>rollback()</code>) werden.
-  </p>
-</section>
-
-<section id="h2" class="card">
-  <div class="badge">Aufgabe 7 – Transaktionen</div>
-  <h2>Alles oder nichts – commit und rollback</h2>
-
-  <div class="question">Aufgabe:</div>
-  <p>
-    Erstelle ein Java-Programm, das zwei Datenbankoperationen ausführt:
-  </p>
-
-  <ul>
-    <li>eine Person einfügen</li>
-    <li>eine andere Person löschen</li>
-  </ul>
-
-  <p>
-    Beide Operationen sollen Teil einer Transaktion sein.
-  </p>
-
-  <p>
-    Wenn ein Fehler auftritt, sollen alle Änderungen rückgängig gemacht werden.
-  </p>
-
-  <!-- Schritt 1 -->
-  <h3>Schritt 1: Verbindung herstellen</h3>
-
-  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
-  <div id="hint1" class="solution">
-    <h3>Hinweis</h3>
-    <p>
-      Verwende wie bisher die <code>connection.properties</code>-Datei.
-    </p>
-  </div>
-
-  <!-- Schritt 2 -->
-  <h3>Schritt 2: Auto-Commit deaktivieren</h3>
-
-  <p>
-    Deaktiviere das automatische Speichern von Änderungen.
-  </p>
-
-  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
-  <div id="hint2" class="solution">
-    <h3>Hinweis</h3>
-
-    <pre>conn.setAutoCommit(false);</pre>
-
-    <p>
-      Jetzt werden Änderungen erst mit <code>commit()</code> gespeichert.
-    </p>
-  </div>
-
-  <!-- Schritt 3 -->
-  <h3>Schritt 3: Erste Operation ausführen</h3>
-
-  <p>
-    Füge eine neue Person in die Tabelle ein.
-  </p>
-
-  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
-  <div id="hint3" class="solution">
-    <h3>Hinweis</h3>
-
-    <pre>INSERT INTO person (id, name, age) VALUES (?, ?, ?)</pre>
-  </div>
-
-  <!-- Schritt 4 -->
-  <h3>Schritt 4: Zweite Operation ausführen</h3>
-
-  <p>
-    Lösche eine bestehende Person aus der Tabelle.
-  </p>
-
-  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
-  <div id="hint4" class="solution">
-    <h3>Hinweis</h3>
-
-    <pre>DELETE FROM person WHERE id = ?</pre>
-  </div>
-
-  <!-- Schritt 5 -->
-  <h3>Schritt 5: Transaktion bestätigen</h3>
-
-  <p>
-    Übernimm alle Änderungen.
-  </p>
-
-  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
-  <div id="hint5" class="solution">
-    <h3>Hinweis</h3>
-
-    <pre>conn.commit();</pre>
-  </div>
-
-  <!-- Schritt 6 -->
-  <h3>Schritt 6: Fehler behandeln</h3>
-
-  <p>
-    Falls ein Fehler auftritt, sollen alle Änderungen zurückgesetzt werden.
-  </p>
-
-  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
-  <div id="hint6" class="solution">
-    <h3>Hinweis</h3>
-
-    <pre>conn.rollback();</pre>
-
-    <p>
-      Dadurch werden alle Änderungen der Transaktion rückgängig gemacht.
-    </p>
-  </div>
-
-  <!-- Schritt 7 -->
-  <h3>Schritt 7: Warum sind Transaktionen wichtig?</h3>
-
-  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
-  <div id="hint7" class="solution">
-    <h3>Hinweis</h3>
-
-    <p>
-      Transaktionen stellen sicher, dass mehrere Operationen nur gemeinsam
-      ausgeführt werden.
-    </p>
-
-    <p>
-      Beispiel:
-    </p>
-
+  <section class="intro" id="aufgabe">
+    <h2>Alles oder nichts – commit und rollback</h2>
+    <p><strong>Aufgabe:</strong></p>
+    <p>Erstelle ein Java-Programm, das zwei Datenbankoperationen ausführt:</p>
     <ul>
-      <li>Geld wird abgebucht</li>
-      <li>Geld wird gutgeschrieben</li>
+      <li>eine Person einfügen</li>
+      <li>eine andere Person löschen</li>
+    </ul>
+    <p>Beide Operationen sollen Teil einer <strong>Transaktion</strong> sein.</p>
+    <p>
+      Wenn ein Fehler auftritt, sollen <strong>alle Änderungen rückgängig gemacht</strong> werden.
+    </p>
+  </section>
+
+  <section id="ziel">
+    <h2>Ziel</h2>
+    <p>
+      In dieser Aufgabe lernst du, wie mehrere SQL-Anweisungen als eine gemeinsame
+      Transaktion ausgeführt werden.
+    </p>
+    <p>
+      Entweder werden alle Änderungen gespeichert (<code>commit()</code>) oder
+      bei einem Fehler werden alle Änderungen zurückgenommen (<code>rollback()</code>).
+    </p>
+
+    <div class="note">
+      <strong>Merke:</strong> Eine Transaktion folgt dem Prinzip
+      <strong>„alles oder nichts“</strong>.
+    </div>
+
+    <h3>Wichtige Methoden</h3>
+    <ul>
+      <li><code>setAutoCommit(false)</code> → automatische Speicherung ausschalten</li>
+      <li><code>commit()</code> → Änderungen dauerhaft speichern</li>
+      <li><code>rollback()</code> → Änderungen rückgängig machen</li>
     </ul>
 
-    <p>
-      👉 Beide Schritte müssen zusammen funktionieren.
-    </p>
-  </div>
+    <button class="hint-btn" onclick="toggleHint('hint1')">Hinweis anzeigen</button>
+    <div class="hint" id="hint1">
+      Standardmäßig ist oft <code>autoCommit = true</code>. Dann wird jede
+      SQL-Anweisung sofort gespeichert. Für Transaktionen muss man deshalb
+      <code>setAutoCommit(false)</code> setzen.
+    </div>
+  </section>
 
-  <!-- Lösung -->
-  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
-  <div id="solution-java" class="solution">
-    <h3>Lösung</h3>
-    <pre class="copyable">import java.sql.*;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+  <section id="dateien">
+    <h2>Benötigte Dateien</h2>
+
+    <h3>1. db.properties</h3>
+    <p>Die Verbindungsdaten werden – wie in den anderen Aufgaben – aus einer Properties-Datei geladen.</p>
+
+    <pre class="copyable"><code>url=jdbc:h2:./db/personendb
+user=sa
+password=</code></pre>
+
+    <h3>2. schema.sql</h3>
+    <p>
+      Dieses SQL-Skript erzeugt die Tabelle <code>person</code> und fügt ein paar Testdaten ein.
+    </p>
+
+    <pre class="copyable"><code>DROP TABLE IF EXISTS person;
+
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    vorname VARCHAR(100) NOT NULL,
+    alter INT NOT NULL
+);
+
+INSERT INTO person (id, vorname, alter) VALUES (1, 'Anna', 20);
+INSERT INTO person (id, vorname, alter) VALUES (2, 'Ben', 22);
+INSERT INTO person (id, vorname, alter) VALUES (3, 'Clara', 19);</code></pre>
+
+    <button class="hint-btn" onclick="toggleHint('hint2')">Hinweis anzeigen</button>
+    <div class="hint" id="hint2">
+      Anfangszustand der Tabelle:
+      <br>1 – Anna – 20
+      <br>2 – Ben – 22
+      <br>3 – Clara – 19
+    </div>
+  </section>
+
+  <section id="code">
+    <h2>Java-Beispiel</h2>
+    <p>
+      Das Programm führt zwei Durchläufe aus:
+    </p>
+    <ol>
+      <li>ein erfolgreicher Durchlauf mit <code>commit()</code></li>
+      <li>ein fehlerhafter Durchlauf mit <code>rollback()</code></li>
+    </ol>
+
+    <pre class="copyable"><code>import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Properties;
 
-public class JdbcTransactionExample {
+public class TransactionDemo {
 
     public static void main(String[] args) {
-
         Properties props = new Properties();
 
-        try (InputStream is = Files.newInputStream(Path.of("connection.properties"))) {
+        try (FileInputStream fis = new FileInputStream("db.properties")) {
+            props.load(fis);
+        } catch (IOException e) {
+            System.out.println("Fehler beim Laden der db.properties");
+            e.printStackTrace();
+            return;
+        }
 
-            props.load(is);
+        String url = props.getProperty("url");
+        String user = props.getProperty("user");
+        String password = props.getProperty("password");
 
-            String url = props.getProperty("jdbc_url");
-            String user = props.getProperty("jdbc_user");
-            String pwd = props.getProperty("jdbc_pwd");
+        try (Connection con = DriverManager.getConnection(url, user, password)) {
 
-            try (Connection conn = DriverManager.getConnection(url, user, pwd)) {
+            System.out.println("=== Anfangszustand ===");
+            printPersons(con);
 
-                conn.setAutoCommit(false);
+            System.out.println("\n=== 1. Durchlauf: commit ===");
+            runTransactionWithCommit(con);
+            printPersons(con);
 
-                try {
+            System.out.println("\n=== 2. Durchlauf: rollback ===");
+            runTransactionWithRollback(con);
+            printPersons(con);
 
-                    String insertSql =
-                            "INSERT INTO person (id, name, age) VALUES (?, ?, ?)";
-
-                    try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
-                        pstmt.setInt(1, 5);
-                        pstmt.setString(2, "Julia");
-                        pstmt.setInt(3, 28);
-                        pstmt.executeUpdate();
-                    }
-
-                    String deleteSql =
-                            "DELETE FROM person WHERE id = ?";
-
-                    try (PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
-                        pstmt.setInt(1, 2);
-                        pstmt.executeUpdate();
-                    }
-
-                    conn.commit();
-                    System.out.println("Transaktion erfolgreich!");
-
-                } catch (Exception e) {
-
-                    conn.rollback();
-                    System.out.println("Fehler! Änderungen wurden zurückgesetzt.");
-                }
-
-            }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            System.out.println("Datenbankfehler:");
             e.printStackTrace();
         }
     }
-}</pre>
-  </div>
 
-</section>
+    private static void runTransactionWithCommit(Connection con) throws SQLException {
+        String insertSql = "INSERT INTO person (id, vorname, alter) VALUES (?, ?, ?)";
+        String deleteSql = "DELETE FROM person WHERE id = ?";
+
+        con.setAutoCommit(false);
+
+        try (
+            PreparedStatement insertStmt = con.prepareStatement(insertSql);
+            PreparedStatement deleteStmt = con.prepareStatement(deleteSql)
+        ) {
+            insertStmt.setInt(1, 4);
+            insertStmt.setString(2, "David");
+            insertStmt.setInt(3, 25);
+            insertStmt.executeUpdate();
+
+            deleteStmt.setInt(1, 2);
+            deleteStmt.executeUpdate();
+
+            con.commit();
+            System.out.println("Transaktion erfolgreich: commit durchgeführt.");
+
+        } catch (SQLException e) {
+            con.rollback();
+            System.out.println("Fehler: rollback durchgeführt.");
+            throw e;
+        } finally {
+            con.setAutoCommit(true);
+        }
+    }
+
+    private static void runTransactionWithRollback(Connection con) throws SQLException {
+        String insertSql = "INSERT INTO person (id, vorname, alter) VALUES (?, ?, ?)";
+        String wrongDeleteSql = "DELETE FROM person WHERE falschesfeld = ?";
+
+        con.setAutoCommit(false);
+
+        try (
+            PreparedStatement insertStmt = con.prepareStatement(insertSql);
+            PreparedStatement deleteStmt = con.prepareStatement(wrongDeleteSql)
+        ) {
+            insertStmt.setInt(1, 5);
+            insertStmt.setString(2, "Eva");
+            insertStmt.setInt(3, 23);
+            insertStmt.executeUpdate();
+
+            deleteStmt.setInt(1, 1);
+            deleteStmt.executeUpdate();
+
+            con.commit();
+            System.out.println("Transaktion erfolgreich: commit durchgeführt.");
+
+        } catch (SQLException e) {
+            con.rollback();
+            System.out.println("Fehler erkannt: rollback durchgeführt.");
+            System.out.println("Grund: " + e.getMessage());
+        } finally {
+            con.setAutoCommit(true);
+        }
+    }
+
+    private static void printPersons(Connection con) throws SQLException {
+        String sql = "SELECT id, vorname, alter FROM person ORDER BY id";
+
+        try (
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery()
+        ) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String vorname = rs.getString("vorname");
+                int alter = rs.getInt("alter");
+
+                System.out.println(id + " | " + vorname + " | " + alter);
+            }
+        }
+    }
+}</code></pre>
+  </section>
+
+  <section id="ablauf">
+    <h2>Was passiert im Programm?</h2>
+
+    <div class="step">
+      <h3>Schritt 1: Anfangszustand anzeigen</h3>
+      <p>Zu Beginn enthält die Tabelle drei Personen:</p>
+      <div class="example-box">
+        1 | Anna | 20<br>
+        2 | Ben | 22<br>
+        3 | Clara | 19
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>Schritt 2: Erfolgreiche Transaktion</h3>
+      <p>
+        Es wird eine neue Person eingefügt:
+        <strong>David</strong>.
+      </p>
+      <p>
+        Danach wird eine andere Person gelöscht:
+        <strong>Ben</strong>.
+      </p>
+      <p>
+        Da beide SQL-Befehle erfolgreich sind, wird am Ende <code>commit()</code> ausgeführt.
+      </p>
+      <div class="example-box">
+        1 | Anna | 20<br>
+        3 | Clara | 19<br>
+        4 | David | 25
+      </div>
+    </div>
+
+    <div class="step">
+      <h3>Schritt 3: Fehlerhafte Transaktion</h3>
+      <p>
+        Danach wird wieder eine Person eingefügt:
+        <strong>Eva</strong>.
+      </p>
+      <p>
+        Anschließend soll eine andere Person gelöscht werden. Dabei wird aber absichtlich
+        ein Fehler eingebaut:
+      </p>
+      <pre class="copyable"><code>DELETE FROM person WHERE falschesfeld = ?</code></pre>
+      <p>
+        Die Spalte <code>falschesfeld</code> existiert nicht. Deshalb tritt ein SQL-Fehler auf.
+      </p>
+      <p>
+        In diesem Fall wird <code>rollback()</code> ausgeführt. Dadurch wird auch das vorherige
+        Einfügen von Eva wieder rückgängig gemacht.
+      </p>
+      <div class="example-box">
+        1 | Anna | 20<br>
+        3 | Clara | 19<br>
+        4 | David | 25
+      </div>
+    </div>
+
+    <button class="hint-btn" onclick="toggleHint('hint3')">Hinweis anzeigen</button>
+    <div class="hint" id="hint3">
+      Obwohl im zweiten Durchlauf die neue Person zuerst erfolgreich eingefügt wurde,
+      bleibt sie am Ende nicht in der Tabelle. Der Grund ist das
+      <code>rollback()</code>.
+    </div>
+  </section>
+
+  <section>
+    <h2>Erwartete Konsolenausgabe</h2>
+
+    <pre class="copyable"><code>=== Anfangszustand ===
+1 | Anna | 20
+2 | Ben | 22
+3 | Clara | 19
+
+=== 1. Durchlauf: commit ===
+Transaktion erfolgreich: commit durchgeführt.
+1 | Anna | 20
+3 | Clara | 19
+4 | David | 25
+
+=== 2. Durchlauf: rollback ===
+Fehler erkannt: rollback durchgeführt.
+1 | Anna | 20
+3 | Clara | 19
+4 | David | 25</code></pre>
+  </section>
+
+  <section id="fragen">
+    <h2>Arbeitsaufträge</h2>
+    <ol>
+      <li>Warum gehören Einfügen und Löschen hier zu einer gemeinsamen Transaktion?</li>
+      <li>Warum wird <code>setAutoCommit(false)</code> verwendet?</li>
+      <li>Was bewirkt <code>commit()</code>?</li>
+      <li>Was bewirkt <code>rollback()</code>?</li>
+      <li>Warum erscheint Eva nach dem zweiten Durchlauf nicht in der Tabelle?</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Bonus</h2>
+    <p>Erweitere das Programm:</p>
+    <ul>
+      <li>Gib vor und nach jeder Transaktion die Anzahl der Personen aus.</li>
+      <li>Baue einen eigenen Fehlertext für den Rollback-Fall ein.</li>
+      <li>Ändere das Beispiel so, dass statt Löschen ein <code>UPDATE</code> durchgeführt wird.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Merksätze</h2>
+    <div class="note">
+      <ul>
+        <li>Eine Transaktion fasst mehrere SQL-Anweisungen zu einer Einheit zusammen.</li>
+        <li>Mit <code>commit()</code> werden Änderungen dauerhaft gespeichert.</li>
+        <li>Mit <code>rollback()</code> werden Änderungen der Transaktion rückgängig gemacht.</li>
+        <li>Bei Transaktionen gilt: <strong>alles oder nichts</strong>.</li>
+      </ul>
+    </div>
+  </section>
 
 </main>
 
 <footer>
-  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+  <a href="jdbc.html" class="footer-link">Zurück zur JDBC-Übersicht</a>
 </footer>
-
-<script src="script.js"></script>
 
 </body>
 </html>
