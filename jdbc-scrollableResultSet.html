@@ -146,25 +146,39 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
   <div id="hint4" class="solution">
     <h3>Hinweis</h3>
-
+  
     <p>
-      Standardmäßig ist ein <code>ResultSet</code> oft nur vorwärts lesbar
-      (<code>next()</code>) und nicht direkt änderbar.
+      Standardmäßig ist ein <code>ResultSet</code> nur vorwärts lesbar
+      (<code>next()</code>) und nicht änderbar.
     </p>
-
+  
     <p>
       Damit du dich vorwärts und rückwärts bewegen und Daten ändern kannst,
       musst du das Statement speziell erstellen:
     </p>
-
+  
     <pre>Statement stmt = conn.createStatement(
-    ResultSet.TYPE_SCROLL_INSENSITIVE,
-    ResultSet.CONCUR_UPDATABLE
-);</pre>
-
+      ResultSet.TYPE_SCROLL_INSENSITIVE,
+      ResultSet.CONCUR_UPDATABLE
+  );</pre>
+  
     <p>
-      <strong>TYPE_SCROLL_INSENSITIVE</strong> → erlaubt Vor- und Zurückspringen<br>
-      <strong>CONCUR_UPDATABLE</strong> → erlaubt Änderungen über das ResultSet
+      <strong>TYPE_SCROLL_INSENSITIVE</strong> → erlaubt Navigation, Änderungen in der DB werden nicht automatisch sichtbar (erst nach erneuter Abfrage)<br>
+      <strong>CONCUR_UPDATABLE</strong> → erlaubt Änderungen im ResultSet
+    </p>
+  
+    <p>
+      Es gibt auch andere Optionen:
+    </p>
+  
+    <ul>
+      <li><code>TYPE_FORWARD_ONLY</code> → nur vorwärts (Standard)</li>
+      <li><code>TYPE_SCROLL_SENSITIVE</code> → zeigt Änderungen in der DB (wenn unterstützt)</li>
+      <li><code>CONCUR_READ_ONLY</code> → nur lesen, keine Änderungen</li>
+    </ul>
+  
+    <p>
+      Für diese Aufgabe reicht <code>TYPE_SCROLL_INSENSITIVE</code>, da wir nur lokal im ResultSet arbeiten.
     </p>
   </div>
 
@@ -282,30 +296,36 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <!-- Schritt 10 -->
   <h3>Schritt 10: Datensatz direkt im ResultSet ändern</h3>
   <p>
-    Ändere das Alter einer Person direkt über das <code>ResultSet</code>.
+    Ändere das Alter einer Person direkt über das <code>ResultSet</code>. Verwende hierfür <code>updateInt(...), updateString(...), ...</code>
   </p>
 
   <button onclick="toggleSolution('hint10')">Hinweis anzeigen</button>
   <div id="hint10" class="solution">
     <h3>Hinweis</h3>
-
+  
     <p>
-      Springe zuerst zu einem Datensatz, zum Beispiel zum zweiten:
+      Um einen Datensatz zu ändern, musst du zuerst den Cursor auf den
+      gewünschten Datensatz positionieren:
     </p>
-
-    <pre>rs.absolute(2);</pre>
-
+  
+    <pre>z.B. rs.absolute(2);</pre>
+  
     <p>
-      Ändere dann eine Spalte:
+      Ändere anschließend eine Spalte, zum Beispiel das Alter:
     </p>
-
+  
     <pre>rs.updateInt("age", 99);</pre>
-
+  
     <p>
-      Übernimm die Änderung mit:
+      Wichtig: Die Änderung wird erst mit <code>updateRow()</code> in die
+      Datenbank übernommen:
     </p>
-
+  
     <pre>rs.updateRow();</pre>
+  
+    <p>
+      Ohne <code>updateRow()</code> wird die Änderung nicht gespeichert.
+    </p>
   </div>
 
   <!-- Schritt 11 -->
@@ -327,38 +347,41 @@ INSERT INTO person VALUES (4, 'Tom', 30);</pre>
   <button onclick="toggleSolution('extra1')">Was bedeutet scrollable und updatable?</button>
   <div id="extra1" class="solution">
     <h3>Erklärung</h3>
-
+  
     <p>
-      Ohne spezielle Einstellungen kann ein <code>ResultSet</code> oft nur vorwärts
-      gelesen werden:
+      Standardmäßig ist ein <code>ResultSet</code> nur vorwärts lesbar.
     </p>
-
+  
     <pre>rs.next();</pre>
-
+  
     <p>
-      Ein scrollbares ResultSet erlaubt zusätzliche Bewegungen:
+      Das bedeutet: Du kannst die Datensätze nur der Reihe nach durchlaufen.
+      Ein Zurückspringen ist nicht möglich.
     </p>
-
+  
+    <p>
+      Ein scrollbares <code>ResultSet</code> erlaubt zusätzliche Bewegungen:
+    </p>
+  
     <ul>
       <li><code>first()</code> → erster Datensatz</li>
       <li><code>last()</code> → letzter Datensatz</li>
-      <li><code>previous()</code> → zurück</li>
+      <li><code>previous()</code> → einen Datensatz zurück</li>
       <li><code>absolute(n)</code> → direkt zu Position n</li>
     </ul>
-
+  
     <p>
-      Ein updatable ResultSet erlaubt außerdem direkte Änderungen:
+      Ein updatable <code>ResultSet</code> erlaubt außerdem direkte Änderungen:
     </p>
-
+  
     <ul>
       <li><code>updateString(...)</code></li>
       <li><code>updateInt(...)</code></li>
       <li><code>updateRow()</code></li>
     </ul>
-
+  
     <p>
-      👉 Der Cursor bewegt sich also frei innerhalb der Ergebnismenge und
-      Änderungen können direkt auf den aktuellen Datensatz angewendet werden.
+      Dadurch kannst du dich frei im Ergebnis bewegen und Datensätze direkt verändern.
     </p>
   </div>
 
