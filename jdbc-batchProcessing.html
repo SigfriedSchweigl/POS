@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 8: Batch Processing</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 8: Batch Processing</h1>
+  <p>Viele INSERT-Befehle einzeln und als Batch ausführen</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Aufgabe 8</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, viele Datensätze in eine Tabelle einzufügen und dabei den
+    Unterschied zwischen vielen einzelnen <code>INSERT</code>-Befehlen und
+    <code>Batch Processing</code> kennenzulernen.
+  </p>
+  <p>
+    Zusätzlich soll gemessen werden, wie lange beide Varianten dauern.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 8 – Batch Processing</div>
+  <h2>Viele INSERTs effizient ausführen</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm, das viele Personen in eine H2-Datenbank einfügt.
+  </p>
+
+  <p>
+    Das Programm soll zwei Varianten vergleichen:
+  </p>
+
+  <ul>
+    <li>Einfügen mit vielen einzelnen <code>executeUpdate()</code>-Aufrufen</li>
+    <li>Einfügen mit <code>addBatch()</code> und <code>executeBatch()</code></li>
+  </ul>
+
+  <p>
+    Miss für beide Varianten die Ausführungszeit und gib die Ergebnisse auf der
+    Konsole aus.
+  </p>
+
+  <p>
+    So soll sichtbar werden, dass Batch Processing bei vielen Datensätzen
+    effizienter sein kann.
+  </p>
+
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Properties-Datei verwenden</h3>
+  <p>
+    Verwende wieder eine Datei <code>connection.properties</code> mit den
+    Verbindungsdaten für H2.
+  </p>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder die gleiche Struktur wie in den vorigen Aufgaben
+      mit <code>jdbc_url</code>, <code>jdbc_user</code> und <code>jdbc_pwd</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
+    <h3>Lösung: connection.properties</h3>
+    <pre class="copyable">jdbc_url=jdbc:h2:mem:testdb;INIT=RUNSCRIPT FROM 'schema.sql'
+jdbc_user=sa
+jdbc_pwd=</pre>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: SQL-Datei erstellen</h3>
+  <p>
+    Lege eine Datei <code>schema.sql</code> an. Diese Datei soll eine Tabelle
+    <code>person</code> erstellen.
+  </p>
+
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Für diesen Vergleich genügt eine einfache Tabelle mit
+      <code>id</code>, <code>name</code> und <code>age</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
+    <h3>Lösung: schema.sql</h3>
+    <pre class="copyable">DROP TABLE IF EXISTS person;
+
+CREATE TABLE person (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    age INT
+);</pre>
+  </div>
+
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Verbindung herstellen</h3>
+  <p>
+    Lade die Properties-Datei und stelle eine Verbindung zur Datenbank her.
+  </p>
+
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wieder <code>Files.newInputStream(Path.of("connection.properties"))</code>
+      und <code>DriverManager.getConnection(...)</code>.
+    </p>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Viele Datensätze einzeln einfügen</h3>
+  <p>
+    Erstelle eine Methode, die viele Personen mit einzelnen
+    <code>executeUpdate()</code>-Aufrufen einfügt.
+  </p>
+
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende eine Schleife und führe für jeden Datensatz ein eigenes
+      <code>INSERT</code> aus.
+    </p>
+
+    <pre class="copyable">insertStmt.executeUpdate();</pre>
+
+    <p>
+      Miss die Zeit vor und nach dem Einfügen, zum Beispiel mit:
+    </p>
+
+    <pre class="copyable">long start = System.nanoTime();
+long end = System.nanoTime();</pre>
+  </div>
+
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: Tabelle wieder leeren</h3>
+  <p>
+    Leere nach dem ersten Durchlauf die Tabelle, damit beide Varianten unter
+    denselben Bedingungen getestet werden.
+  </p>
+
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende dafür zum Beispiel:
+    </p>
+
+    <pre class="copyable">DELETE FROM person</pre>
+
+    <p>
+      Führe diese Anweisung ebenfalls mit <code>executeUpdate()</code> aus.
+    </p>
+  </div>
+
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: Viele Datensätze mit Batch einfügen</h3>
+  <p>
+    Erstelle nun eine zweite Methode, die dieselben Personen mit
+    <code>addBatch()</code> sammelt und am Ende mit
+    <code>executeBatch()</code> ausführt.
+  </p>
+
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Setze in der Schleife die Werte und füge jede Anweisung zur Batch-Liste hinzu:
+    </p>
+
+    <pre class="copyable">insertStmt.addBatch();</pre>
+
+    <p>
+      Am Ende führst du alle gesammelten Befehle gemeinsam aus:
+    </p>
+
+    <pre class="copyable">insertStmt.executeBatch();</pre>
+
+    <p>
+      Miss auch hier wieder die Ausführungszeit.
+    </p>
+  </div>
+
+  <!-- Schritt 7 -->
+  <h3>Schritt 7: Zeiten vergleichen</h3>
+  <p>
+    Gib auf der Konsole aus, wie lange beide Varianten gedauert haben.
+  </p>
+
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Rechne die gemessene Zeit zum Beispiel in Millisekunden um und gib sie aus.
+    </p>
+
+    <pre class="copyable">System.out.println("Ohne Batch: " + duration + " ms");
+System.out.println("Mit Batch: " + duration + " ms");</pre>
+  </div>
+
+  <!-- Schritt 8 -->
+  <h3>Schritt 8: Ergebnis interpretieren</h3>
+  <p>
+    Vergleiche die beiden Zeitmessungen und überlege, warum Batch Processing
+    oft schneller ist.
+  </p>
+
+  <button onclick="toggleSolution('hint8')">Hinweis anzeigen</button>
+  <div id="hint8" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Beim Batch Processing werden viele SQL-Anweisungen gesammelt und gemeinsam
+      an die Datenbank geschickt. Dadurch sind oft weniger einzelne Datenbankzugriffe nötig.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('extra1')">Was ist Batch Processing?</button>
+  <div id="extra1" class="solution">
+    <h3>Erklärung</h3>
+
+    <p>
+      Beim Batch Processing werden mehrere SQL-Anweisungen gesammelt und
+      anschließend gemeinsam ausgeführt.
+    </p>
+
+    <p>
+      Häufig verwendete Methoden sind:
+    </p>
+
+    <ul>
+      <li><code>addBatch()</code> → fügt eine Anweisung zur Batch-Liste hinzu</li>
+      <li><code>executeBatch()</code> → führt alle gesammelten Anweisungen aus</li>
+    </ul>
+
+    <p>
+      Das ist besonders nützlich, wenn sehr viele Datensätze eingefügt,
+      geändert oder gelöscht werden sollen.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('extra2')">Wann verwendet man executeUpdate() und wann executeBatch()?</button>
+  <div id="extra2" class="solution">
+    <h3>Erklärung</h3>
+
+    <p>
+      <code>executeUpdate()</code> verwendet man, wenn man eine einzelne
+      SQL-Anweisung ausführen möchte, die Daten verändert.
+    </p>
+
+    <ul>
+      <li><code>INSERT</code></li>
+      <li><code>UPDATE</code></li>
+      <li><code>DELETE</code></li>
+    </ul>
+
+    <p>
+      <code>executeBatch()</code> verwendet man, wenn mehrere solcher
+      Anweisungen gesammelt und gemeinsam ausgeführt werden sollen.
+    </p>
+  </div>
+
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class JdbcBatchExample {
+
+    private static final int PERSON_COUNT = 5000;
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+        Path path = Path.of("connection.properties");
+
+        if (!Files.exists(path)) {
+            System.out.println("Properties-Datei nicht gefunden!");
+            return;
+        }
+
+        try (InputStream is = Files.newInputStream(path)) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd)) {
+
+                long normalTime = insertNormally(conn);
+                System.out.println("Ohne Batch: " + normalTime + " ms");
+
+                clearTable(conn);
+
+                long batchTime = insertWithBatch(conn);
+                System.out.println("Mit Batch: " + batchTime + " ms");
+
+            } catch (SQLException e) {
+                System.out.println("Fehler bei der Datenbankoperation:");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Fehler beim Laden der Properties:");
+            e.printStackTrace();
+        }
+    }
+
+    private static long insertNormally(Connection conn) throws SQLException {
+        String sql = "INSERT INTO person VALUES (?, ?, ?)";
+        long start = System.nanoTime();
+
+        try (PreparedStatement insertStmt = conn.prepareStatement(sql)) {
+            for (int i = 1; i <= PERSON_COUNT; i++) {
+                insertStmt.setInt(1, i);
+                insertStmt.setString(2, "Person_" + i);
+                insertStmt.setInt(3, 18 + (i % 50));
+                insertStmt.executeUpdate();
+            }
+        }
+
+        long end = System.nanoTime();
+        return (end - start) / 1_000_000;
+    }
+
+    private static void clearTable(Connection conn) throws SQLException {
+        try (PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM person")) {
+            deleteStmt.executeUpdate();
+        }
+    }
+
+    private static long insertWithBatch(Connection conn) throws SQLException {
+        String sql = "INSERT INTO person VALUES (?, ?, ?)";
+        long start = System.nanoTime();
+
+        try (PreparedStatement insertStmt = conn.prepareStatement(sql)) {
+            for (int i = 1; i <= PERSON_COUNT; i++) {
+                insertStmt.setInt(1, i);
+                insertStmt.setString(2, "Person_" + i);
+                insertStmt.setInt(3, 18 + (i % 50));
+                insertStmt.addBatch();
+            }
+
+            insertStmt.executeBatch();
+        }
+
+        long end = System.nanoTime();
+        return (end - start) / 1_000_000;
+    }
+}</pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
