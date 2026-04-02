@@ -450,9 +450,24 @@ VALUES (?, ?, ?)</pre>
       Das Interface trennt die Beschreibung der Methoden von der eigentlichen
       Umsetzung.
     </p>
+    
     <p>
       Später könnte man zum Beispiel statt <code>JdbcActorRepository</code>
       auch eine andere Implementierung schreiben, ohne die App zu ändern.
+    </p>
+    
+    <p>
+      In der Praxis bedeutet das zum Beispiel:
+    </p>
+    
+    <ul>
+      <li>eine Implementierung für <strong>H2</strong> (z. B. für Tests)</li>
+      <li>eine Implementierung für <strong>SQL Server</strong> (z. B. im echten Betrieb)</li>
+    </ul>
+    
+    <p>
+      Die <code>ActorApp</code> verwendet dabei immer nur das Interface
+      <code>ActorRepository</code> und muss nicht angepasst werden.
     </p>
   </div>
 
@@ -500,11 +515,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActorRepository {
-    List<Actor> findAll() throws SQLException;
+    List&lt;Actor&gt; findAll() throws SQLException;
 
-    List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException;
+    List&lt;Actor&gt; findAllByLastNameStartsWith(String prefix) throws SQLException;
 
-    Optional<Actor> findById(Integer id) throws SQLException;
+    Optional&lt;Actor&gt; findById(Integer id) throws SQLException;
 
     Actor save(Actor actor) throws SQLException;
 }</pre>
@@ -554,7 +569,7 @@ public class JdbcActorRepository implements ActorRepository {
                 ORDER BY act_id
                 """;
 
-        List<Actor> result = new ArrayList<>();
+        List&lt;Actor&gt; result = new ArrayList<>();
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, prefix + "%");
@@ -570,7 +585,7 @@ public class JdbcActorRepository implements ActorRepository {
     }
 
     @Override
-    public Optional<Actor> findById(Integer id) throws SQLException {
+    public Optional&lt;Actor&gt; findById(Integer id) throws SQLException {
         String sql = "SELECT * FROM actor WHERE act_id = ?";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
