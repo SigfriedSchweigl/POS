@@ -72,8 +72,7 @@
   <div id="hint1" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende wieder die gleiche Struktur wie in den vorigen Aufgaben
-      mit <code>jdbc_url</code>, <code>jdbc_user</code> und <code>jdbc_pwd</code>.
+      Du kannst dieselbe Properties-Datei wie in den vorigen Aufgaben verwenden. 
     </p>
   </div>
 
@@ -181,24 +180,52 @@ long end = System.nanoTime();</pre>
     <code>addBatch()</code> sammelt und am Ende mit
     <code>executeBatch()</code> ausführt.
   </p>
-
+  
+  <p>
+    Auch hier verwendest du wieder ein <code>PreparedStatement</code> mit einem
+    <code>INSERT</code>-Befehl.
+  </p>
+  
   <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
   <div id="hint6" class="solution">
     <h3>Hinweis</h3>
+  
     <p>
-      Setze in der Schleife die Werte und füge jede Anweisung zur Batch-Liste hinzu:
+      Gehe ähnlich vor wie beim normalen Einfügen:
     </p>
-
+  
+    <ul>
+      <li>Erstelle ein <code>PreparedStatement</code></li>
+      <li>Verwende eine Schleife</li>
+      <li>Setze in jedem Durchlauf die Werte mit <code>setXXX(...)</code></li>
+    </ul>
+  
+    <p>
+      Beispiel:
+    </p>
+  
+    <pre class="copyable">insertStmt.setInt(1, i);
+  insertStmt.setString(2, "Person_" + i);
+  insertStmt.setInt(3, 18 + (i % 50));</pre>
+  
+    <p>
+      Statt <code>executeUpdate()</code> aufzurufen, fügst du die Anweisung zur Batch-Liste hinzu:
+    </p>
+  
     <pre class="copyable">insertStmt.addBatch();</pre>
-
+  
     <p>
-      Am Ende führst du alle gesammelten Befehle gemeinsam aus:
+      Das bedeutet: Die Anweisung wird gesammelt, aber noch nicht ausgeführt.
     </p>
-
-    <pre class="copyable">insertStmt.executeBatch();</pre>
-
+  
     <p>
-      Miss auch hier wieder die Ausführungszeit.
+      Nachdem alle Datensätze vorbereitet wurden, führst du sie gemeinsam aus:
+    </p>
+  
+    <pre class="copyable">insertStmt.executeBatch();</pre>
+  
+    <p>
+      Erst hier werden alle gesammelten INSERT-Befehle tatsächlich an die Datenbank geschickt.
     </p>
   </div>
 
