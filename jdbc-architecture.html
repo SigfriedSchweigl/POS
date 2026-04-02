@@ -265,11 +265,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActorRepository {
-    List<Actor> findAll() throws SQLException;
+    List&lt;Actor&gt; findAll() throws SQLException;
 
-    List<Actor> findAllByLastNameStartsWith(String prefix) throws SQLException;
+    List&lt;Actor&gt; findAllByLastNameStartsWith(String prefix) throws SQLException;
 
-    Optional<Actor> findById(Integer id) throws SQLException;
+    Optional&lt;Actor&gt; findById(Integer id) throws SQLException;
 
     Actor save(Actor actor) throws SQLException;
 }</pre>
