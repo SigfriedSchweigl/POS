@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 7: Transaktionen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 7: Transaktionen</h1>
+  <p>Mehrere Datenbankoperationen sicher zusammenfassen</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Aufgabe 7</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    Ziel ist es, mehrere Datenbankoperationen zu einer Transaktion
+    zusammenzufassen. Dabei soll gezeigt werden, wie Änderungen entweder
+    vollständig übernommen (<code>commit()</code>) oder bei Fehlern
+    zurückgesetzt (<code>rollback()</code>) werden.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Aufgabe 7 – Transaktionen</div>
+  <h2>Alles oder nichts – commit und rollback</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Erstelle ein Java-Programm, das zwei Datenbankoperationen ausführt:
+  </p>
+
+  <ul>
+    <li>eine Person einfügen</li>
+    <li>eine andere Person löschen</li>
+  </ul>
+
+  <p>
+    Beide Operationen sollen Teil einer Transaktion sein.
+  </p>
+
+  <p>
+    Wenn ein Fehler auftritt, sollen alle Änderungen rückgängig gemacht werden.
+  </p>
+
+  <!-- Schritt 1 -->
+  <h3>Schritt 1: Verbindung herstellen</h3>
+
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <h3>Hinweis</h3>
+    <p>
+      Verwende wie bisher die <code>connection.properties</code>-Datei.
+    </p>
+  </div>
+
+  <!-- Schritt 2 -->
+  <h3>Schritt 2: Auto-Commit deaktivieren</h3>
+
+  <p>
+    Deaktiviere das automatische Speichern von Änderungen.
+  </p>
+
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <h3>Hinweis</h3>
+
+    <pre>conn.setAutoCommit(false);</pre>
+
+    <p>
+      Jetzt werden Änderungen erst mit <code>commit()</code> gespeichert.
+    </p>
+  </div>
+
+  <!-- Schritt 3 -->
+  <h3>Schritt 3: Erste Operation ausführen</h3>
+
+  <p>
+    Füge eine neue Person in die Tabelle ein.
+  </p>
+
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <h3>Hinweis</h3>
+
+    <pre>INSERT INTO person (id, name, age) VALUES (?, ?, ?)</pre>
+  </div>
+
+  <!-- Schritt 4 -->
+  <h3>Schritt 4: Zweite Operation ausführen</h3>
+
+  <p>
+    Lösche eine bestehende Person aus der Tabelle.
+  </p>
+
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <h3>Hinweis</h3>
+
+    <pre>DELETE FROM person WHERE id = ?</pre>
+  </div>
+
+  <!-- Schritt 5 -->
+  <h3>Schritt 5: Transaktion bestätigen</h3>
+
+  <p>
+    Übernimm alle Änderungen.
+  </p>
+
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <h3>Hinweis</h3>
+
+    <pre>conn.commit();</pre>
+  </div>
+
+  <!-- Schritt 6 -->
+  <h3>Schritt 6: Fehler behandeln</h3>
+
+  <p>
+    Falls ein Fehler auftritt, sollen alle Änderungen zurückgesetzt werden.
+  </p>
+
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <h3>Hinweis</h3>
+
+    <pre>conn.rollback();</pre>
+
+    <p>
+      Dadurch werden alle Änderungen der Transaktion rückgängig gemacht.
+    </p>
+  </div>
+
+  <!-- Schritt 7 -->
+  <h3>Schritt 7: Warum sind Transaktionen wichtig?</h3>
+
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <h3>Hinweis</h3>
+
+    <p>
+      Transaktionen stellen sicher, dass mehrere Operationen nur gemeinsam
+      ausgeführt werden.
+    </p>
+
+    <p>
+      Beispiel:
+    </p>
+
+    <ul>
+      <li>Geld wird abgebucht</li>
+      <li>Geld wird gutgeschrieben</li>
+    </ul>
+
+    <p>
+      👉 Beide Schritte müssen zusammen funktionieren.
+    </p>
+  </div>
+
+  <!-- Lösung -->
+  <button onclick="toggleSolution('solution-java')">Lösung anzeigen</button>
+  <div id="solution-java" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">import java.sql.*;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class JdbcTransactionExample {
+
+    public static void main(String[] args) {
+
+        Properties props = new Properties();
+
+        try (InputStream is = Files.newInputStream(Path.of("connection.properties"))) {
+
+            props.load(is);
+
+            String url = props.getProperty("jdbc_url");
+            String user = props.getProperty("jdbc_user");
+            String pwd = props.getProperty("jdbc_pwd");
+
+            try (Connection conn = DriverManager.getConnection(url, user, pwd)) {
+
+                conn.setAutoCommit(false);
+
+                try {
+
+                    String insertSql =
+                            "INSERT INTO person (id, name, age) VALUES (?, ?, ?)";
+
+                    try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+                        pstmt.setInt(1, 5);
+                        pstmt.setString(2, "Julia");
+                        pstmt.setInt(3, 28);
+                        pstmt.executeUpdate();
+                    }
+
+                    String deleteSql =
+                            "DELETE FROM person WHERE id = ?";
+
+                    try (PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
+                        pstmt.setInt(1, 2);
+                        pstmt.executeUpdate();
+                    }
+
+                    conn.commit();
+                    System.out.println("Transaktion erfolgreich!");
+
+                } catch (Exception e) {
+
+                    conn.rollback();
+                    System.out.println("Fehler! Änderungen wurden zurückgesetzt.");
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}</pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
