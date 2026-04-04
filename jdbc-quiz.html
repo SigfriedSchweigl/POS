@@ -345,30 +345,14 @@ stmt.executeBatch();</pre>
   </div>
 
   <!-- Frage 17 -->
-  <h3>Frage 17: Zeitmessung</h3>
-  <p>
-    Warum wurde in der Batch-Aufgabe <code>System.nanoTime()</code>
-    verwendet?
-  </p>
-
-  <button onclick="toggleSolution('q17')">Lösung anzeigen</button>
-  <div id="q17" class="solution">
-    <h3>Lösung</h3>
-    <p>
-      Damit kann die Dauer einer Operation sehr genau gemessen werden,
-      zum Beispiel der Unterschied zwischen Einfügen ohne Batch und mit Batch.
-    </p>
-  </div>
-
-  <!-- Frage 18 -->
-  <h3>Frage 18: Architektur</h3>
+  <h3>Frage 17: Architektur</h3>
   <p>
     Welche Aufgabe hat die Klasse <code>Actor</code> im Package
     <code>domain</code>?
   </p>
 
-  <button onclick="toggleSolution('q18')">Lösung anzeigen</button>
-  <div id="q18" class="solution">
+  <button onclick="toggleSolution('q17')">Lösung anzeigen</button>
+  <div id="q17" class="solution">
     <h3>Lösung</h3>
     <p>
       Sie beschreibt das Fachobjekt und speichert die Daten eines
@@ -377,15 +361,15 @@ stmt.executeBatch();</pre>
     </p>
   </div>
 
-  <!-- Frage 19 -->
-  <h3>Frage 19: Repository-Interface</h3>
+  <!-- Frage 18 -->
+  <h3>Frage 18: Repository-Interface</h3>
   <p>
     Welche Aufgabe hat ein Repository-Interface wie
     <code>ActorRepository</code>?
   </p>
 
-  <button onclick="toggleSolution('q19')">Lösung anzeigen</button>
-  <div id="q19" class="solution">
+  <button onclick="toggleSolution('q18')">Lösung anzeigen</button>
+  <div id="q18" class="solution">
     <h3>Lösung</h3>
     <p>
       Das Interface beschreibt, welche Methoden verfügbar sind,
@@ -393,15 +377,15 @@ stmt.executeBatch();</pre>
     </p>
   </div>
 
-  <!-- Frage 20 -->
-  <h3>Frage 20: Architektur-Vorteil</h3>
+  <!-- Frage 19 -->
+  <h3>Frage 19: Architektur-Vorteil</h3>
   <p>
     Warum ist es sinnvoll, die Bereiche <code>domain</code>,
     <code>persistence</code> und <code>app</code> zu trennen?
   </p>
 
-  <button onclick="toggleSolution('q20')">Lösung anzeigen</button>
-  <div id="q20" class="solution">
+  <button onclick="toggleSolution('q19')">Lösung anzeigen</button>
+  <div id="q19" class="solution">
     <h3>Lösung</h3>
     <p>
       Dadurch wird der Code übersichtlicher, besser wartbar und leichter
@@ -413,15 +397,15 @@ stmt.executeBatch();</pre>
     </p>
   </div>
 
-  <!-- Frage 21 -->
-  <h3>Frage 21: Optional</h3>
+  <!-- Frage 20 -->
+  <h3>Frage 20: Optional</h3>
   <p>
     Was bedeutet <code>Optional&lt;Actor&gt;</code> bei der Methode
     <code>findById(...)</code>?
   </p>
 
-  <button onclick="toggleSolution('q21')">Lösung anzeigen</button>
-  <div id="q21" class="solution">
+  <button onclick="toggleSolution('q20')">Lösung anzeigen</button>
+  <div id="q20" class="solution">
     <h3>Lösung</h3>
     <p>
       Es bedeutet: Entweder wird ein <code>Actor</code> gefunden oder es
@@ -429,8 +413,8 @@ stmt.executeBatch();</pre>
     </p>
   </div>
 
-  <!-- Frage 22 -->
-  <h3>Frage 22: Fehler erkennen</h3>
+  <!-- Frage 21 -->
+  <h3>Frage 21: Fehler erkennen</h3>
   <pre class="copyable">Optional actor = repo.findById(1);
 System.out.println(actor.get());</pre>
 
@@ -438,8 +422,8 @@ System.out.println(actor.get());</pre>
     Was ist hier problematisch?
   </p>
 
-  <button onclick="toggleSolution('q22')">Lösung anzeigen</button>
-  <div id="q22" class="solution">
+  <button onclick="toggleSolution('q21')">Lösung anzeigen</button>
+  <div id="q21" class="solution">
     <h3>Lösung</h3>
     <p>
       Es wird ein roher Typ <code>Optional</code> verwendet statt
@@ -451,8 +435,8 @@ System.out.println(actor.get());</pre>
     </p>
   </div>
 
-  <!-- Frage 23 -->
-  <h3>Frage 23: Code ergänzen</h3>
+  <!-- Frage 22 -->
+  <h3>Frage 22: Code ergänzen</h3>
   <p>
     Ergänze die fehlende Methode, um alle Datensätze aus einem ResultSet
     nacheinander zu lesen:
@@ -462,16 +446,16 @@ System.out.println(actor.get());</pre>
     System.out.println(rs.getInt("id"));
 }</pre>
 
-  <button onclick="toggleSolution('q23')">Lösung anzeigen</button>
-  <div id="q23" class="solution">
+  <button onclick="toggleSolution('q22')">Lösung anzeigen</button>
+  <div id="q22" class="solution">
     <h3>Lösung</h3>
     <pre class="copyable">while (rs.next()) {
     System.out.println(rs.getInt("id"));
 }</pre>
   </div>
 
-  <!-- Frage 24 -->
-  <h3>Frage 24: Code ergänzen</h3>
+  <!-- Frage 23 -->
+  <h3>Frage 23: Code ergänzen</h3>
   <p>
     Ergänze die fehlende Methode für eine erfolgreiche Transaktion:
   </p>
@@ -482,21 +466,21 @@ stmt.executeUpdate();
 
 conn.__________();</pre>
 
-  <button onclick="toggleSolution('q24')">Lösung anzeigen</button>
-  <div id="q24" class="solution">
+  <button onclick="toggleSolution('q23')">Lösung anzeigen</button>
+  <div id="q23" class="solution">
     <h3>Lösung</h3>
     <pre class="copyable">conn.commit();</pre>
   </div>
 
-  <!-- Frage 25 -->
-  <h3>Frage 25: Gesamtverständnis</h3>
+  <!-- Frage 24 -->
+  <h3>Frage 24: Gesamtverständnis</h3>
   <p>
     Warum sollte JDBC-Code nicht einfach komplett in der
     <code>main</code>-Methode stehen?
   </p>
 
-  <button onclick="toggleSolution('q25')">Lösung anzeigen</button>
-  <div id="q25" class="solution">
+  <button onclick="toggleSolution('q24')">Lösung anzeigen</button>
+  <div id="q24" class="solution">
     <h3>Lösung</h3>
     <p>
       Dann wird der Code schnell unübersichtlich.
