@@ -1,0 +1,237 @@
+<section id="quiz" class="card">
+  <div class="badge">Abschluss-Quiz</div>
+  <h2>JDBC – Gesamtüberblick</h2>
+
+  <div class="question">Aufgabe:</div>
+  <p>
+    Beantworte die folgenden Fragen zu JDBC, ResultSets, Transaktionen,
+    Batch Processing und Architektur.
+  </p>
+
+  <!-- Frage 1 -->
+  <h3>Frage 1: executeQuery vs. executeUpdate</h3>
+  <p>
+    Wann verwendet man <code>executeQuery()</code> und wann <code>executeUpdate()</code>?
+  </p>
+
+  <button onclick="toggleSolution('q1')">Lösung anzeigen</button>
+  <div id="q1" class="solution">
+    <p>
+      <code>executeQuery()</code> → für SELECT (liefert ResultSet)<br>
+      <code>executeUpdate()</code> → für INSERT, UPDATE, DELETE (liefert Anzahl der betroffenen Zeilen)
+    </p>
+  </div>
+
+  <!-- Frage 2 -->
+  <h3>Frage 2: ResultSet Navigation</h3>
+  <p>
+    Welche Methode verwendest du, um direkt zum 3. Datensatz zu springen?
+  </p>
+
+  <button onclick="toggleSolution('q2')">Lösung anzeigen</button>
+  <div id="q2" class="solution">
+    <p><code>rs.absolute(3)</code></p>
+  </div>
+
+  <!-- Frage 3 -->
+  <h3>Frage 3: Code verstehen</h3>
+  <pre class="copyable">ResultSet rs = stmt.executeQuery("SELECT * FROM person");
+
+while (rs.next()) {
+    System.out.println(rs.getString("name"));
+}</pre>
+
+  <p>Was macht dieser Code?</p>
+
+  <button onclick="toggleSolution('q3')">Lösung anzeigen</button>
+  <div id="q3" class="solution">
+    <p>
+      Er liest alle Datensätze aus der Tabelle <code>person</code>
+      und gibt den Namen jeder Person aus.
+    </p>
+  </div>
+
+  <!-- Frage 4 -->
+  <h3>Frage 4: PreparedStatement</h3>
+  <p>
+    Warum sollte man <code>PreparedStatement</code> statt <code>Statement</code> verwenden?
+  </p>
+
+  <button onclick="toggleSolution('q4')">Lösung anzeigen</button>
+  <div id="q4" class="solution">
+    <ul>
+      <li>Schutz vor SQL Injection</li>
+      <li>bessere Performance</li>
+      <li>klarere Struktur (Platzhalter)</li>
+    </ul>
+  </div>
+
+  <!-- Frage 5 -->
+  <h3>Frage 5: Codefehler erkennen</h3>
+  <pre class="copyable">String sql = "INSERT INTO person VALUES (?, ?, ?)";
+PreparedStatement stmt = conn.prepareStatement(sql);
+
+stmt.setInt(1, 1);
+stmt.setString(2, "Anna");
+
+stmt.executeUpdate();</pre>
+
+  <p>Was ist hier das Problem?</p>
+
+  <button onclick="toggleSolution('q5')">Lösung anzeigen</button>
+  <div id="q5" class="solution">
+    <p>
+      Es fehlen Parameter → nicht alle Platzhalter wurden gesetzt.
+    </p>
+  </div>
+
+  <!-- Frage 6 -->
+  <h3>Frage 6: Transaktionen</h3>
+  <p>
+    Was bewirkt <code>setAutoCommit(false)</code>?
+  </p>
+
+  <button onclick="toggleSolution('q6')">Lösung anzeigen</button>
+  <div id="q6" class="solution">
+    <p>
+      SQL-Anweisungen werden nicht mehr automatisch gespeichert,
+      sondern müssen mit <code>commit()</code> bestätigt werden.
+    </p>
+  </div>
+
+  <!-- Frage 7 -->
+  <h3>Frage 7: commit vs. rollback</h3>
+  <p>
+    Was ist der Unterschied zwischen <code>commit()</code> und <code>rollback()</code>?
+  </p>
+
+  <button onclick="toggleSolution('q7')">Lösung anzeigen</button>
+  <div id="q7" class="solution">
+    <p>
+      <code>commit()</code> → speichert Änderungen dauerhaft<br>
+      <code>rollback()</code> → macht Änderungen rückgängig
+    </p>
+  </div>
+
+  <!-- Frage 8 -->
+  <h3>Frage 8: Code verstehen</h3>
+  <pre class="copyable">conn.setAutoCommit(false);
+
+stmt1.executeUpdate();
+stmt2.executeUpdate();
+
+conn.commit();</pre>
+
+  <p>Warum gehören diese Befehle zusammen?</p>
+
+  <button onclick="toggleSolution('q8')">Lösung anzeigen</button>
+  <div id="q8" class="solution">
+    <p>
+      Beide SQL-Anweisungen bilden eine Transaktion und werden gemeinsam gespeichert.
+    </p>
+  </div>
+
+  <!-- Frage 9 -->
+  <h3>Frage 9: Batch Processing</h3>
+  <p>
+    Was ist der Vorteil von <code>executeBatch()</code>?
+  </p>
+
+  <button onclick="toggleSolution('q9')">Lösung anzeigen</button>
+  <div id="q9" class="solution">
+    <p>
+      Mehrere SQL-Anweisungen werden gesammelt und gemeinsam ausgeführt → bessere Performance.
+    </p>
+  </div>
+
+  <!-- Frage 10 -->
+  <h3>Frage 10: Code verstehen</h3>
+  <pre class="copyable">for (int i = 1; i <= 1000; i++) {
+    stmt.setInt(1, i);
+    stmt.addBatch();
+}
+
+stmt.executeBatch();</pre>
+
+  <p>Was passiert hier?</p>
+
+  <button onclick="toggleSolution('q10')">Lösung anzeigen</button>
+  <div id="q10" class="solution">
+    <p>
+      1000 INSERT-Anweisungen werden gesammelt und anschließend gemeinsam ausgeführt.
+    </p>
+  </div>
+
+  <!-- Frage 11 -->
+  <h3>Frage 11: Architektur</h3>
+  <p>
+    Welche Aufgabe hat ein Repository-Interface?
+  </p>
+
+  <button onclick="toggleSolution('q11')">Lösung anzeigen</button>
+  <div id="q11" class="solution">
+    <p>
+      Es definiert, welche Methoden verfügbar sind, ohne die Umsetzung festzulegen.
+    </p>
+  </div>
+
+  <!-- Frage 12 -->
+  <h3>Frage 12: Architektur Vorteil</h3>
+  <p>
+    Warum ist folgende Struktur sinnvoll?
+  </p>
+
+  <ul>
+    <li>domain</li>
+    <li>persistence</li>
+    <li>app</li>
+  </ul>
+
+  <button onclick="toggleSolution('q12')">Lösung anzeigen</button>
+  <div id="q12" class="solution">
+    <p>
+      Klare Trennung der Verantwortlichkeiten → besser wartbar und erweiterbar.
+    </p>
+  </div>
+
+  <!-- Frage 13 -->
+  <h3>Frage 13: Generics</h3>
+  <p>
+    Warum ist <code>Optional&lt;Actor&gt;</code> besser als <code>Optional</code>?
+  </p>
+
+  <button onclick="toggleSolution('q13')">Lösung anzeigen</button>
+  <div id="q13" class="solution">
+    <p>
+      Typsicherheit → kein Casting nötig und weniger Fehler.
+    </p>
+  </div>
+
+  <!-- Frage 14 -->
+  <h3>Frage 14: Fehler erkennen</h3>
+  <pre class="copyable">Optional actor = repo.findById(1);
+System.out.println(actor.get());</pre>
+
+  <p>Was ist hier problematisch?</p>
+
+  <button onclick="toggleSolution('q14')">Lösung anzeigen</button>
+  <div id="q14" class="solution">
+    <p>
+      Kein Generics + <code>get()</code> kann Exception werfen, wenn leer.
+    </p>
+  </div>
+
+  <!-- Frage 15 -->
+  <h3>Frage 15: Gesamtverständnis</h3>
+  <p>
+    Warum sollte man JDBC-Code nicht direkt in der Main-Klasse schreiben?
+  </p>
+
+  <button onclick="toggleSolution('q15')">Lösung anzeigen</button>
+  <div id="q15" class="solution">
+    <p>
+      Schlechte Struktur → besser Repository verwenden (Trennung von Logik und DB-Zugriff).
+    </p>
+  </div>
+
+</section>
