@@ -1,73 +1,147 @@
-<section id="quiz" class="card">
-  <div class="badge">Abschluss-Quiz</div>
-  <h2>JDBC – Gesamtüberblick</h2>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Abschluss-Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Abschluss-Quiz</h1>
+  <p>Wiederholung zu allen bisherigen Aufgaben</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#h2">Quiz</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    In diesem Quiz wiederholst du wichtige Inhalte aus den bisherigen
+    JDBC-Aufgaben.
+  </p>
+  <p>
+    Es geht um Datenbankverbindungen, Statements, PreparedStatements,
+    ResultSets, Transaktionen, Batch Processing und Architektur mit
+    Repository.
+  </p>
+</section>
+
+<section id="h2" class="card">
+  <div class="badge">Abschluss-Quiz – JDBC</div>
+  <h2>Teste dein Wissen</h2>
 
   <div class="question">Aufgabe:</div>
   <p>
-    Beantworte die folgenden Fragen zu JDBC, ResultSets, Transaktionen,
-    Batch Processing und Architektur.
+    Beantworte die folgenden Fragen zu den bisherigen JDBC-Themen.
+    Einige Fragen beziehen sich auf kurze Codefragmente.
   </p>
 
   <!-- Frage 1 -->
-  <h3>Frage 1: executeQuery vs. executeUpdate</h3>
+  <h3>Frage 1: Verbindung herstellen</h3>
   <p>
-    Wann verwendet man <code>executeQuery()</code> und wann <code>executeUpdate()</code>?
+    Welche Klasse verwendet man in JDBC typischerweise, um eine Verbindung
+    zur Datenbank herzustellen?
   </p>
 
   <button onclick="toggleSolution('q1')">Lösung anzeigen</button>
   <div id="q1" class="solution">
+    <h3>Lösung</h3>
     <p>
-      <code>executeQuery()</code> → für SELECT (liefert ResultSet)<br>
-      <code>executeUpdate()</code> → für INSERT, UPDATE, DELETE (liefert Anzahl der betroffenen Zeilen)
+      Dafür verwendet man typischerweise <code>DriverManager</code>, zum Beispiel:
     </p>
+    <pre class="copyable">Connection conn = DriverManager.getConnection(url, user, pwd);</pre>
   </div>
 
   <!-- Frage 2 -->
-  <h3>Frage 2: ResultSet Navigation</h3>
+  <h3>Frage 2: Properties-Datei</h3>
   <p>
-    Welche Methode verwendest du, um direkt zum 3. Datensatz zu springen?
+    Welche drei Properties wurden in den bisherigen Aufgaben für die
+    Verbindung zur H2-Datenbank verwendet?
   </p>
 
   <button onclick="toggleSolution('q2')">Lösung anzeigen</button>
   <div id="q2" class="solution">
-    <p><code>rs.absolute(3)</code></p>
+    <h3>Lösung</h3>
+    <p>
+      Verwendet wurden:
+    </p>
+    <ul>
+      <li><code>jdbc_url</code></li>
+      <li><code>jdbc_user</code></li>
+      <li><code>jdbc_pwd</code></li>
+    </ul>
   </div>
 
   <!-- Frage 3 -->
-  <h3>Frage 3: Code verstehen</h3>
+  <h3>Frage 3: executeQuery und executeUpdate</h3>
+  <p>
+    Wofür verwendet man <code>executeQuery()</code> und wofür
+    <code>executeUpdate()</code>?
+  </p>
+
+  <button onclick="toggleSolution('q3')">Lösung anzeigen</button>
+  <div id="q3" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      <code>executeQuery()</code> verwendet man für <code>SELECT</code>-Abfragen.
+      Die Methode liefert ein <code>ResultSet</code>.
+    </p>
+    <p>
+      <code>executeUpdate()</code> verwendet man für
+      <code>INSERT</code>, <code>UPDATE</code> und <code>DELETE</code>.
+      Die Methode liefert die Anzahl der geänderten Zeilen.
+    </p>
+  </div>
+
+  <!-- Frage 4 -->
+  <h3>Frage 4: Code verstehen</h3>
   <pre class="copyable">ResultSet rs = stmt.executeQuery("SELECT * FROM person");
 
 while (rs.next()) {
     System.out.println(rs.getString("name"));
 }</pre>
 
-  <p>Was macht dieser Code?</p>
-
-  <button onclick="toggleSolution('q3')">Lösung anzeigen</button>
-  <div id="q3" class="solution">
-    <p>
-      Er liest alle Datensätze aus der Tabelle <code>person</code>
-      und gibt den Namen jeder Person aus.
-    </p>
-  </div>
-
-  <!-- Frage 4 -->
-  <h3>Frage 4: PreparedStatement</h3>
   <p>
-    Warum sollte man <code>PreparedStatement</code> statt <code>Statement</code> verwenden?
+    Was macht dieser Code?
   </p>
 
   <button onclick="toggleSolution('q4')">Lösung anzeigen</button>
   <div id="q4" class="solution">
-    <ul>
-      <li>Schutz vor SQL Injection</li>
-      <li>bessere Performance</li>
-      <li>klarere Struktur (Platzhalter)</li>
-    </ul>
+    <h3>Lösung</h3>
+    <p>
+      Der Code führt eine <code>SELECT</code>-Abfrage auf der Tabelle
+      <code>person</code> aus und gibt den Wert der Spalte
+      <code>name</code> für jeden Datensatz aus.
+    </p>
   </div>
 
   <!-- Frage 5 -->
-  <h3>Frage 5: Codefehler erkennen</h3>
+  <h3>Frage 5: Statement oder PreparedStatement?</h3>
+  <p>
+    Warum verwendet man in der Praxis meist
+    <code>PreparedStatement</code> statt <code>Statement</code>?
+  </p>
+
+  <button onclick="toggleSolution('q5')">Lösung anzeigen</button>
+  <div id="q5" class="solution">
+    <h3>Lösung</h3>
+    <ul>
+      <li>besserer Schutz vor SQL Injection</li>
+      <li>übersichtlichere SQL-Befehle durch Platzhalter <code>?</code></li>
+      <li>oft bessere Performance bei wiederholten Anweisungen</li>
+    </ul>
+  </div>
+
+  <!-- Frage 6 -->
+  <h3>Frage 6: Codefehler erkennen</h3>
   <pre class="copyable">String sql = "INSERT INTO person VALUES (?, ?, ?)";
 PreparedStatement stmt = conn.prepareStatement(sql);
 
@@ -76,45 +150,125 @@ stmt.setString(2, "Anna");
 
 stmt.executeUpdate();</pre>
 
-  <p>Was ist hier das Problem?</p>
-
-  <button onclick="toggleSolution('q5')">Lösung anzeigen</button>
-  <div id="q5" class="solution">
-    <p>
-      Es fehlen Parameter → nicht alle Platzhalter wurden gesetzt.
-    </p>
-  </div>
-
-  <!-- Frage 6 -->
-  <h3>Frage 6: Transaktionen</h3>
   <p>
-    Was bewirkt <code>setAutoCommit(false)</code>?
+    Was ist hier das Problem?
   </p>
 
   <button onclick="toggleSolution('q6')">Lösung anzeigen</button>
   <div id="q6" class="solution">
+    <h3>Lösung</h3>
     <p>
-      SQL-Anweisungen werden nicht mehr automatisch gespeichert,
-      sondern müssen mit <code>commit()</code> bestätigt werden.
+      Es wurden nicht alle Platzhalter gesetzt.
+      Der dritte Parameter fehlt.
     </p>
   </div>
 
   <!-- Frage 7 -->
-  <h3>Frage 7: commit vs. rollback</h3>
+  <h3>Frage 7: Generated Keys</h3>
   <p>
-    Was ist der Unterschied zwischen <code>commit()</code> und <code>rollback()</code>?
+    Wozu verwendet man Generated Keys?
   </p>
 
   <button onclick="toggleSolution('q7')">Lösung anzeigen</button>
   <div id="q7" class="solution">
+    <h3>Lösung</h3>
     <p>
-      <code>commit()</code> → speichert Änderungen dauerhaft<br>
-      <code>rollback()</code> → macht Änderungen rückgängig
+      Generated Keys verwendet man, um nach einem <code>INSERT</code>
+      automatisch erzeugte Schlüsselwerte auszulesen, zum Beispiel eine
+      automatisch vergebene ID.
     </p>
   </div>
 
   <!-- Frage 8 -->
-  <h3>Frage 8: Code verstehen</h3>
+  <h3>Frage 8: Scrollable ResultSet</h3>
+  <p>
+    Welche Methode verwendest du, um direkt zum zweiten Datensatz zu springen?
+  </p>
+
+  <button onclick="toggleSolution('q8')">Lösung anzeigen</button>
+  <div id="q8" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Dafür verwendet man:
+    </p>
+    <pre class="copyable">rs.absolute(2);</pre>
+  </div>
+
+  <!-- Frage 9 -->
+  <h3>Frage 9: Weitere ResultSet-Methoden</h3>
+  <p>
+    Nenne drei Methoden, mit denen man sich in einem scrollbaren
+    <code>ResultSet</code> bewegen kann.
+  </p>
+
+  <button onclick="toggleSolution('q9')">Lösung anzeigen</button>
+  <div id="q9" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Zum Beispiel:
+    </p>
+    <ul>
+      <li><code>first()</code></li>
+      <li><code>last()</code></li>
+      <li><code>previous()</code></li>
+      <li><code>absolute(n)</code></li>
+      <li><code>next()</code></li>
+    </ul>
+  </div>
+
+  <!-- Frage 10 -->
+  <h3>Frage 10: Updatable ResultSet</h3>
+  <p>
+    Welche Methode muss nach <code>updateInt(...)</code> oder
+    <code>updateString(...)</code> aufgerufen werden, damit die Änderung
+    gespeichert wird?
+  </p>
+
+  <button onclick="toggleSolution('q10')">Lösung anzeigen</button>
+  <div id="q10" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Dafür muss <code>updateRow()</code> aufgerufen werden.
+    </p>
+  </div>
+
+  <!-- Frage 11 -->
+  <h3>Frage 11: Transaktionen</h3>
+  <p>
+    Was bewirkt <code>setAutoCommit(false)</code>?
+  </p>
+
+  <button onclick="toggleSolution('q11')">Lösung anzeigen</button>
+  <div id="q11" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Danach werden SQL-Anweisungen nicht mehr automatisch sofort gespeichert.
+      Änderungen müssen dann ausdrücklich mit <code>commit()</code>
+      bestätigt werden.
+    </p>
+  </div>
+
+  <!-- Frage 12 -->
+  <h3>Frage 12: commit und rollback</h3>
+  <p>
+    Was ist der Unterschied zwischen <code>commit()</code> und
+    <code>rollback()</code>?
+  </p>
+
+  <button onclick="toggleSolution('q12')">Lösung anzeigen</button>
+  <div id="q12" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      <code>commit()</code> speichert die Änderungen dauerhaft.
+    </p>
+    <p>
+      <code>rollback()</code> macht die Änderungen der laufenden
+      Transaktion wieder rückgängig.
+    </p>
+  </div>
+
+  <!-- Frage 13 -->
+  <h3>Frage 13: Code verstehen</h3>
   <pre class="copyable">conn.setAutoCommit(false);
 
 stmt1.executeUpdate();
@@ -122,116 +276,246 @@ stmt2.executeUpdate();
 
 conn.commit();</pre>
 
-  <p>Warum gehören diese Befehle zusammen?</p>
-
-  <button onclick="toggleSolution('q8')">Lösung anzeigen</button>
-  <div id="q8" class="solution">
-    <p>
-      Beide SQL-Anweisungen bilden eine Transaktion und werden gemeinsam gespeichert.
-    </p>
-  </div>
-
-  <!-- Frage 9 -->
-  <h3>Frage 9: Batch Processing</h3>
   <p>
-    Was ist der Vorteil von <code>executeBatch()</code>?
+    Warum gehören diese Befehle logisch zusammen?
   </p>
 
-  <button onclick="toggleSolution('q9')">Lösung anzeigen</button>
-  <div id="q9" class="solution">
+  <button onclick="toggleSolution('q13')">Lösung anzeigen</button>
+  <div id="q13" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Mehrere SQL-Anweisungen werden gesammelt und gemeinsam ausgeführt → bessere Performance.
+      Die beiden SQL-Anweisungen werden als eine gemeinsame Transaktion
+      behandelt. Erst am Ende werden sie mit <code>commit()</code>
+      zusammen gespeichert.
     </p>
   </div>
 
-  <!-- Frage 10 -->
-  <h3>Frage 10: Code verstehen</h3>
+  <!-- Frage 14 -->
+  <h3>Frage 14: Batch Processing</h3>
+  <p>
+    Was ist die Grundidee von Batch Processing?
+  </p>
+
+  <button onclick="toggleSolution('q14')">Lösung anzeigen</button>
+  <div id="q14" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Mehrere SQL-Anweisungen werden zuerst gesammelt und anschließend
+      gemeinsam ausgeführt.
+    </p>
+  </div>
+
+  <!-- Frage 15 -->
+  <h3>Frage 15: Batch-Methoden</h3>
+  <p>
+    Welche beiden Methoden sind für Batch Processing besonders wichtig?
+  </p>
+
+  <button onclick="toggleSolution('q15')">Lösung anzeigen</button>
+  <div id="q15" class="solution">
+    <h3>Lösung</h3>
+    <ul>
+      <li><code>addBatch()</code></li>
+      <li><code>executeBatch()</code></li>
+    </ul>
+  </div>
+
+  <!-- Frage 16 -->
+  <h3>Frage 16: Code verstehen</h3>
   <pre class="copyable">for (int i = 1; i <= 1000; i++) {
     stmt.setInt(1, i);
+    stmt.setString(2, "Person_" + i);
+    stmt.setInt(3, 20);
     stmt.addBatch();
 }
 
 stmt.executeBatch();</pre>
 
-  <p>Was passiert hier?</p>
-
-  <button onclick="toggleSolution('q10')">Lösung anzeigen</button>
-  <div id="q10" class="solution">
-    <p>
-      1000 INSERT-Anweisungen werden gesammelt und anschließend gemeinsam ausgeführt.
-    </p>
-  </div>
-
-  <!-- Frage 11 -->
-  <h3>Frage 11: Architektur</h3>
   <p>
-    Welche Aufgabe hat ein Repository-Interface?
+    Was passiert hier?
   </p>
 
-  <button onclick="toggleSolution('q11')">Lösung anzeigen</button>
-  <div id="q11" class="solution">
+  <button onclick="toggleSolution('q16')">Lösung anzeigen</button>
+  <div id="q16" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Es definiert, welche Methoden verfügbar sind, ohne die Umsetzung festzulegen.
+      Es werden 1000 vorbereitete SQL-Anweisungen gesammelt und anschließend
+      gemeinsam ausgeführt.
     </p>
   </div>
 
-  <!-- Frage 12 -->
-  <h3>Frage 12: Architektur Vorteil</h3>
+  <!-- Frage 17 -->
+  <h3>Frage 17: Zeitmessung</h3>
   <p>
-    Warum ist folgende Struktur sinnvoll?
+    Warum wurde in der Batch-Aufgabe <code>System.nanoTime()</code>
+    verwendet?
   </p>
 
-  <ul>
-    <li>domain</li>
-    <li>persistence</li>
-    <li>app</li>
-  </ul>
-
-  <button onclick="toggleSolution('q12')">Lösung anzeigen</button>
-  <div id="q12" class="solution">
+  <button onclick="toggleSolution('q17')">Lösung anzeigen</button>
+  <div id="q17" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Klare Trennung der Verantwortlichkeiten → besser wartbar und erweiterbar.
+      Damit kann die Dauer einer Operation sehr genau gemessen werden,
+      zum Beispiel der Unterschied zwischen Einfügen ohne Batch und mit Batch.
     </p>
   </div>
 
-  <!-- Frage 13 -->
-  <h3>Frage 13: Generics</h3>
+  <!-- Frage 18 -->
+  <h3>Frage 18: Architektur</h3>
   <p>
-    Warum ist <code>Optional&lt;Actor&gt;</code> besser als <code>Optional</code>?
+    Welche Aufgabe hat die Klasse <code>Actor</code> im Package
+    <code>domain</code>?
   </p>
 
-  <button onclick="toggleSolution('q13')">Lösung anzeigen</button>
-  <div id="q13" class="solution">
+  <button onclick="toggleSolution('q18')">Lösung anzeigen</button>
+  <div id="q18" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Typsicherheit → kein Casting nötig und weniger Fehler.
+      Sie beschreibt das Fachobjekt und speichert die Daten eines
+      Schauspielers, zum Beispiel <code>id</code>,
+      <code>firstName</code> und <code>lastName</code>.
     </p>
   </div>
 
-  <!-- Frage 14 -->
-  <h3>Frage 14: Fehler erkennen</h3>
+  <!-- Frage 19 -->
+  <h3>Frage 19: Repository-Interface</h3>
+  <p>
+    Welche Aufgabe hat ein Repository-Interface wie
+    <code>ActorRepository</code>?
+  </p>
+
+  <button onclick="toggleSolution('q19')">Lösung anzeigen</button>
+  <div id="q19" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Das Interface beschreibt, welche Methoden verfügbar sind,
+      ohne die konkrete Umsetzung festzulegen.
+    </p>
+  </div>
+
+  <!-- Frage 20 -->
+  <h3>Frage 20: Architektur-Vorteil</h3>
+  <p>
+    Warum ist es sinnvoll, die Bereiche <code>domain</code>,
+    <code>persistence</code> und <code>app</code> zu trennen?
+  </p>
+
+  <button onclick="toggleSolution('q20')">Lösung anzeigen</button>
+  <div id="q20" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Dadurch wird der Code übersichtlicher, besser wartbar und leichter
+      erweiterbar.
+    </p>
+    <p>
+      Außerdem kann man Implementierungen leichter austauschen,
+      zum Beispiel für H2 oder SQL Server.
+    </p>
+  </div>
+
+  <!-- Frage 21 -->
+  <h3>Frage 21: Optional</h3>
+  <p>
+    Was bedeutet <code>Optional&lt;Actor&gt;</code> bei der Methode
+    <code>findById(...)</code>?
+  </p>
+
+  <button onclick="toggleSolution('q21')">Lösung anzeigen</button>
+  <div id="q21" class="solution">
+    <h3>Lösung</h3>
+    <p>
+      Es bedeutet: Entweder wird ein <code>Actor</code> gefunden oder es
+      gibt keinen Wert.
+    </p>
+  </div>
+
+  <!-- Frage 22 -->
+  <h3>Frage 22: Fehler erkennen</h3>
   <pre class="copyable">Optional actor = repo.findById(1);
 System.out.println(actor.get());</pre>
 
-  <p>Was ist hier problematisch?</p>
+  <p>
+    Was ist hier problematisch?
+  </p>
 
-  <button onclick="toggleSolution('q14')">Lösung anzeigen</button>
-  <div id="q14" class="solution">
+  <button onclick="toggleSolution('q22')">Lösung anzeigen</button>
+  <div id="q22" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Kein Generics + <code>get()</code> kann Exception werfen, wenn leer.
+      Es wird ein roher Typ <code>Optional</code> verwendet statt
+      <code>Optional&lt;Actor&gt;</code>.
+    </p>
+    <p>
+      Außerdem kann <code>get()</code> problematisch sein, wenn das
+      Optional leer ist.
     </p>
   </div>
 
-  <!-- Frage 15 -->
-  <h3>Frage 15: Gesamtverständnis</h3>
+  <!-- Frage 23 -->
+  <h3>Frage 23: Code ergänzen</h3>
   <p>
-    Warum sollte man JDBC-Code nicht direkt in der Main-Klasse schreiben?
+    Ergänze die fehlende Methode, um alle Datensätze aus einem ResultSet
+    nacheinander zu lesen:
   </p>
 
-  <button onclick="toggleSolution('q15')">Lösung anzeigen</button>
-  <div id="q15" class="solution">
+  <pre class="copyable">while (__________) {
+    System.out.println(rs.getInt("id"));
+}</pre>
+
+  <button onclick="toggleSolution('q23')">Lösung anzeigen</button>
+  <div id="q23" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">while (rs.next()) {
+    System.out.println(rs.getInt("id"));
+}</pre>
+  </div>
+
+  <!-- Frage 24 -->
+  <h3>Frage 24: Code ergänzen</h3>
+  <p>
+    Ergänze die fehlende Methode für eine erfolgreiche Transaktion:
+  </p>
+
+  <pre class="copyable">conn.setAutoCommit(false);
+
+stmt.executeUpdate();
+
+conn.__________();</pre>
+
+  <button onclick="toggleSolution('q24')">Lösung anzeigen</button>
+  <div id="q24" class="solution">
+    <h3>Lösung</h3>
+    <pre class="copyable">conn.commit();</pre>
+  </div>
+
+  <!-- Frage 25 -->
+  <h3>Frage 25: Gesamtverständnis</h3>
+  <p>
+    Warum sollte JDBC-Code nicht einfach komplett in der
+    <code>main</code>-Methode stehen?
+  </p>
+
+  <button onclick="toggleSolution('q25')">Lösung anzeigen</button>
+  <div id="q25" class="solution">
+    <h3>Lösung</h3>
     <p>
-      Schlechte Struktur → besser Repository verwenden (Trennung von Logik und DB-Zugriff).
+      Dann wird der Code schnell unübersichtlich.
+    </p>
+    <p>
+      Besser ist eine Trennung von Zuständigkeiten, zum Beispiel mit
+      Domain-Klassen, Repository-Interface und JDBC-Implementierung.
     </p>
   </div>
 
 </section>
+
+</main>
+
+<footer>
+  <a href="jdbc.html" class="back-link">Zurück zur JDBC-Übersicht</a>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
