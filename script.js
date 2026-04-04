@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     button.addEventListener("click", () => {
       navigator.clipboard.writeText(pre.innerText).then(() => {
-
         if (button._timeout) {
           clearTimeout(button._timeout);
         }
@@ -26,9 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         button._timeout = setTimeout(() => {
           button.innerText = "Kopieren";
         }, 1500);
-
       }).catch(() => {
-
         if (button._timeout) {
           clearTimeout(button._timeout);
         }
