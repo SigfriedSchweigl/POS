@@ -124,7 +124,12 @@ INSERT INTO person VALUES (3, 'Lisa', 19);</pre>
   <div id="hint3" class="solution">
     <h3>Hinweis</h3>
     <p>
-      Verwende <code>Files.newInputStream(Path.of("connection.properties"))</code>.
+      <code>Properties props = new Properties();</code>
+      Verwende <code>InputStream is = Files.newInputStream(Path.of("connection.properties"))</code>.
+      <code>props.load(is);
+      String url = props.getProperty("jdbc_url");
+      ...
+      </code>
     </p>
   </div>
 
