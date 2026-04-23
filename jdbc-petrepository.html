@@ -108,53 +108,28 @@ App.java
     </pre>
   </div>
 
-  <h3>Beispiel für Record und Enum</h3>
-  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
-  <div id="solution2" class="solution">
-    <pre class="copyable">
-public enum PetType {
-    DOG,
-    CAT,
-    HAMSTER
-}
-    </pre>
-
-    <pre class="copyable">
-import java.time.LocalDate;
-
-public record Pet(long id, String name, PetType type, LocalDate birthdate) {
-}
-    </pre>
-  </div>
-
-  <h3>Beispiel für das Interface</h3>
-  <button onclick="toggleSolution('solution3')">Lösung anzeigen</button>
-  <div id="solution3" class="solution">
-    <pre class="copyable">
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-
-public interface PetRepository {
-    Pet save(Pet pet) throws SQLException;
-    List&lt;Pet&gt; findAll() throws SQLException;
-    Optional&lt;Pet&gt; findById(long id) throws SQLException;
-    void update(Pet pet) throws SQLException;
-    void deleteById(long id) throws SQLException;
-}
-    </pre>
-  </div>
-
   <h3>Beispiel für die Tabelle</h3>
   <button onclick="toggleSolution('solution4')">Lösung anzeigen</button>
   <div id="solution4" class="solution">
     <pre class="copyable">
 CREATE TABLE pet (
-    id BIGINT PRIMARY KEY,
+    id IDENTITY,
     name VARCHAR(100) NOT NULL,
     type VARCHAR(20) NOT NULL,
     birthdate DATE NOT NULL
 );
+    </pre>
+  </div>
+
+  <h3>Was getestet werden soll</h3>
+  <button onclick="toggleSolution('solution6')">Lösung anzeigen</button>
+  <div id="solution6" class="solution">
+    <pre class="copyable">
+- save(...) fügt ein neues Haustier ein
+- findAll() liefert alle Haustiere
+- findById(...) liefert ein Optional&lt;Pet&gt;
+- update(...) ändert vorhandene Daten
+- deleteById(...) löscht einen Datensatz
     </pre>
   </div>
 
@@ -209,17 +184,7 @@ public class App {
     </pre>
   </div>
 
-  <h3>Was getestet werden soll</h3>
-  <button onclick="toggleSolution('solution6')">Lösung anzeigen</button>
-  <div id="solution6" class="solution">
-    <pre class="copyable">
-- save(...) fügt ein neues Haustier ein
-- findAll() liefert alle Haustiere
-- findById(...) liefert ein Optional&lt;Pet&gt;
-- update(...) ändert vorhandene Daten
-- deleteById(...) löscht einen Datensatz
-    </pre>
-  </div>
+  
 
 </section>
 
