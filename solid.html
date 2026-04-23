@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SOLID – Aufgaben mit Lösungen</title>
+  <title>SOLID – Übungen mit Lösungen</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <header>
-    <h1>SOLID – Aufgaben mit Lösungen</h1>
+    <h1>SOLID – Übungen mit Lösungen</h1>
     <p>Interaktive Übungsseite zu den fünf SOLID-Prinzipien</p>
   </header>
 
@@ -26,7 +26,7 @@
     <section class="intro">
       <h2>Willkommen</h2>
       <p>
-        Auf dieser Seite findest du fünf typische Aufgaben zu den SOLID-Prinzipien.
+        Auf dieser Seite findest du fünf typische Übungen zu den SOLID-Prinzipien.
         Klicke jeweils auf <strong>„Lösung anzeigen“</strong>, um die Erklärung und eine mögliche Verbesserung zu sehen.
       </p>
     </section>
@@ -35,7 +35,7 @@
       <div class="badge">S – Single Responsibility Principle</div>
       <h2>1. Single Responsibility Prinzip</h2>
 
-      <div class="question">Aufgabe: Was ist das Problem an dieser Klasse?</div>
+      <div class="question">Übung: Was ist das Problem an dieser Klasse?</div>
 
       <pre>class Report {
     void generate() {
@@ -88,7 +88,7 @@ class ReportPdfExporter {
       <div class="badge">O – Open/Closed Principle</div>
       <h2>2. Open/Closed Prinzip</h2>
 
-      <div class="question">Aufgabe: Warum verletzt diese Klasse das OCP?</div>
+      <div class="question">Übung: Warum verletzt diese Klasse das OCP?</div>
 
       <pre>class ShippingCalculator {
     public double calculate(String country) {
@@ -150,7 +150,7 @@ class ShippingCalculator {
       <div class="badge">L – Liskov Substitution Principle</div>
       <h2>3. Liskovsches Substitutionsprinzip</h2>
 
-      <div class="question">Aufgabe: Warum ist diese Vererbung problematisch?</div>
+      <div class="question">Übung: Warum ist diese Vererbung problematisch?</div>
 
       <pre>class Account {
     void withdraw(double amount) { ... }
@@ -210,7 +210,7 @@ class ReadOnlyAccount implements ReadableAccount {
       <div class="badge">I – Interface Segregation Principle</div>
       <h2>4. Interface Segregation Prinzip</h2>
 
-      <div class="question">Aufgabe: Was passt an diesem Interface nicht?</div>
+      <div class="question">Übung: Was passt an diesem Interface nicht?</div>
 
       <pre>interface Vehicle {
     void drive();
@@ -264,7 +264,7 @@ class Car implements Drivable {
       <div class="badge">D – Dependency Inversion Principle</div>
       <h2>5. Dependency Inversion Prinzip</h2>
 
-      <div class="question">Aufgabe: Warum verletzt diese Klasse das DIP?</div>
+      <div class="question">Übung: Warum verletzt diese Klasse das DIP?</div>
 
       <pre>class EmailSender {
     public void send(String message) {
