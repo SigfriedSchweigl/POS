@@ -76,6 +76,10 @@ main {
   color: #1f4b99;
 }
 
+.card h2:not(:first-of-type) {
+  margin-top: 40px;
+}
+
 .badge {
   display: inline-block;
   background: #e8f0ff;
