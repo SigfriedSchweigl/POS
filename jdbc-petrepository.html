@@ -38,27 +38,49 @@
   <h2>Aufgabenstellung</h2>
 
   <p>
-    Erstelle eine kleine Anwendung zur Verwaltung von Haustieren.
+    Erstelle eine kleine Anwendung zur Verwaltung von Haustieren mit JDBC.
   </p>
-
-  <pre class="copyable">
-Aufgabenstellung:
-
-- Erstelle ein Record Pet mit den Attributen id, name, type und birthdate.
-- type ist ein Enum mit den Werten DOG, CAT und HAMSTER.
-- Erstelle eine Klasse JdbcPetRepository, die das Interface PetRepository implementiert.
-
-Das Interface enthält folgende Methoden:
-Pet save(Pet pet) throws SQLException;
-List&lt;Pet&gt; findAll() throws SQLException;
-Optional&lt;Pet&gt; findById(long id) throws SQLException;
-void update(Pet pet) throws SQLException;
-void deleteById(long id) throws SQLException;
-
-- Erstelle eine main-Methode, die eine H2-In-Memory-Datenbank verwendet,
-  die Tabelle pet anlegt und einige Testdaten einfügt.
-- Teste alle Methoden des JdbcPetRepositorys.
-  </pre>
+  
+  <ul>
+    <li>
+      Erstelle ein <strong>Record Pet</strong> mit den Attributen:
+      <code>id</code>, <code>name</code>, <code>type</code> und <code>birthdate</code>.
+    </li>
+  
+    <li>
+      Erstelle ein <strong>Enum PetType</strong> mit den Werten:
+      <code>DOG</code>, <code>CAT</code> und <code>HAMSTER</code>.
+    </li>
+  
+    <li>
+      Erstelle ein <strong>Interface PetRepository</strong> mit folgenden Methoden:
+      <pre class="copyable">
+  Pet save(Pet pet) throws SQLException;
+  List&lt;Pet&gt; findAll() throws SQLException;
+  Optional&lt;Pet&gt; findById(long id) throws SQLException;
+  void update(Pet pet) throws SQLException;
+  void deleteById(long id) throws SQLException;
+      </pre>
+    </li>
+  
+    <li>
+      Implementiere das Interface in einer Klasse
+      <strong>JdbcPetRepository</strong>.
+    </li>
+  
+    <li>
+      Erstelle eine <strong>main-Methode</strong>, die:
+      <ul>
+        <li>eine H2-In-Memory-Datenbank verwendet</li>
+        <li>die Tabelle <code>pet</code> anlegt</li>
+        <li>einige Testdaten einfügt</li>
+      </ul>
+    </li>
+  
+    <li>
+      Teste alle Methoden des <strong>JdbcPetRepository</strong>.
+    </li>
+  </ul>
 
   <h3>Hinweis</h3>
   <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
@@ -148,41 +170,39 @@ import java.time.LocalDate;
 
 public class App {
     public static void main(String[] args) throws SQLException {
-        String url = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
+        String url = "jdbc:h2:mem:petdb";
 
         try (Connection connection = DriverManager.getConnection(url);
              Statement stmt = connection.createStatement()) {
 
             stmt.execute("""
                 CREATE TABLE pet (
-                    id BIGINT PRIMARY KEY,
+                    id IDENTITY,
                     name VARCHAR(100) NOT NULL,
                     type VARCHAR(20) NOT NULL,
                     birthdate DATE NOT NULL
                 )
             """);
 
-            stmt.executeUpdate("""
-                INSERT INTO pet (id, name, type, birthdate)
-                VALUES (1, 'Bello', 'DOG', '2020-05-10')
-            """);
+            JdbcPetRepository repo = new JdbcPetRepository(connection);
 
-            stmt.executeUpdate("""
-                INSERT INTO pet (id, name, type, birthdate)
-                VALUES (2, 'Minka', 'CAT', '2021-03-15')
-            """);
+            Pet luna = repo.save(new Pet(null, "Luna", PetType.CAT , LocalDate.of(2019, 5, 10)));
+            Pet buddy = repo.save(new Pet(null, "Buddy", PetType.DOG, LocalDate.of(2018, 3, 22)));
 
-            JdbcPetRepository repository = new JdbcPetRepository(connection);
+            System.out.println("\n--- All pets ---");
+            repo.findAll().forEach(System.out::println);
 
-            repository.save(new Pet(3, "Hammy", PetType.HAMSTER, LocalDate.of(2022, 8, 1)));
+            System.out.println("\n--- Find Luna by ID ---");
+            repo.findById(luna.id()).ifPresent(System.out::println);
 
-            System.out.println(repository.findAll());
-            System.out.println(repository.findById(1));
+            System.out.println("\n--- Update Buddy from DOG to HAMSTER ---");
+            Pet updatedBuddy = new Pet(buddy.id(), "Buddy", PetType.HAMSTER, buddy.birthdate());
+            repo.update(updatedBuddy);
+            System.out.println(repo.findById(buddy.id()).orElseThrow());
 
-            repository.update(new Pet(2, "Mimi", PetType.CAT, LocalDate.of(2021, 3, 15)));
-            repository.deleteById(1);
-
-            System.out.println(repository.findAll());
+            System.out.println("\n--- Delete Luna ---");
+            repo.deleteById(luna.id());
+            repo.findAll().forEach(System.out::println);
         }
     }
 }
