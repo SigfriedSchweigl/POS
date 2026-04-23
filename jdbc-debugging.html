@@ -30,10 +30,10 @@
 </section>
 
 <section class="card" id="aufgabe">
-  <h2>Fehleranalyse: Warum funktioniert der Code nicht?</h2>
+  <h2>Fehleranalyse 1: Warum funktioniert der Code nicht?</h2>
 
   <p>
-    Der folgende Code soll alle Schauspieler aus der Datenbank laden.
+    Der folgende Code soll einen Schauspieler aus der Datenbank laden.
     Er enthält jedoch mehrere Fehler.
   </p>
 
@@ -68,7 +68,7 @@ stmt.close();
       Die <strong>Connection</strong> wird nicht geschlossen.
     </p>
     <p>
-      Das führt zu Ressourcenproblemen (Connection-Leaks).
+      Das führt zu Ressourcenproblemen.
     </p>
   </div>
 
@@ -124,9 +124,110 @@ try (Connection con = DriverManager.getConnection(url, user, password);
   <button onclick="toggleSolution('solution5')">Lösung anzeigen</button>
   <div id="solution5" class="solution">
     <p>
-      Wenn man Parameter einbaut, sollte man <strong>PreparedStatement</strong> verwenden,
-      sonst entsteht SQL Injection.
+      Wenn man Parameter einbaut, sollte man <strong>PreparedStatement</strong> verwenden.
     </p>
+  </div>
+
+  <h2>Fehleranalyse 2: Updateable ResultSet</h2>
+
+  <p>
+    Der folgende Code soll den Vornamen eines Schauspielers über ein updateable ResultSet ändern.
+    Der Code läuft aber nicht wie erwartet.
+  </p>
+
+  <pre class="copyable">
+try (Connection con = DriverManager.getConnection(url, user, password);
+     Statement stmt = con.createStatement(
+         ResultSet.TYPE_SCROLL_INSENSITIVE,
+         ResultSet.CONCUR_UPDATABLE
+     );
+     ResultSet rs = stmt.executeQuery("SELECT actor_id, first_name, last_name FROM actor WHERE actor_id = 1")) {
+
+    if (rs.next()) {
+        rs.updateString("first_name", "Max");
+    }
+}
+  </pre>
+
+  <h3>Schritt 6: Warum wird der neue Wert nicht gespeichert?</h3>
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    Es reicht nicht, nur einen neuen Wert im ResultSet zu setzen.
+  </div>
+
+  <button onclick="toggleSolution('solution6')">Lösung anzeigen</button>
+  <div id="solution6" class="solution">
+    <p>
+      Der Aufruf <strong>updateRow()</strong> fehlt.
+    </p>
+    <p>
+      Mit <strong>updateString(...)</strong> wird der neue Wert nur im aktuellen Datensatz des ResultSet gesetzt.
+      Erst <strong>updateRow()</strong> schreibt die Änderung wirklich in die Datenbank.
+    </p>
+  </div>
+
+  <h3>Schritt 7: Welche Voraussetzung muss zusätzlich erfüllt sein?</h3>
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    Schau dir an, wie Statement und ResultSet erzeugt wurden.
+  </div>
+
+  <button onclick="toggleSolution('solution7')">Lösung anzeigen</button>
+  <div id="solution7" class="solution">
+    <p>
+      Das ResultSet muss <strong>updatable</strong> sein.
+    </p>
+    <p>
+      Deshalb wurde das Statement mit
+      <strong>ResultSet.CONCUR_UPDATABLE</strong> erstellt.
+    </p>
+  </div>
+
+  <h3>Schritt 8: Korrigierter Code</h3>
+  <button onclick="toggleSolution('solution8')">Lösung anzeigen</button>
+  <div id="solution8" class="solution">
+    <pre class="copyable">
+try (Connection con = DriverManager.getConnection(url, user, password);
+     Statement stmt = con.createStatement(
+         ResultSet.TYPE_SCROLL_INSENSITIVE,
+         ResultSet.CONCUR_UPDATABLE
+     );
+     ResultSet rs = stmt.executeQuery("SELECT actor_id, first_name, last_name FROM actor WHERE actor_id = 1")) {
+
+    if (rs.next()) {
+        rs.updateString("first_name", "Max");
+        rs.updateRow();
+    }
+}
+    </pre>
+  </div>
+
+  <h3>Schritt 9: Was wäre ein weiterer typischer Fehler?</h3>
+  <button onclick="toggleSolution('hint9')">Hinweis anzeigen</button>
+  <div id="hint9" class="solution">
+    Überlege, was passiert, wenn man die falsche Art von ResultSet verwendet.
+  </div>
+
+  <button onclick="toggleSolution('solution9')">Lösung anzeigen</button>
+  <div id="solution9" class="solution">
+    <p>
+      Ein häufiger Fehler ist, dass das Statement nur ein normales read-only ResultSet liefert.
+    </p>
+    <p>
+      Dann sind Methoden wie <strong>updateString(...)</strong> oder <strong>updateRow()</strong> nicht sinnvoll nutzbar.
+    </p>
+  </div>
+
+  <h3>Schritt 10: Merksatz</h3>
+  <button onclick="toggleSolution('solution10')">Lösung anzeigen</button>
+  <div id="solution10" class="solution">
+    <p>
+      Bei einem updateable ResultSet gilt:
+    </p>
+    <pre class="copyable">
+Wert ändern → updateXxx(...) aufrufen
+Änderung speichern → updateRow() aufrufen
+    </pre>
   </div>
 
 </section>
