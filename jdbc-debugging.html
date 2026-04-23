@@ -15,8 +15,8 @@
 
 <nav>
   <a href="index.html">Start</a>
-  <a href="#ziel">Ziel</a>
-  <a href="#aufgabe">Aufgabe</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#aufgabe">Übung</a>
 </nav>
 
 <main>
@@ -24,11 +24,8 @@
 <section class="intro" id="ziel">
   <h2>Ziel</h2>
   <p>
-    In dieser Aufgabe analysierst du fehlerhaften JDBC-Code.
+    In dieser Übung analysierst du fehlerhaften JDBC-Code.
     Ziel ist es, typische Fehler zu erkennen und zu verstehen.
-  </p>
-  <p>
-    Solche Fehler passieren in der Praxis sehr oft – deshalb ist Debugging eine wichtige Fähigkeit.
   </p>
 </section>
 
@@ -45,7 +42,7 @@ Connection con = DriverManager.getConnection(url, user, password);
 
 Statement stmt = con.createStatement();
 
-ResultSet rs = stmt.executeQuery("SELECT * FROM actor");
+ResultSet rs = stmt.executeQuery("SELECT * FROM actor WHERE actor_id = 1");
 
 while (rs.next()) {
     int id = rs.getInt("actor_id");
@@ -57,8 +54,6 @@ while (rs.next()) {
 
 rs.close();
 stmt.close();
-
-// Connection wird NICHT geschlossen
   </pre>
 
   <h3>Schritt 1: Was fehlt im Code?</h3>
@@ -94,11 +89,6 @@ stmt.close();
   </div>
 
   <h3>Schritt 3: Wie löst man das korrekt?</h3>
-  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
-  <div id="hint3" class="solution">
-    Es gibt eine moderne Lösung in Java.
-  </div>
-
   <button onclick="toggleSolution('solution3')">Lösung anzeigen</button>
   <div id="solution3" class="solution">
     <p>
@@ -112,7 +102,7 @@ stmt.close();
     <pre class="copyable">
 try (Connection con = DriverManager.getConnection(url, user, password);
      Statement stmt = con.createStatement();
-     ResultSet rs = stmt.executeQuery("SELECT * FROM actor")) {
+     ResultSet rs = stmt.executeQuery("SELECT * FROM actor WHERE actor_id = 1")) {
 
     while (rs.next()) {
         int id = rs.getInt("actor_id");
