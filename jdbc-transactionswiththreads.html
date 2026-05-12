@@ -96,12 +96,12 @@
   Thread B: starte Transaktion
   Thread B: wartet auf Lock...
   
-  Thread A: neuer Kontostand = 900.0
+  Thread A: neuer Kontostand = 900.0 (Änderung: -100.0)
   Thread A: COMMIT
   
   Thread B: Lock erhalten
   Thread B: Kontostand = 900.0
-  Thread B: neuer Kontostand = 850.0
+  Thread B: neuer Kontostand = 850.0 (Änderung: -50.0)
   Thread B: COMMIT
   
   Finaler Kontostand: 850.0
@@ -351,7 +351,7 @@ public class SelectForUpdateThreads {
                             updateStmt.setInt(2, accountId);
                             updateStmt.executeUpdate();
 
-                            System.out.println(threadName + ": neuer Kontostand = " + newBalance);
+                            System.out.println(threadName + ": neuer Kontostand = " + newBalance + " (Änderung: -" + amount+")"
                         }
 
                         conn.commit();
