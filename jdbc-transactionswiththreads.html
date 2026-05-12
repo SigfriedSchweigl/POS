@@ -60,6 +60,24 @@
     <li>Thread B muss warten.</li>
     <li>Nach COMMIT von Thread A kann Thread B weiterarbeiten.</li>
   </ol>
+
+  <h3>Was bedeutet FOR UPDATE?</h3>
+
+  <p>
+    Der Zusatz <code>FOR UPDATE</code> sperrt die ausgewählten Datensätze
+    für andere Transaktionen.
+  </p>
+  
+  <p>
+    Solange die aktuelle Transaktion noch nicht mit
+    <strong>COMMIT</strong> oder <strong>ROLLBACK</strong>
+    beendet wurde, müssen andere Threads warten.
+  </p>
+  
+  <p>
+    Dadurch wird verhindert, dass mehrere Threads gleichzeitig denselben
+    Datensatz verändern.
+  </p>
   
   <h3>Beispielausgabe</h3>
   
