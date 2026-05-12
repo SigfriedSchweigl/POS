@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JDBC – Aufgabe 2: SELECT FOR UPDATE</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>JDBC – Aufgabe 2</h1>
+  <p>Transaktionen und SELECT FOR UPDATE mit Threads</p>
+</header>
+
+<nav>
+  <a href="index.html">Start</a>
+  <a href="jdbc.html">JDBC</a>
+  <a href="#aufgabe">Aufgabe 2</a>
+</nav>
+
+<main>
+
+<section class="intro">
+  <h2>Ziel</h2>
+  <p>
+    In dieser Aufgabe untersuchst du, wie mehrere Threads gleichzeitig auf denselben
+    Datensatz zugreifen.
+  </p>
+  <p>
+    Dabei lernst du, wie <strong>SELECT FOR UPDATE</strong> einen Datensatz sperrt,
+    damit eine Transaktion sicher arbeiten kann.
+  </p>
+</section>
+
+<section class="card" id="aufgabe">
+  <h2>Aufgabenstellung</h2>
+
+  <p>
+    Erstelle ein JDBC-Programm, das zwei Threads verwendet. Beide Threads sollen
+    Geld von demselben Konto abbuchen.
+  </p>
+
+  <ul>
+    <li>Verwende eine H2-In-Memory-Datenbank.</li>
+    <li>Erstelle eine Tabelle <code>account</code> mit <code>id</code> und <code>balance</code>.</li>
+    <li>Füge ein Konto mit dem Startwert <code>1000.00</code> ein.</li>
+    <li>Starte zwei Threads, die gleichzeitig vom selben Konto abbuchen.</li>
+    <li>Verwende <strong>SELECT ... FOR UPDATE</strong>, um den Datensatz zu sperren.</li>
+    <li>Gib am Ende den finalen Kontostand aus.</li>
+  </ul>
+
+  <h3>Schritt 1: Tabelle erstellen</h3>
+  <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+  <div id="hint1" class="solution">
+    <p>
+      Die Tabelle braucht eine eindeutige ID und einen Kontostand.
+      Für den Kontostand eignet sich in SQL <strong>DECIMAL</strong>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
+  <div id="solution1" class="solution">
+    <pre class="copyable">
+CREATE TABLE IF NOT EXISTS account (
+    id INT PRIMARY KEY,
+    balance DECIMAL(10,2)
+);
+    </pre>
+  </div>
+
+  <h3>Schritt 2: Testdaten einfügen</h3>
+  <button onclick="toggleSolution('hint2')">Hinweis anzeigen</button>
+  <div id="hint2" class="solution">
+    <p>
+      Verwende ein Konto mit der ID <code>1</code> und einem Startbetrag von <code>1000.00</code>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution2')">Lösung anzeigen</button>
+  <div id="solution2" class="solution">
+    <pre class="copyable">
+MERGE INTO account (id, balance)
+KEY(id)
+VALUES (1, 1000.00);
+    </pre>
+  </div>
+
+  <h3>Schritt 3: Zwei Threads starten</h3>
+  <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
+  <div id="hint3" class="solution">
+    <p>
+      Ein Thread soll zuerst starten. Der zweite Thread startet kurz danach,
+      damit man die Sperre besser beobachten kann.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution3')">Lösung anzeigen</button>
+  <div id="solution3" class="solution">
+    <pre class="copyable">
+Thread t1 = new Thread(() -> withdraw(1, 100, "Thread A", 2000));
+Thread t2 = new Thread(() -> withdraw(1, 50, "Thread B", 0));
+
+t1.start();
+
+Thread.sleep(500);
+
+t2.start();
+
+t1.join();
+t2.join();
+    </pre>
+  </div>
+
+  <h3>Schritt 4: Transaktion starten</h3>
+  <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
+  <div id="hint4" class="solution">
+    <p>
+      Damit mehrere SQL-Befehle zusammengehören, muss <strong>AutoCommit</strong>
+      ausgeschaltet werden.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution4')">Lösung anzeigen</button>
+  <div id="solution4" class="solution">
+    <pre class="copyable">
+conn.setAutoCommit(false);
+    </pre>
+  </div>
+
+  <h3>Schritt 5: Datensatz sperren</h3>
+  <button onclick="toggleSolution('hint5')">Hinweis anzeigen</button>
+  <div id="hint5" class="solution">
+    <p>
+      Mit <strong>FOR UPDATE</strong> wird der gelesene Datensatz für andere
+      Transaktionen gesperrt.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution5')">Lösung anzeigen</button>
+  <div id="solution5" class="solution">
+    <pre class="copyable">
+SELECT balance
+FROM account
+WHERE id = ?
+FOR UPDATE;
+    </pre>
+  </div>
+
+  <h3>Schritt 6: Kontostand ändern</h3>
+  <button onclick="toggleSolution('hint6')">Hinweis anzeigen</button>
+  <div id="hint6" class="solution">
+    <p>
+      Lies zuerst den aktuellen Kontostand, berechne den neuen Wert und speichere
+      ihn anschließend mit <strong>UPDATE</strong>.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution6')">Lösung anzeigen</button>
+  <div id="solution6" class="solution">
+    <pre class="copyable">
+double balance = rs.getDouble("balance");
+double newBalance = balance - amount;
+
+String updateSql = """
+    UPDATE account
+    SET balance = ?
+    WHERE id = ?
+    """;
+    </pre>
+  </div>
+
+  <h3>Schritt 7: Commit oder Rollback</h3>
+  <button onclick="toggleSolution('hint7')">Hinweis anzeigen</button>
+  <div id="hint7" class="solution">
+    <p>
+      Wenn alles funktioniert, wird die Transaktion bestätigt.
+      Bei einem Fehler wird sie zurückgenommen.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution7')">Lösung anzeigen</button>
+  <div id="solution7" class="solution">
+    <pre class="copyable">
+conn.commit();
+    </pre>
+
+    <pre class="copyable">
+conn.rollback();
+    </pre>
+  </div>
+
+  <h3>Schritt 8: Vollständige Musterlösung</h3>
+  <button onclick="toggleSolution('solution8')">Lösung anzeigen</button>
+  <div id="solution8" class="solution">
+    <pre class="copyable">
+package transactions;
+
+import java.sql.*;
+
+public class SelectForUpdateThreads {
+    private static final String URL = "jdbc:h2:mem:forupdate;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000";
+    private static final String USER = "root";
+    private static final String PASSWORD = "root";
+
+    public static void main(String[] args) throws InterruptedException {
+        createTable();
+
+        Thread t1 = new Thread(() -> withdraw(1, 100, "Thread A", 2000));
+        Thread t2 = new Thread(() -> withdraw(1, 50, "Thread B", 0));
+
+        t1.start();
+
+        Thread.sleep(500);
+
+        t2.start();
+
+        t1.join();
+        t2.join();
+
+        printBalance();
+    }
+
+    private static void createTable() {
+        String createSql = """
+            CREATE TABLE IF NOT EXISTS account (
+                id INT PRIMARY KEY,
+                balance DECIMAL(10,2)
+            )
+            """;
+
+        String insertSql = """
+            MERGE INTO account (id, balance)
+            KEY(id)
+            VALUES (1, 1000.00)
+            """;
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute(createSql);
+            stmt.execute(insertSql);
+
+            System.out.println("Tabelle account erstellt.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void withdraw(
+            int accountId,
+            double amount,
+            String threadName,
+            long sleepMillis
+    ) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+
+            conn.setAutoCommit(false);
+
+            System.out.println(threadName + ": starte Transaktion");
+
+            String selectSql = """
+                SELECT balance
+                FROM account
+                WHERE id = ?
+                FOR UPDATE
+                """;
+
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                selectStmt.setInt(1, accountId);
+
+                System.out.println(threadName + ": wartet auf Lock...");
+
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println(threadName + ": Lock erhalten");
+
+                        double balance = rs.getDouble("balance");
+                        System.out.println(threadName + ": Kontostand = " + balance);
+
+                        double newBalance = balance - amount;
+
+                        Thread.sleep(sleepMillis);
+
+                        String updateSql = """
+                            UPDATE account
+                            SET balance = ?
+                            WHERE id = ?
+                            """;
+
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                            updateStmt.setDouble(1, newBalance);
+                            updateStmt.setInt(2, accountId);
+                            updateStmt.executeUpdate();
+
+                            System.out.println(threadName + ": neuer Kontostand = " + newBalance);
+                        }
+
+                        conn.commit();
+                        System.out.println(threadName + ": COMMIT");
+                    }
+                }
+
+            } catch (Exception e) {
+                conn.rollback();
+                System.out.println(threadName + ": ROLLBACK");
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void printBalance() {
+        String sql = "SELECT balance FROM account WHERE id = 1";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                System.out.println("Finaler Kontostand: " + rs.getDouble("balance"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+    </pre>
+  </div>
+
+  <h3>Schritt 9: Erwartete Beobachtung</h3>
+  <button onclick="toggleSolution('solution9')">Lösung anzeigen</button>
+  <div id="solution9" class="solution">
+    <p>
+      Thread A erhält zuerst den Lock und wartet durch <code>Thread.sleep(...)</code>
+      etwas länger.
+    </p>
+    <p>
+      Thread B muss warten, bis Thread A die Transaktion mit <strong>COMMIT</strong>
+      beendet hat.
+    </p>
+    <p>
+      Erst danach kann Thread B den Datensatz lesen und selbst ändern.
+    </p>
+  </div>
+
+  <h3>Schritt 10: Kontrollfrage</h3>
+  <button onclick="toggleSolution('hint10')">Hinweis anzeigen</button>
+  <div id="hint10" class="solution">
+    <p>
+      Überlege, was passieren könnte, wenn beide Threads gleichzeitig denselben
+      alten Kontostand lesen würden.
+    </p>
+  </div>
+
+  <button onclick="toggleSolution('solution10')">Lösung anzeigen</button>
+  <div id="solution10" class="solution">
+    <p>
+      Ohne saubere Sperre könnten beide Threads denselben alten Kontostand lesen.
+      Dadurch könnte eine Änderung verloren gehen.
+    </p>
+    <p>
+      Mit <strong>SELECT FOR UPDATE</strong> wird verhindert, dass beide Threads
+      gleichzeitig denselben Datensatz bearbeiten.
+    </p>
+  </div>
+
+</section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
