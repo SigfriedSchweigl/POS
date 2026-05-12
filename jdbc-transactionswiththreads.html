@@ -50,6 +50,45 @@
     <li>Gib am Ende den finalen Kontostand aus.</li>
   </ul>
 
+  <h3>Ablauf</h3>
+
+  <ol>
+    <li>Die Tabelle account wird erstellt.</li>
+    <li>Thread A startet zuerst.</li>
+    <li>Thread A sperrt den Datensatz mit SELECT FOR UPDATE.</li>
+    <li>Thread B versucht ebenfalls auf den Datensatz zuzugreifen.</li>
+    <li>Thread B muss warten.</li>
+    <li>Nach COMMIT von Thread A kann Thread B weiterarbeiten.</li>
+  </ol>
+  
+  <h3>Beispielausgabe</h3>
+  
+  <p>
+    Eine mögliche Konsolenausgabe könnte so aussehen:
+  </p>
+  
+  <pre class="copyable">
+  Tabelle account erstellt.
+  
+  Thread A: starte Transaktion
+  Thread A: wartet auf Lock...
+  Thread A: Lock erhalten
+  Thread A: Kontostand = 1000.0
+  
+  Thread B: starte Transaktion
+  Thread B: wartet auf Lock...
+  
+  Thread A: neuer Kontostand = 900.0
+  Thread A: COMMIT
+  
+  Thread B: Lock erhalten
+  Thread B: Kontostand = 900.0
+  Thread B: neuer Kontostand = 850.0
+  Thread B: COMMIT
+  
+  Finaler Kontostand: 850.0
+  </pre>
+
   <h3>Schritt 1: Tabelle erstellen</h3>
   <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
   <div id="hint1" class="solution">
