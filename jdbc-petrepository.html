@@ -188,40 +188,10 @@ public class App {
 
 </section>
 
-  <h3>Musterlösung: PetType, Pet und Repository</h3>
-<button onclick="toggleSolution('solutionFull')">Lösung anzeigen</button>
-<div id="solutionFull" class="solution">
-
-<pre class="copyable">
-public enum PetType {
-    DOG,
-    CAT,
-    HAMSTER
-}
-</pre>
-
-<pre class="copyable">
-import java.time.LocalDate;
-
-public record Pet(Long id, String name, PetType type, LocalDate birthdate) {
-}
-</pre>
-
-<pre class="copyable">
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-
-public interface PetRepository {
-    Pet save(Pet pet) throws SQLException;
-    List&lt;Pet&gt; findAll() throws SQLException;
-    Optional&lt;Pet&gt; findById(long id) throws SQLException;
-    void update(Pet pet) throws SQLException;
-    void deleteById(long id) throws SQLException;
-}
-</pre>
-
-<pre class="copyable">
+ <h3>Musterlösung: JdbcPetRepository</h3>
+<button onclick="toggleSolution('solutionRepo')">Lösung anzeigen</button>
+<div id="solutionRepo" class="solution">
+  <pre class="copyable">
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -244,12 +214,11 @@ public class JdbcPetRepository implements PetRepository {
 
         try (PreparedStatement stmt = connection.prepareStatement(
                 sql,
-                Statement.RETURN_GENERATED_KEYS
-        )) {
+                Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setString(1, pet.name());
             stmt.setString(2, pet.type().name());
             stmt.setDate(3, Date.valueOf(pet.birthdate()));
-
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -318,7 +287,6 @@ public class JdbcPetRepository implements PetRepository {
             stmt.setString(2, pet.type().name());
             stmt.setDate(3, Date.valueOf(pet.birthdate()));
             stmt.setLong(4, pet.id());
-
             stmt.executeUpdate();
         }
     }
@@ -342,8 +310,7 @@ public class JdbcPetRepository implements PetRepository {
         );
     }
 }
-</pre>
-
+  </pre>
 </div>
   
 </main>
