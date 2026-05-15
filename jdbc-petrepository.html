@@ -188,6 +188,164 @@ public class App {
 
 </section>
 
+  <h3>Musterlösung: PetType, Pet und Repository</h3>
+<button onclick="toggleSolution('solutionFull')">Lösung anzeigen</button>
+<div id="solutionFull" class="solution">
+
+<pre class="copyable">
+public enum PetType {
+    DOG,
+    CAT,
+    HAMSTER
+}
+</pre>
+
+<pre class="copyable">
+import java.time.LocalDate;
+
+public record Pet(Long id, String name, PetType type, LocalDate birthdate) {
+}
+</pre>
+
+<pre class="copyable">
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+public interface PetRepository {
+    Pet save(Pet pet) throws SQLException;
+    List&lt;Pet&gt; findAll() throws SQLException;
+    Optional&lt;Pet&gt; findById(long id) throws SQLException;
+    void update(Pet pet) throws SQLException;
+    void deleteById(long id) throws SQLException;
+}
+</pre>
+
+<pre class="copyable">
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public class JdbcPetRepository implements PetRepository {
+
+    private final Connection connection;
+
+    public JdbcPetRepository(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public Pet save(Pet pet) throws SQLException {
+        String sql = """
+            INSERT INTO pet (name, type, birthdate)
+            VALUES (?, ?, ?)
+            """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(
+                sql,
+                Statement.RETURN_GENERATED_KEYS
+        )) {
+            stmt.setString(1, pet.name());
+            stmt.setString(2, pet.type().name());
+            stmt.setDate(3, Date.valueOf(pet.birthdate()));
+
+            stmt.executeUpdate();
+
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return new Pet(
+                        keys.getLong(1),
+                        pet.name(),
+                        pet.type(),
+                        pet.birthdate()
+                    );
+                }
+            }
+        }
+
+        throw new SQLException("Keine ID erzeugt.");
+    }
+
+    @Override
+    public List&lt;Pet&gt; findAll() throws SQLException {
+        List&lt;Pet&gt; pets = new ArrayList&lt;&gt;();
+
+        String sql = "SELECT id, name, type, birthdate FROM pet";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                pets.add(mapRow(rs));
+            }
+        }
+
+        return pets;
+    }
+
+    @Override
+    public Optional&lt;Pet&gt; findById(long id) throws SQLException {
+        String sql = """
+            SELECT id, name, type, birthdate
+            FROM pet
+            WHERE id = ?
+            """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRow(rs));
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void update(Pet pet) throws SQLException {
+        String sql = """
+            UPDATE pet
+            SET name = ?, type = ?, birthdate = ?
+            WHERE id = ?
+            """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, pet.name());
+            stmt.setString(2, pet.type().name());
+            stmt.setDate(3, Date.valueOf(pet.birthdate()));
+            stmt.setLong(4, pet.id());
+
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteById(long id) throws SQLException {
+        String sql = "DELETE FROM pet WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    private Pet mapRow(ResultSet rs) throws SQLException {
+        return new Pet(
+            rs.getLong("id"),
+            rs.getString("name"),
+            PetType.valueOf(rs.getString("type")),
+            rs.getDate("birthdate").toLocalDate()
+        );
+    }
+}
+</pre>
+
+</div>
+  
 </main>
 
 <script src="script.js"></script>
