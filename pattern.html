@@ -70,9 +70,22 @@
     <div id="solution1" class="solution">
       <h3>Lösung</h3>
       <p>
-        Das Singleton Pattern stellt sicher, dass es von einer Klasse nur ein einziges
-        Objekt gibt. Das kann bei zentralen Konfigurationsdaten sinnvoll sein.
+        Ohne Singleton könnten mehrere unterschiedliche Konfigurationsobjekte entstehen.
+        Dadurch könnten verschiedene Teile des Programms mit unterschiedlichen
+        Datenbankeinstellungen arbeiten.
       </p>
+      
+      <pre class="copyable">DatabaseConfig config1 = new DatabaseConfig();
+      DatabaseConfig config2 = new DatabaseConfig();
+      
+      config1.setUrl("jdbc:h2:./db1");
+      config2.setUrl("jdbc:h2:./db2");</pre>
+      
+      <p>
+        Das Singleton Pattern verhindert das, indem nur eine einzige Instanz
+        der Klasse existiert.
+      </p>
+      
 
 <pre class="copyable">class DatabaseConfig {
     private static final DatabaseConfig INSTANCE = new DatabaseConfig();
