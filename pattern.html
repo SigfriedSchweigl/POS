@@ -144,8 +144,7 @@ DatabaseConfig config2 = new DatabaseConfig();</pre>
 
       <h3>Verwendung</h3>
 
-<pre class="copyable">DatabaseConfig config =
-        DatabaseConfig.getInstance();
+<pre class="copyable">DatabaseConfig config = DatabaseConfig.getInstance();
 
 System.out.println(config.getUrl());</pre>
 
@@ -255,8 +254,7 @@ class UserFactory {
 
       <h3>Verwendung</h3>
 
-<pre class="copyable">User user =
-        UserFactory.createUser("teacher");
+<pre class="copyable">User user = UserFactory.createUser("teacher");
 
 user.printRole();</pre>
 
@@ -337,23 +335,17 @@ user.printRole();</pre>
     void findAll();
 }
 
-class H2StudentRepository
-        implements StudentRepository {
+class H2StudentRepository implements StudentRepository {
 
     public void findAll() {
-        System.out.println(
-                "Lese Schüler aus H2"
-        );
+        System.out.println("Lese Schüler aus H2");
     }
 }
 
-class MySqlStudentRepository
-        implements StudentRepository {
+class MySqlStudentRepository implements StudentRepository {
 
     public void findAll() {
-        System.out.println(
-                "Lese Schüler aus MySQL"
-        );
+        System.out.println("Lese Schüler aus MySQL");
     }
 }
 
@@ -367,8 +359,8 @@ abstract class Application {
         repository.findAll();
     }
 
-    protected abstract
-    StudentRepository createRepository();
+    protected abstract StudentRepository
+            createRepository();
 }
 
 class H2Application extends Application {
@@ -391,8 +383,7 @@ class MySqlApplication extends Application {
 
       <h3>Verwendung</h3>
 
-<pre class="copyable">Application app =
-        new H2Application();
+<pre class="copyable">Application app = new H2Application();
 
 app.run();</pre>
 
@@ -408,9 +399,7 @@ app.run();</pre>
         diese Methode verwendet:
       </p>
 
-<pre class="copyable">protected StudentRepository
-createRepository() {
-
+<pre class="copyable">protected StudentRepository createRepository() {
     return new H2StudentRepository();
 }</pre>
 
@@ -421,8 +410,7 @@ createRepository() {
         Application-Klasse ausgetauscht werden:
       </p>
 
-<pre class="copyable">Application app =
-        new MySqlApplication();
+<pre class="copyable">Application app = new MySqlApplication();
 
 app.run();</pre>
 
@@ -509,16 +497,14 @@ interface TeacherRepository {
     void findAll();
 }
 
-class H2StudentRepository
-        implements StudentRepository {
+class H2StudentRepository implements StudentRepository {
 
     public void findAll() {
         System.out.println("H2 Student");
     }
 }
 
-class H2TeacherRepository
-        implements TeacherRepository {
+class H2TeacherRepository implements TeacherRepository {
 
     public void findAll() {
         System.out.println("H2 Teacher");
@@ -543,11 +529,9 @@ class MySqlTeacherRepository
 
 interface RepositoryFactory {
 
-    StudentRepository
-    createStudentRepository();
+    StudentRepository createStudentRepository();
 
-    TeacherRepository
-    createTeacherRepository();
+    TeacherRepository createTeacherRepository();
 }
 
 class H2RepositoryFactory
