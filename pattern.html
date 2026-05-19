@@ -445,82 +445,73 @@ teacherRepository.findAll();</pre>
       </p>
     </div>
 
-    <button onclick="toggleSolution('compare4')">
-  Vergleich anzeigen
-</button>
+    <button onclick="toggleSolution('compare4')">Vergleich anzeigen</button>
 
 <div id="compare4" class="solution">
 
-  <h3>Vergleich der Factory Patterns</h3>
-
-  <table>
-    <tr>
-      <th>Pattern</th>
-      <th>Idee</th>
-    </tr>
-
-    <tr>
-      <td><strong>Simple Factory</strong></td>
-      <td>
-        Erzeugt ein einzelnes Objekt zentral.
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>Factory Method</strong></td>
-      <td>
-        Die Unterklasse entscheidet,
-        welches konkrete Objekt erzeugt wird.
-      </td>
-    </tr>
-
-    <tr>
-      <td><strong>Abstract Factory</strong></td>
-      <td>
-        Erzeugt mehrere zusammengehörige Objekte
-        als Objektfamilie.
-      </td>
-    </tr>
-  </table>
-
-  <h3>Beispiele</h3>
+  <h3>Wann verwendet man welches Factory Pattern?</h3>
 
   <p>
-    <strong>Simple Factory:</strong><br>
-    Welches einzelne Objekt brauche ich?
+    Die drei Factory Patterns unterscheiden sich vor allem darin,
+    <strong>wer entscheidet</strong> und <strong>wie viele Objekte</strong>
+    erzeugt werden.
   </p>
 
-<pre class="copyable">User user =
-        UserFactory.createUser("teacher");</pre>
+  <h4>Simple Factory</h4>
+  <p>
+    Eine normale Factory-Methode entscheidet anhand eines Wertes,
+    welches einzelne Objekt erzeugt wird.
+  </p>
+
+<pre class="copyable">User user = UserFactory.createUser("teacher");</pre>
 
   <p>
-    <strong>Factory Method:</strong><br>
-    Welche Unterklasse entscheidet über das Objekt?
+    <strong>Frage:</strong> Welches einzelne Objekt brauche ich?
+  </p>
+
+  <h4>Factory Method</h4>
+  <p>
+    Eine Oberklasse definiert den Ablauf.
+    Die Unterklasse entscheidet, welches konkrete Objekt erzeugt wird.
   </p>
 
 <pre class="copyable">Application app = new H2Application();
-
 app.run();</pre>
 
   <p>
-    <strong>Abstract Factory:</strong><br>
-    Welche zusammengehörige Objektfamilie brauche ich?
+    <strong>Frage:</strong> Welche Unterklasse soll das Objekt erzeugen?
   </p>
 
-<pre class="copyable">RepositoryFactory factory =
-        new H2RepositoryFactory();
+  <h4>Abstract Factory</h4>
+  <p>
+    Eine Factory erzeugt mehrere zusammengehörige Objekte,
+    die gemeinsam verwendet werden.
+  </p>
 
-StudentRepository studentRepository =
-        factory.createStudentRepository();
+<pre class="copyable">RepositoryFactory factory = new H2RepositoryFactory();
 
-TeacherRepository teacherRepository =
-        factory.createTeacherRepository();</pre>
+StudentRepository studentRepository = factory.createStudentRepository();
+TeacherRepository teacherRepository = factory.createTeacherRepository();</pre>
 
   <p>
-    <strong>Merksatz:</strong><br>
-    Simple Factory → ein Objekt<br>
-    Factory Method → Unterklasse entscheidet<br>
-    Abstract Factory → ganze Objektfamilie
+    <strong>Frage:</strong> Welche zusammengehörige Objektfamilie brauche ich?
+  </p>
+
+  <h3>Kurz gesagt</h3>
+
+  <p>
+    <strong>Simple Factory:</strong>
+    Eine Klasse entscheidet über ein Objekt.
+  </p>
+
+  <p>
+    <strong>Factory Method:</strong>
+    Eine Unterklasse entscheidet über ein Objekt.
+  </p>
+
+  <p>
+    <strong>Abstract Factory:</strong>
+    Eine Factory entscheidet über mehrere passende Objekte.
   </p>
 
 </div>
