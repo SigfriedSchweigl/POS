@@ -328,6 +328,86 @@ TeacherRepository teacherRepository = new H2TeacherRepository();</pre>
       </p>
     </div>
 
+    <button onclick="toggleSolution('compare4')">
+  Vergleich anzeigen
+</button>
+
+<div id="compare4" class="solution">
+
+  <h3>Vergleich der Factory Patterns</h3>
+
+  <table>
+    <tr>
+      <th>Pattern</th>
+      <th>Idee</th>
+    </tr>
+
+    <tr>
+      <td><strong>Simple Factory</strong></td>
+      <td>
+        Erzeugt ein einzelnes Objekt zentral.
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>Factory Method</strong></td>
+      <td>
+        Die Unterklasse entscheidet,
+        welches konkrete Objekt erzeugt wird.
+      </td>
+    </tr>
+
+    <tr>
+      <td><strong>Abstract Factory</strong></td>
+      <td>
+        Erzeugt mehrere zusammengehörige Objekte
+        als Objektfamilie.
+      </td>
+    </tr>
+  </table>
+
+  <h3>Beispiele</h3>
+
+  <p>
+    <strong>Simple Factory:</strong><br>
+    Welches einzelne Objekt brauche ich?
+  </p>
+
+<pre class="copyable">User user =
+        UserFactory.createUser("teacher");</pre>
+
+  <p>
+    <strong>Factory Method:</strong><br>
+    Welche Unterklasse entscheidet über das Objekt?
+  </p>
+
+<pre class="copyable">Application app = new H2Application();
+
+app.run();</pre>
+
+  <p>
+    <strong>Abstract Factory:</strong><br>
+    Welche zusammengehörige Objektfamilie brauche ich?
+  </p>
+
+<pre class="copyable">RepositoryFactory factory =
+        new H2RepositoryFactory();
+
+StudentRepository studentRepository =
+        factory.createStudentRepository();
+
+TeacherRepository teacherRepository =
+        factory.createTeacherRepository();</pre>
+
+  <p>
+    <strong>Merksatz:</strong><br>
+    Simple Factory → ein Objekt<br>
+    Factory Method → Unterklasse entscheidet<br>
+    Abstract Factory → ganze Objektfamilie
+  </p>
+
+</div>
+
     <button onclick="toggleSolution('solution4')">Lösung anzeigen</button>
 
     <div id="solution4" class="solution">
