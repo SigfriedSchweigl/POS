@@ -36,8 +36,9 @@
   </p>
 
   <p>
-    Die Beispiele orientieren sich am JDBC-Umfeld mit Repositorys,
-    Datenbanken und Konfigurationen.
+    Die Beispiele sind bewusst einfach gehalten. Einige Beispiele verwenden
+    Tiere oder grafische Oberflächen, andere orientieren sich am JDBC-Umfeld mit
+    Repositorys, Datenbanken und Konfigurationen.
   </p>
 </section>
 
@@ -209,20 +210,16 @@ user.printRole();</pre>
       welches konkrete Objekt erzeugt wird.
     </p>
 
-<pre class="copyable">class Application {
-    public void run() {
-        StudentRepository repository = new H2StudentRepository();
-        repository.findAll();
-    }
-}</pre>
+<pre class="copyable">Animal animal = new Dog();
+animal.makeSound();</pre>
 
     <button onclick="toggleSolution('hint3')">Hinweis anzeigen</button>
 
     <div id="hint3" class="solution">
       <p>
-        Die Klasse <code>Application</code> hängt direkt von einer konkreten
-        Repository-Klasse ab. Besser wäre: Unterklassen entscheiden, welches
-        Repository verwendet wird.
+        Die Erzeugung von <code>Dog</code> oder <code>Cat</code> soll nicht direkt
+        im Hauptprogramm stehen. Eine Unterklasse kann entscheiden, welches Objekt
+        erzeugt wird.
       </p>
     </div>
 
@@ -232,9 +229,67 @@ user.printRole();</pre>
       <h3>Erklärung</h3>
 
       <p>
-        Beim Factory Method Pattern definiert die Oberklasse den Ablauf.
-        Die Unterklasse liefert das konkrete Objekt.
+        Beim Factory Method Pattern kennt die abstrakte Oberklasse nur die Methode
+        zur Objekterzeugung. Sie weiß aber nicht, welches konkrete Objekt erzeugt wird.
       </p>
+
+<pre class="copyable">interface Animal {
+    void makeSound();
+}
+
+class Dog implements Animal {
+    public void makeSound() {
+        System.out.println("Wuff");
+    }
+}
+
+class Cat implements Animal {
+    public void makeSound() {
+        System.out.println("Miau");
+    }
+}
+
+abstract class AnimalCreator {
+    public abstract Animal createAnimal();
+}
+
+class DogCreator extends AnimalCreator {
+    public Animal createAnimal() {
+        return new Dog();
+    }
+}
+
+class CatCreator extends AnimalCreator {
+    public Animal createAnimal() {
+        return new Cat();
+    }
+}</pre>
+
+      <h3>Verwendung</h3>
+
+<pre class="copyable">AnimalCreator creator = new DogCreator();
+
+Animal animal = creator.createAnimal();
+
+animal.makeSound();</pre>
+
+      <p>
+        Hier entscheidet die Unterklasse <code>DogCreator</code>, dass ein
+        <code>Dog</code>-Objekt erzeugt wird.
+      </p>
+
+<pre class="copyable">AnimalCreator creator = new CatCreator();
+
+Animal animal = creator.createAnimal();
+
+animal.makeSound();</pre>
+
+      <p>
+        Wird stattdessen <code>CatCreator</code> verwendet, entsteht ein
+        <code>Cat</code>-Objekt.
+      </p>
+
+      <h3>Factory Method im Repository-Umfeld</h3>
 
 <pre class="copyable">interface StudentRepository {
     void findAll();
@@ -280,29 +335,14 @@ class MySqlApplication extends Application {
 app.run();</pre>
 
       <p>
-        Obwohl die Variable den Typ <code>Application</code> hat, steckt intern
-        ein <code>H2Application</code>-Objekt darin. Deshalb wird beim Aufruf von
-        <code>createRepository()</code> automatisch die Methode aus
-        <code>H2Application</code> verwendet.
-      </p>
-
-      <p>
-        Soll später statt H2 eine MySQL-Datenbank verwendet werden, muss nur die
-        konkrete Application-Klasse ausgetauscht werden:
-      </p>
-
-<pre class="copyable">Application app = new MySqlApplication();
-
-app.run();</pre>
-
-      <p>
-        Die Methode <code>run()</code> bleibt dabei unverändert.
-        Nur das erzeugte Repository wird automatisch ausgetauscht.
+        Die Methode <code>run()</code> bleibt gleich. Nur die konkrete Unterklasse
+        entscheidet, welches Repository erzeugt wird.
       </p>
 
       <p>
         <strong>Merksatz:</strong><br>
-        Die Oberklasse definiert den Ablauf, die Unterklasse liefert das konkrete Objekt.
+        Factory Method bedeutet: Die Oberklasse kennt die Erzeugungsmethode,
+        aber die Unterklasse entscheidet über das konkrete Objekt.
       </p>
     </div>
   </article>
@@ -313,18 +353,19 @@ app.run();</pre>
     <p>
       <strong>Problem:</strong><br>
       Es sollen mehrere zusammengehörige Objekte erzeugt werden, zum Beispiel
-      alle Repositorys für H2 oder alle Repositorys für MySQL.
+      alle GUI-Elemente für Windows oder alle GUI-Elemente für macOS.
     </p>
 
-<pre class="copyable">StudentRepository studentRepository = new H2StudentRepository();
-TeacherRepository teacherRepository = new H2TeacherRepository();</pre>
+<pre class="copyable">Button button = new WindowsButton();
+Checkbox checkbox = new WindowsCheckbox();</pre>
 
     <button onclick="toggleSolution('hint4')">Hinweis anzeigen</button>
 
     <div id="hint4" class="solution">
       <p>
-        Was passiert, wenn statt H2 plötzlich MySQL verwendet werden soll?
-        Dann müssen mehrere konkrete Klassen ausgetauscht werden.
+        Wenn mehrere Objekte zusammenpassen müssen, sollte nicht jedes Objekt
+        einzeln im Programm erzeugt werden. Eine Factory kann eine ganze Familie
+        passender Objekte erzeugen.
       </p>
     </div>
 
@@ -334,9 +375,90 @@ TeacherRepository teacherRepository = new H2TeacherRepository();</pre>
       <h3>Erklärung</h3>
 
       <p>
-        Die Abstract Factory erzeugt nicht nur ein einzelnes Objekt,
-        sondern eine ganze Familie zusammengehöriger Objekte.
+        Eine Abstract Factory erzeugt mehrere zusammengehörige Objekte.
+        Im Beispiel erzeugt eine Factory immer einen passenden Button und eine
+        passende Checkbox.
       </p>
+
+<pre class="copyable">interface Button {
+    void render();
+}
+
+interface Checkbox {
+    void render();
+}
+
+class WindowsButton implements Button {
+    public void render() {
+        System.out.println("Windows Button");
+    }
+}
+
+class WindowsCheckbox implements Checkbox {
+    public void render() {
+        System.out.println("Windows Checkbox");
+    }
+}
+
+class MacButton implements Button {
+    public void render() {
+        System.out.println("Mac Button");
+    }
+}
+
+class MacCheckbox implements Checkbox {
+    public void render() {
+        System.out.println("Mac Checkbox");
+    }
+}
+
+interface GUIFactory {
+    Button createButton();
+
+    Checkbox createCheckbox();
+}
+
+class WindowsFactory implements GUIFactory {
+    public Button createButton() {
+        return new WindowsButton();
+    }
+
+    public Checkbox createCheckbox() {
+        return new WindowsCheckbox();
+    }
+}
+
+class MacFactory implements GUIFactory {
+    public Button createButton() {
+        return new MacButton();
+    }
+
+    public Checkbox createCheckbox() {
+        return new MacCheckbox();
+    }
+}</pre>
+
+      <h3>Verwendung</h3>
+
+<pre class="copyable">GUIFactory factory = new WindowsFactory();
+
+Button button = factory.createButton();
+Checkbox checkbox = factory.createCheckbox();
+
+button.render();
+checkbox.render();</pre>
+
+      <p>
+        Soll später macOS verwendet werden, muss nur die Factory ausgetauscht werden:
+      </p>
+
+<pre class="copyable">GUIFactory factory = new MacFactory();</pre>
+
+      <p>
+        Der restliche Code bleibt gleich. Button und Checkbox passen weiterhin zusammen.
+      </p>
+
+      <h3>Abstract Factory im Repository-Umfeld</h3>
 
 <pre class="copyable">interface StudentRepository {
     void findAll();
@@ -372,6 +494,7 @@ class MySqlTeacherRepository implements TeacherRepository {
 
 interface RepositoryFactory {
     StudentRepository createStudentRepository();
+
     TeacherRepository createTeacherRepository();
 }
 
@@ -395,126 +518,108 @@ class MySqlRepositoryFactory implements RepositoryFactory {
     }
 }</pre>
 
-      <h3>Verwendung</h3>
-
-<pre class="copyable">RepositoryFactory factory = new H2RepositoryFactory();
-
-StudentRepository studentRepository = factory.createStudentRepository();
-TeacherRepository teacherRepository = factory.createTeacherRepository();
-
-studentRepository.findAll();
-teacherRepository.findAll();</pre>
-
-      <p>
-        Soll später MySQL verwendet werden, muss nur die Factory ausgetauscht werden:
-      </p>
-
-<pre class="copyable">RepositoryFactory factory = new MySqlRepositoryFactory();</pre>
-
-      <p>
-        Der restliche Code bleibt gleich.
-      </p>
-
       <h3>Rollen im Abstract Factory Pattern</h3>
 
       <ul>
         <li>
           <strong>Abstract Factory:</strong>
-          gemeinsames Factory-Interface (<code>RepositoryFactory</code>)
+          gemeinsames Factory-Interface, zum Beispiel <code>GUIFactory</code>
         </li>
         <li>
           <strong>Concrete Factory:</strong>
-          konkrete Factory-Klassen
-          (<code>H2RepositoryFactory</code>, <code>MySqlRepositoryFactory</code>)
+          konkrete Factory-Klassen, zum Beispiel <code>WindowsFactory</code>
+          und <code>MacFactory</code>
         </li>
         <li>
           <strong>Abstract Products:</strong>
-          gemeinsame Produkt-Interfaces
-          (<code>StudentRepository</code>, <code>TeacherRepository</code>)
+          gemeinsame Produkt-Interfaces, zum Beispiel <code>Button</code>
+          und <code>Checkbox</code>
         </li>
         <li>
           <strong>Concrete Products:</strong>
-          konkrete Implementierungen
-          (<code>H2StudentRepository</code>, <code>MySqlTeacherRepository</code>)
+          konkrete Produkte, zum Beispiel <code>WindowsButton</code>
+          und <code>WindowsCheckbox</code>
         </li>
       </ul>
 
       <p>
         <strong>Merksatz:</strong><br>
-        Eine Abstract Factory erzeugt zusammengehörige Objektfamilien.
+        Eine Abstract Factory erzeugt mehrere zusammengehörige Objekte.
       </p>
     </div>
 
     <button onclick="toggleSolution('compare4')">Vergleich anzeigen</button>
 
-<div id="compare4" class="solution">
+    <div id="compare4" class="solution">
+      <h3>Wann verwendet man welches Factory Pattern?</h3>
 
-  <h3>Wann verwendet man welches Factory Pattern?</h3>
+      <p>
+        Die drei Factory Patterns unterscheiden sich vor allem darin,
+        <strong>wer entscheidet</strong> und <strong>wie viele Objekte</strong>
+        erzeugt werden.
+      </p>
 
-  <p>
-    Die drei Factory Patterns unterscheiden sich vor allem darin,
-    <strong>wer entscheidet</strong> und <strong>wie viele Objekte</strong>
-    erzeugt werden.
-  </p>
+      <h4>Simple Factory</h4>
 
-  <h4>Simple Factory</h4>
-  <p>
-    Eine normale Factory-Methode entscheidet anhand eines Wertes,
-    welches einzelne Objekt erzeugt wird.
-  </p>
+      <p>
+        Eine normale Factory-Klasse entscheidet anhand eines Wertes,
+        welches einzelne Objekt erzeugt wird.
+      </p>
 
 <pre class="copyable">User user = UserFactory.createUser("teacher");</pre>
 
-  <p>
-    <strong>Frage:</strong> Welches einzelne Objekt brauche ich?
-  </p>
+      <p>
+        <strong>Frage:</strong> Welches einzelne Objekt brauche ich?
+      </p>
 
-  <h4>Factory Method</h4>
-  <p>
-    Eine Oberklasse definiert den Ablauf.
-    Die Unterklasse entscheidet, welches konkrete Objekt erzeugt wird.
-  </p>
+      <h4>Factory Method</h4>
 
-<pre class="copyable">Application app = new H2Application();
-app.run();</pre>
+      <p>
+        Eine Oberklasse definiert eine Erzeugungsmethode.
+        Die Unterklasse entscheidet, welches konkrete Objekt erzeugt wird.
+      </p>
 
-  <p>
-    <strong>Frage:</strong> Welche Unterklasse soll das Objekt erzeugen?
-  </p>
+<pre class="copyable">AnimalCreator creator = new DogCreator();
 
-  <h4>Abstract Factory</h4>
-  <p>
-    Eine Factory erzeugt mehrere zusammengehörige Objekte,
-    die gemeinsam verwendet werden.
-  </p>
+Animal animal = creator.createAnimal();</pre>
 
-<pre class="copyable">RepositoryFactory factory = new H2RepositoryFactory();
+      <p>
+        <strong>Frage:</strong> Welche Unterklasse soll das Objekt erzeugen?
+      </p>
 
-StudentRepository studentRepository = factory.createStudentRepository();
-TeacherRepository teacherRepository = factory.createTeacherRepository();</pre>
+      <h4>Abstract Factory</h4>
 
-  <p>
-    <strong>Frage:</strong> Welche zusammengehörige Objektfamilie brauche ich?
-  </p>
+      <p>
+        Eine Factory erzeugt mehrere zusammengehörige Objekte,
+        die gemeinsam verwendet werden.
+      </p>
 
-  <h3>Kurz gesagt</h3>
+<pre class="copyable">GUIFactory factory = new WindowsFactory();
 
-  <p>
-    <strong>Simple Factory:</strong>
-    Eine Klasse entscheidet über ein Objekt.
-  </p>
+Button button = factory.createButton();
+Checkbox checkbox = factory.createCheckbox();</pre>
 
-  <p>
-    <strong>Factory Method:</strong>
-    Eine Unterklasse entscheidet über ein Objekt.
-  </p>
+      <p>
+        <strong>Frage:</strong> Welche zusammengehörige Objektfamilie brauche ich?
+      </p>
 
-  <p>
-    <strong>Abstract Factory:</strong>
-    Eine Factory entscheidet über mehrere passende Objekte.
-  </p>
+      <h3>Kurz gesagt</h3>
 
-</div>
+      <p>
+        <strong>Simple Factory:</strong>
+        Eine Klasse entscheidet über ein Objekt.
+      </p>
+
+      <p>
+        <strong>Factory Method:</strong>
+        Eine Unterklasse entscheidet über ein Objekt.
+      </p>
+
+      <p>
+        <strong>Abstract Factory:</strong>
+        Eine Factory entscheidet über mehrere passende Objekte.
+      </p>
+    </div>
   </article>
 
   <article id="adapter">
@@ -594,15 +699,15 @@ System.out.println(reader.readStudents());</pre>
       <ul>
         <li>
           <strong>Target:</strong>
-          gewünschtes Interface (<code>StudentReader</code>)
+          gewünschtes Interface, zum Beispiel <code>StudentReader</code>
         </li>
         <li>
           <strong>Adaptee:</strong>
-          bestehende alte Klasse (<code>OldCsvStudentReader</code>)
+          bestehende alte Klasse, zum Beispiel <code>OldCsvStudentReader</code>
         </li>
         <li>
           <strong>Adapter:</strong>
-          übersetzt zwischen beiden (<code>CsvStudentReaderAdapter</code>)
+          übersetzt zwischen beiden, zum Beispiel <code>CsvStudentReaderAdapter</code>
         </li>
       </ul>
 
