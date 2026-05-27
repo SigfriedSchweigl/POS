@@ -163,24 +163,18 @@ socket.receive(packet);</pre>
     
     <h3>Client-Seite</h3>
     
-    <pre class="copyable">DatagramPacket packet =
-            new DatagramPacket(
-                    daten,
-                    daten.length,
-                    InetAddress.getByName("localhost"),
-                    5000
-            );
+    <pre class="copyable">DatagramPacket packet = new DatagramPacket(
+            daten,
+            daten.length,
+            InetAddress.getByName("localhost"),
+            5000
+);
     
     socket.send(packet);</pre>
     
     <p>
       Der Client sendet ein Paket an den Server auf Port <code>5000</code>.
       Anders als bei TCP wird dabei keine feste Verbindung aufgebaut.
-    </p>
-    <p>
-      Die Methode <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese
-      Methode <strong>blockiert</strong>. Das Programm läuft also erst weiter, wenn
-      tatsächlich ein Paket empfangen wurde.
     </p>
   </article>
 
