@@ -99,16 +99,34 @@
 
     <p>
       TCP sorgt dafür, dass Daten zuverlässig und in der richtigen Reihenfolge
-      ankommen. Deshalb eignet sich TCP für Anwendungen, bei denen nichts verloren
-      gehen darf, zum Beispiel Webseiten, Dateiübertragungen oder Datenbankzugriffe.
+      ankommen. Geht bei der Übertragung ein Paket verloren, versucht TCP die 
+      Daten automatisch erneut zu senden. Der Programmierer merkt davon oft nichts.
+      Deshalb eignet sich TCP für Anwendungen, bei denen nichts verloren gehen 
+      darf, zum Beispiel Webseiten, Dateiübertragungen oder Datenbankzugriffe.
     </p>
 
 <pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);
 Socket socket = serverSocket.accept();</pre>
 
     <p>
-      <code>ServerSocket</code> öffnet auf dem Server einen Port. In diesem Beispiel
-      ist es der Port <code>5000</code>.
+      Der Server öffnet den Port <code>5000</code> und wartet mit
+      <code>accept()</code> auf einen Client.
+      Die Methode blockiert, bis sich ein Client verbindet.
+    </p>
+    
+    <h3>Client-Seite</h3>
+    
+    <pre class="copyable">Socket socket = new Socket("localhost", 5000);</pre>
+    
+    <p>
+      Der Client verbindet sich mit dem Server auf Port <code>5000</code>.
+      Erst danach können beide Seiten Daten austauschen.
+    </p>
+
+    <p>
+      Beim TCP-Programm gibt es keine eigene Methode <code>send(...)</code>.
+      Gesendet wird über den Ausgabestrom des Sockets, zum Beispiel später mit
+      <code>out.println(aufgabe)</code>.
     </p>
 
     <p>
@@ -144,15 +162,27 @@ DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 socket.receive(packet);</pre>
 
     <p>
-      <code>DatagramSocket</code> öffnet einen UDP-Socket. Mit
-      <code>DatagramPacket</code> wird ein Paket vorbereitet, in dem empfangene Daten
-      gespeichert werden können.
+      Der UDP-Server wartet auf ein Paket am Port <code>5000</code>.
+      Die Methode <code>receive(...)</code> blockiert,
+      bis ein Paket empfangen wurde.
+      Das Programm bleibt an dieser Stelle also stehen,
+      bis Daten eintreffen.
     </p>
-
+    
+    <h3>Client-Seite</h3>
+    
+    <pre class="copyable">DatagramPacket packet = new DatagramPacket(
+            daten,
+            daten.length,
+            InetAddress.getByName("localhost"),
+            5000
+);
+socket.send(packet);</pre>
+    
     <p>
-      Die Methode <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese
-      Methode <strong>blockiert</strong>. Das Programm läuft also erst weiter, wenn
-      tatsächlich ein Paket empfangen wurde.
+      Der Client sendet mit <code>socket.send(packet)</code> ein Paket an den Server
+      auf Port <code>5000</code>.
+      Anders als bei TCP wird dabei keine feste Verbindung aufgebaut.
     </p>
   </article>
 
@@ -314,8 +344,9 @@ out.println(ergebnis);</pre>
 out.flush();</pre>
 
       <p>
-        <code>flush()</code> leert den Puffer. Erst dadurch werden gepufferte Daten
-        wirklich hinausgeschrieben.
+        <code>PrintWriter</code> sammelt Daten zuerst in einem Puffer.
+        <code>flush()</code> sorgt dafür, dass diese Daten wirklich über das Netzwerk
+        gesendet werden.
       </p>
     </div>
 
@@ -438,6 +469,8 @@ public class CalculatorClient {
             out.println(aufgabe);
 
             String antwort = in.readLine();
+            // readLine() blockiert,
+            // bis der Server eine Antwort sendet.
 
             System.out.println("Aufgabe: " + aufgabe);
             System.out.println("Ergebnis vom Server: " + antwort);
@@ -454,13 +487,21 @@ public class CalculatorClient {
 
       <p>
         <code>out.println(aufgabe)</code> sendet die Rechenaufgabe an den Server.
-        Durch <code>println(...)</code> wird auch ein Zeilenumbruch gesendet. Das ist
-        wichtig, weil der Server mit <code>readLine()</code> auf eine ganze Zeile wartet.
+        Das ist beim TCP-Client die eigentliche Sende-Anweisung.
+        TCP verwendet hier keinen <code>send(...)</code>-Befehl wie UDP,
+        sondern schreibt die Daten in den Ausgabestrom des Sockets.
       </p>
 
       <p>
-        <code>String antwort = in.readLine();</code> blockiert, bis der Server eine
-        Antwort sendet. Der Client wartet an dieser Stelle also auf Daten vom Server.
+        Durch <code>println(...)</code> wird zusätzlich ein Zeilenumbruch gesendet.
+        Das ist wichtig, weil der Server mit <code>readLine()</code> auf eine vollständige
+        Zeile wartet.
+      </p>
+
+      <p>
+        <code>String antwort = in.readLine();</code> blockiert,
+        bis der Server eine Antwort sendet.
+        Der Client wartet an dieser Stelle also auf Daten vom Server.
       </p>
 
       <p>
