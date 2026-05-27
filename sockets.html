@@ -12,17 +12,17 @@
 
 <header>
   <h1>Java Sockets – TCP und UDP</h1>
-  <p>Grundlagen der Netzwerkprogrammierung mit einer TCP-Rechner-Übung</p>
+  <p>Grundlagen der Netzwerkprogrammierung mit einem einfachen Rechner-Beispiel</p>
 </header>
 
 <nav>
   <a href="index.html">Start</a>
   <a href="#ziel">Ziel</a>
-  <a href="#tcp-udp">TCP und UDP</a>
+  <a href="#grundidee">Grundidee</a>
   <a href="#tcp">TCP</a>
   <a href="#udp">UDP</a>
-  <a href="#uebung">Übung</a>
   <a href="#vergleich">Vergleich</a>
+  <a href="#uebung">Übung</a>
 </nav>
 
 <main>
@@ -32,174 +32,263 @@
 
   <p>
     Auf dieser Seite lernst du die Grundidee von Java Sockets kennen.
-    Im Mittelpunkt steht eine einfache TCP-Anwendung: Ein Client sendet eine
-    Rechenaufgabe an einen Server, der Server berechnet das Ergebnis und sendet
+    Dabei werden die beiden Protokolle <strong>TCP</strong> und <strong>UDP</strong>
+    gegenübergestellt.
+  </p>
+
+  <p>
+    Im Mittelpunkt steht ein kleines Rechner-Beispiel: Ein Client sendet eine
+    Rechenaufgabe an einen Server. Der Server berechnet das Ergebnis und sendet
     es zurück.
   </p>
 
   <p>
-    Dadurch werden die wichtigsten Begriffe wie <code>ServerSocket</code>,
-    <code>Socket</code>, <code>readLine()</code>, <code>println()</code> und
-    <code>flush()</code> an einem kleinen Beispiel verständlich.
+    Zuerst wird das Beispiel mit <strong>TCP</strong> umgesetzt. Danach wird kurz
+    gezeigt, wie dieselbe Idee mit <strong>UDP</strong> aussieht. So erkennt man
+    den Unterschied zwischen verbindungsorientierter und verbindungsloser
+    Kommunikation besser.
   </p>
 </section>
 
 <section class="card">
 
-  <article id="tcp-udp">
-    <h2>1. TCP und UDP kurz erklärt</h2>
+  <article id="grundidee">
+    <h2>1. Grundidee von Sockets</h2>
 
     <p>
-      Java kann über Sockets Daten zwischen Programmen austauschen. Dabei gibt es
-      zwei wichtige Arten der Kommunikation:
+      Ein Socket ist eine Schnittstelle, über die Programme Daten über ein
+      Netzwerk senden und empfangen können.
     </p>
 
     <p>
-      <strong>TCP</strong> ist verbindungsorientiert. Vor dem Datenaustausch wird
-      eine Verbindung aufgebaut. Die Daten kommen zuverlässig und in der richtigen
-      Reihenfolge an.
+      In Java gibt es dafür im Paket <code>java.net</code> verschiedene Klassen.
+      Für den Einstieg sind vor allem diese Klassen wichtig:
     </p>
 
+    <ul>
+      <li><code>ServerSocket</code> – wartet bei TCP auf eingehende Verbindungen</li>
+      <li><code>Socket</code> – stellt bei TCP die Verbindung zwischen Client und Server dar</li>
+      <li><code>DatagramSocket</code> – sendet und empfängt UDP-Pakete</li>
+      <li><code>DatagramPacket</code> – enthält die Daten eines UDP-Pakets</li>
+    </ul>
+
     <p>
-      <strong>UDP</strong> ist verbindungslos. Pakete werden einfach verschickt.
-      Das ist schneller, aber es gibt keine Garantie, dass ein Paket wirklich ankommt.
+      Man kann sich einen Socket wie eine Kommunikationsstelle vorstellen.
+      Ein Programm schreibt Daten hinein, ein anderes Programm liest sie wieder aus.
     </p>
   </article>
 
   <article id="tcp">
-    <h2>2. TCP: Verbindung zwischen Client und Server</h2>
+    <h2>2. TCP kurz erklärt</h2>
 
     <p>
-      Bei TCP gibt es meistens einen Server und einen Client.
-      Der Server wartet auf eine Verbindung. Der Client verbindet sich mit dem Server.
+      TCP arbeitet verbindungsorientiert: Ein Client verbindet sich mit einem
+      Server. Erst danach werden Daten übertragen.
+    </p>
+
+    <p>
+      TCP sorgt dafür, dass die Daten zuverlässig und in der richtigen Reihenfolge
+      ankommen. Deshalb wird TCP zum Beispiel bei Webseiten, E-Mails oder vielen
+      Datenbankverbindungen verwendet.
     </p>
 
 <pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);
-
-Socket clientSocket = serverSocket.accept();</pre>
+Socket socket = serverSocket.accept();</pre>
 
     <p>
-      <code>accept()</code> wartet so lange, bis sich ein Client verbindet.
-      Danach liefert die Methode ein <code>Socket</code>-Objekt zurück.
-      Über dieses Socket können Server und Client Daten austauschen.
+      <code>ServerSocket</code> öffnet einen Port am Server.
+      Die Methode <code>accept()</code> wartet auf eine Verbindung.
+      Währenddessen <strong>blockiert</strong> das Programm an dieser Stelle.
+      Sobald sich ein Client verbindet, liefert <code>accept()</code> ein
+      <code>Socket</code>-Objekt zurück.
+    </p>
+  </article>
+
+  <article id="udp">
+    <h2>3. UDP kurz erklärt</h2>
+
+    <p>
+      UDP arbeitet verbindungslos. Der Sender schickt ein Paket an eine Adresse
+      und einen Port, ohne vorher eine Verbindung aufzubauen.
     </p>
 
     <p>
-      Zum Lesen und Schreiben werden Streams verwendet.
-      Für Textnachrichten sind <code>BufferedReader</code> und
-      <code>PrintWriter</code> gut geeignet.
+      UDP ist einfacher und oft schneller als TCP. Dafür gibt es aber keine
+      Garantie, dass ein Paket wirklich ankommt oder dass mehrere Pakete in der
+      richtigen Reihenfolge ankommen.
     </p>
+
+<pre class="copyable">DatagramSocket socket = new DatagramSocket(5000);
+DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+socket.receive(packet);</pre>
+
+    <p>
+      <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese Methode
+      blockiert, bis ein Paket empfangen wurde.
+    </p>
+  </article>
+
+  <article id="vergleich">
+    <h2>4. TCP und UDP im Vergleich</h2>
+
+    <p>
+      Beide Protokolle können Daten übertragen. Der wichtigste Unterschied ist,
+      ob vorher eine Verbindung aufgebaut wird.
+    </p>
+
+    <table>
+      <tr>
+        <th>TCP</th>
+        <th>UDP</th>
+      </tr>
+      <tr>
+        <td>verbindungsorientiert</td>
+        <td>verbindungslos</td>
+      </tr>
+      <tr>
+        <td>Client verbindet sich mit Server</td>
+        <td>Sender verschickt einzelne Pakete</td>
+      </tr>
+      <tr>
+        <td>zuverlässig</td>
+        <td>keine Zustellgarantie</td>
+      </tr>
+      <tr>
+        <td>Daten kommen geordnet an</td>
+        <td>Pakete können verloren gehen</td>
+      </tr>
+      <tr>
+        <td>gut für Dateiübertragung, Webseiten, Datenbanken</td>
+        <td>gut für Spiele, Streaming, schnelle Sensordaten</td>
+      </tr>
+    </table>
+
+    <p>
+      <strong>Merksatz:</strong><br>
+      TCP ist sicherer und zuverlässiger. UDP ist einfacher und schneller,
+      garantiert aber keine erfolgreiche Zustellung.
+    </p>
+  </article>
+
+  <article id="uebung">
+    <h2>5. Übung: TCP-Rechner</h2>
+
+    <p>
+      In dieser Übung wird ein einfacher Rechner mit TCP erstellt.
+      Der Client sendet eine Rechenaufgabe an den Server, zum Beispiel
+      <code>5 + 3</code>. Der Server berechnet das Ergebnis und sendet es zurück.
+    </p>
+
+    <h3>Aufgabe</h3>
+
+    <p>
+      Erstelle zwei Java-Klassen:
+    </p>
+
+    <ul>
+      <li><code>CalculatorServer</code></li>
+      <li><code>CalculatorClient</code></li>
+    </ul>
+
+    <p>
+      Der Ablauf soll so aussehen:
+    </p>
+
+    <ol>
+      <li>Der Server startet und wartet auf Port <code>5000</code>.</li>
+      <li>Der Client verbindet sich mit dem Server.</li>
+      <li>Der Client sendet eine Rechenaufgabe, zum Beispiel <code>5 + 3</code>.</li>
+      <li>Der Server liest die Aufgabe.</li>
+      <li>Der Server berechnet das Ergebnis.</li>
+      <li>Der Server sendet das Ergebnis zurück.</li>
+      <li>Der Client gibt das Ergebnis aus.</li>
+    </ol>
+
+    <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
+
+    <div id="hint1" class="solution">
+      <h3>Hinweis</h3>
+
+      <p>
+        Gehe in kleinen Schritten vor. Starte zuerst nur den Server und prüfe,
+        ob er auf eine Verbindung wartet.
+      </p>
+
+      <h4>Schritt 1: ServerSocket erzeugen</h4>
+
+<pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);</pre>
+
+      <p>
+        Damit öffnet der Server den Port <code>5000</code>.
+      </p>
+
+      <h4>Schritt 2: Auf Client warten</h4>
+
+<pre class="copyable">Socket socket = serverSocket.accept();</pre>
+
+      <p>
+        <code>accept()</code> blockiert. Das bedeutet: Das Programm läuft an
+        dieser Stelle erst weiter, wenn sich ein Client verbindet.
+      </p>
+
+      <h4>Schritt 3: Text empfangen</h4>
 
 <pre class="copyable">BufferedReader in = new BufferedReader(
         new InputStreamReader(socket.getInputStream())
 );
 
-PrintWriter out = new PrintWriter(
-        socket.getOutputStream(),
-        true
-);</pre>
+String aufgabe = in.readLine();</pre>
 
-    <p>
-      Der zweite Parameter <code>true</code> beim <code>PrintWriter</code>
-      aktiviert <strong>autoFlush</strong>. Dadurch wird eine Zeile nach
-      <code>println(...)</code> sofort gesendet.
-    </p>
-
-    <p>
-      Ohne autoFlush müsste man selbst <code>flush()</code> aufrufen.
-      <code>flush()</code> leert den Puffer und schickt die Daten wirklich über
-      die Verbindung.
-    </p>
-
-<pre class="copyable">out.println("Ergebnis: 8");
-out.flush();</pre>
-  </article>
-
-  <article id="udp">
-    <h2>3. UDP: Datagramme statt Verbindung</h2>
-
-    <p>
-      UDP arbeitet anders als TCP. Es wird keine feste Verbindung aufgebaut.
-      Daten werden als einzelne Pakete, sogenannte Datagramme, verschickt.
-    </p>
-
-    <p>
-      In Java verwendet man dafür hauptsächlich:
-    </p>
-
-<pre class="copyable">DatagramSocket
-DatagramPacket</pre>
-
-    <p>
-      UDP eignet sich gut für Anwendungen, bei denen Geschwindigkeit wichtiger
-      ist als absolute Zuverlässigkeit, zum Beispiel bei Audio- oder Videodaten.
-    </p>
-  </article>
-
-  <article id="uebung">
-    <h2>4. Übung: TCP-Rechner</h2>
-
-    <p>
-      Schreibe einen TCP-Server und einen TCP-Client.
-      Der Client sendet eine einfache Rechenaufgabe an den Server.
-      Der Server berechnet das Ergebnis und sendet es zurück.
-    </p>
-
-    <h3>Beispielablauf</h3>
-
-<pre class="copyable">Client sendet: 5 + 3
-Server antwortet: Ergebnis: 8</pre>
-
-    <h3>Anforderungen</h3>
-
-    <ul>
-      <li>Der Server wartet auf Port <code>5000</code>.</li>
-      <li>Der Client verbindet sich mit <code>localhost</code> und Port <code>5000</code>.</li>
-      <li>Der Client sendet eine Aufgabe im Format <code>Zahl Operator Zahl</code>.</li>
-      <li>Erlaubte Operatoren: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>.</li>
-      <li>Der Server sendet das Ergebnis als Text zurück.</li>
-    </ul>
-
-    <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
-
-    <div id="hint1" class="solution">
       <p>
-        Lies die Eingabe mit <code>readLine()</code> ein und zerlege sie mit
-        <code>split(" ")</code>.
+        <code>readLine()</code> liest eine ganze Textzeile. Auch diese Methode
+        kann blockieren, wenn noch keine Zeile angekommen ist.
       </p>
 
-<pre class="copyable">String input = in.readLine();
+      <h4>Schritt 4: Antwort senden</h4>
 
-String[] parts = input.split(" ");
+<pre class="copyable">PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-int zahl1 = Integer.parseInt(parts[0]);
-String operator = parts[1];
-int zahl2 = Integer.parseInt(parts[2]);</pre>
+out.println(ergebnis);</pre>
 
       <p>
-        Danach kannst du mit <code>if</code> oder <code>switch</code> entscheiden,
-        welche Rechnung ausgeführt wird.
+        Der zweite Parameter <code>true</code> aktiviert <strong>autoFlush</strong>.
+        Dadurch wird die Antwort nach <code>println(...)</code> sofort gesendet.
+      </p>
+
+      <p>
+        Ohne <code>true</code> müsste man selbst <code>flush()</code> aufrufen:
+      </p>
+
+<pre class="copyable">out.println(ergebnis);
+out.flush();</pre>
+
+      <p>
+        <code>flush()</code> leert den Puffer. Erst dadurch werden gepufferte
+        Daten wirklich hinausgeschrieben.
       </p>
     </div>
 
     <button onclick="toggleSolution('solution1')">Lösung anzeigen</button>
 
     <div id="solution1" class="solution">
-      <h3>CalculatorServer.java</h3>
+      <h3>Lösung: TCP-Rechner</h3>
+
+      <p>
+        Starte zuerst den Server. Danach startest du den Client.
+      </p>
+
+      <h4>CalculatorServer.java</h4>
 
 <pre class="copyable">import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class CalculatorServer {
-    public static void main(String[] args) {
-        int port = 5000;
-
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server wartet auf Port " + port + "...");
+    public static void main(String[] args) throws Exception {
+        try (ServerSocket serverSocket = new ServerSocket(5000)) {
+            System.out.println("Server wartet auf Client...");
 
             try (Socket socket = serverSocket.accept();
                  BufferedReader in = new BufferedReader(
@@ -212,138 +301,222 @@ public class CalculatorServer {
 
                 System.out.println("Client verbunden.");
 
-                String input = in.readLine();
-                System.out.println("Empfangen: " + input);
+                String aufgabe = in.readLine();
+                System.out.println("Empfangen: " + aufgabe);
 
-                String result = calculate(input);
+                int ergebnis = berechne(aufgabe);
 
-                out.println(result);
+                out.println(ergebnis);
+                System.out.println("Gesendet: " + ergebnis);
             }
-
-        } catch (IOException e) {
-            System.out.println("Fehler: " + e.getMessage());
         }
     }
 
-    private static String calculate(String input) {
-        String[] parts = input.split(" ");
+    private static int berechne(String aufgabe) {
+        String[] teile = aufgabe.split(" ");
 
-        if (parts.length != 3) {
-            return "Fehler: Format muss z. B. 5 + 3 sein.";
+        int zahl1 = Integer.parseInt(teile[0]);
+        String operator = teile[1];
+        int zahl2 = Integer.parseInt(teile[2]);
+
+        if (operator.equals("+")) {
+            return zahl1 + zahl2;
         }
 
-        double number1 = Double.parseDouble(parts[0]);
-        String operator = parts[1];
-        double number2 = Double.parseDouble(parts[2]);
-
-        double result;
-
-        switch (operator) {
-            case "+":
-                result = number1 + number2;
-                break;
-            case "-":
-                result = number1 - number2;
-                break;
-            case "*":
-                result = number1 * number2;
-                break;
-            case "/":
-                if (number2 == 0) {
-                    return "Fehler: Division durch 0.";
-                }
-
-                result = number1 / number2;
-                break;
-            default:
-                return "Fehler: unbekannter Operator.";
+        if (operator.equals("-")) {
+            return zahl1 - zahl2;
         }
 
-        return "Ergebnis: " + result;
+        if (operator.equals("*")) {
+            return zahl1 * zahl2;
+        }
+
+        if (operator.equals("/")) {
+            return zahl1 / zahl2;
+        }
+
+        throw new IllegalArgumentException("Unbekannter Operator: " + operator);
     }
 }</pre>
 
-      <h3>CalculatorClient.java</h3>
+      <h4>CalculatorClient.java</h4>
 
 <pre class="copyable">import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class CalculatorClient {
-    public static void main(String[] args) {
-        String host = "localhost";
-        int port = 5000;
-
-        try (Socket socket = new Socket(host, port);
+    public static void main(String[] args) throws Exception {
+        try (Socket socket = new Socket("localhost", 5000);
              BufferedReader in = new BufferedReader(
                      new InputStreamReader(socket.getInputStream())
              );
              PrintWriter out = new PrintWriter(
                      socket.getOutputStream(),
                      true
-             );
-             Scanner scanner = new Scanner(System.in)) {
+             )) {
 
-            System.out.print("Rechnung eingeben, z. B. 5 + 3: ");
-            String calculation = scanner.nextLine();
+            String aufgabe = "5 + 3";
 
-            out.println(calculation);
+            out.println(aufgabe);
 
-            String response = in.readLine();
-            System.out.println(response);
+            String antwort = in.readLine();
 
-        } catch (IOException e) {
-            System.out.println("Fehler: " + e.getMessage());
+            System.out.println("Aufgabe: " + aufgabe);
+            System.out.println("Ergebnis vom Server: " + antwort);
         }
     }
 }</pre>
 
-      <h3>Warum wird <code>true</code> verwendet?</h3>
+      <h4>Was passiert beim Ausführen?</h4>
 
       <p>
-        <code>PrintWriter</code> sammelt Daten zunächst in einem Puffer.
-        Mit <code>true</code> wird autoFlush aktiviert. Dadurch wird nach
-        <code>println(...)</code> sofort gesendet.
+        Der Server wartet zuerst bei <code>accept()</code>. Erst wenn der Client
+        gestartet wird, entsteht die Verbindung.
       </p>
 
-<pre class="copyable">PrintWriter out = new PrintWriter(socket.getOutputStream(), true);</pre>
-
       <p>
-        Ohne <code>true</code> müsste man nach dem Schreiben selbst
-        <code>flush()</code> aufrufen:
+        Danach sendet der Client die Textzeile <code>5 + 3</code>. Der Server
+        liest diese Zeile mit <code>readLine()</code>, berechnet das Ergebnis und
+        sendet es mit <code>println(...)</code> zurück.
       </p>
 
-<pre class="copyable">out.println(calculation);
-out.flush();</pre>
-
       <p>
-        Ohne <code>flush()</code> kann es passieren, dass die Nachricht im Puffer
-        bleibt. Dann wartet die Gegenseite auf Daten, obwohl im Programm bereits
-        <code>println(...)</code> aufgerufen wurde.
+        Weil der <code>PrintWriter</code> mit <code>true</code> erzeugt wurde,
+        wird nach <code>println(...)</code> automatisch ein <code>flush()</code>
+        ausgeführt. Die Antwort bleibt also nicht im Puffer liegen.
       </p>
     </div>
   </article>
 
-  <article id="vergleich">
-    <h2>5. Vergleich: TCP und UDP</h2>
+  <article id="udp-rechner">
+    <h2>6. Zusatz: Gleicher Rechner mit UDP</h2>
 
     <p>
-      <strong>TCP</strong> verwendet man, wenn Daten zuverlässig ankommen müssen.
-      Beispiele: Webseiten, E-Mails, Datenbankzugriffe.
+      Das gleiche Beispiel kann auch mit UDP umgesetzt werden. Der Unterschied:
+      Es gibt keine feste Verbindung zwischen Client und Server. Der Client
+      sendet ein Paket, der Server antwortet mit einem Paket.
     </p>
 
-    <p>
-      <strong>UDP</strong> verwendet man, wenn Geschwindigkeit wichtiger ist als
-      vollständige Sicherheit. Beispiele: Audio, Video, Spiele, Multicast.
-    </p>
+    <button onclick="toggleSolution('solution2')">UDP-Lösung anzeigen</button>
 
-    <p>
-      <strong>Merksatz:</strong><br>
-      TCP ist zuverlässiger. UDP ist leichter und schneller.
-    </p>
+    <div id="solution2" class="solution">
+      <h3>UDP-Variante</h3>
+
+      <p>
+        Die Rechenlogik ist gleich. Anders ist nur die Art, wie Daten gesendet
+        und empfangen werden.
+      </p>
+
+      <h4>UdpCalculatorServer.java</h4>
+
+<pre class="copyable">import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+public class UdpCalculatorServer {
+    public static void main(String[] args) throws Exception {
+        try (DatagramSocket socket = new DatagramSocket(5000)) {
+            byte[] buffer = new byte[1024];
+
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+            System.out.println("UDP-Server wartet auf Paket...");
+            socket.receive(packet);
+
+            String aufgabe = new String(
+                    packet.getData(),
+                    0,
+                    packet.getLength()
+            );
+
+            int ergebnis = berechne(aufgabe);
+            byte[] antwort = String.valueOf(ergebnis).getBytes();
+
+            DatagramPacket response = new DatagramPacket(
+                    antwort,
+                    antwort.length,
+                    packet.getAddress(),
+                    packet.getPort()
+            );
+
+            socket.send(response);
+        }
+    }
+
+    private static int berechne(String aufgabe) {
+        String[] teile = aufgabe.split(" ");
+
+        int zahl1 = Integer.parseInt(teile[0]);
+        String operator = teile[1];
+        int zahl2 = Integer.parseInt(teile[2]);
+
+        if (operator.equals("+")) {
+            return zahl1 + zahl2;
+        }
+
+        if (operator.equals("-")) {
+            return zahl1 - zahl2;
+        }
+
+        if (operator.equals("*")) {
+            return zahl1 * zahl2;
+        }
+
+        if (operator.equals("/")) {
+            return zahl1 / zahl2;
+        }
+
+        throw new IllegalArgumentException("Unbekannter Operator: " + operator);
+    }
+}</pre>
+
+      <h4>UdpCalculatorClient.java</h4>
+
+<pre class="copyable">import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
+public class UdpCalculatorClient {
+    public static void main(String[] args) throws Exception {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            String aufgabe = "5 + 3";
+            byte[] daten = aufgabe.getBytes();
+
+            DatagramPacket packet = new DatagramPacket(
+                    daten,
+                    daten.length,
+                    InetAddress.getByName("localhost"),
+                    5000
+            );
+
+            socket.send(packet);
+
+            byte[] buffer = new byte[1024];
+            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+
+            socket.receive(response);
+
+            String antwort = new String(
+                    response.getData(),
+                    0,
+                    response.getLength()
+            );
+
+            System.out.println("Aufgabe: " + aufgabe);
+            System.out.println("Ergebnis vom Server: " + antwort);
+        }
+    }
+}</pre>
+
+      <h4>Wichtiger Unterschied</h4>
+
+      <p>
+        Bei TCP entsteht zuerst eine Verbindung. Bei UDP wird nur ein Paket an
+        eine Adresse und einen Port geschickt. Deshalb gibt es bei UDP keinen
+        <code>ServerSocket</code> und kein <code>accept()</code>.
+      </p>
+    </div>
   </article>
 
 </section>
