@@ -32,8 +32,13 @@
 
   <p>
     Auf dieser Seite lernst du die Grundidee von Java Sockets kennen.
+    Sockets ermöglichen es, dass zwei Programme Daten austauschen können –
+    entweder auf demselben Rechner oder über ein Netzwerk.
+  </p>
+
+  <p>
     Dabei werden die beiden Protokolle <strong>TCP</strong> und <strong>UDP</strong>
-    gegenübergestellt.
+    gegenübergestellt. Beide können Daten übertragen, funktionieren aber unterschiedlich.
   </p>
 
   <p>
@@ -43,10 +48,9 @@
   </p>
 
   <p>
-    Zuerst wird das Beispiel mit <strong>TCP</strong> umgesetzt. Danach wird kurz
-    gezeigt, wie dieselbe Idee mit <strong>UDP</strong> aussieht. So erkennt man
-    den Unterschied zwischen verbindungsorientierter und verbindungsloser
-    Kommunikation besser.
+    Zuerst wird das Beispiel mit <strong>TCP</strong> umgesetzt. Danach wird dieselbe
+    Idee mit <strong>UDP</strong> gezeigt. Dadurch sieht man besser, was am Programm
+    ähnlich bleibt und was sich durch das Protokoll ändert.
   </p>
 </section>
 
@@ -56,13 +60,19 @@
     <h2>1. Grundidee von Sockets</h2>
 
     <p>
-      Ein Socket ist eine Schnittstelle, über die Programme Daten über ein
-      Netzwerk senden und empfangen können.
+      Ein Socket ist eine Kommunikationsschnittstelle. Ein Programm kann über
+      einen Socket Daten senden oder empfangen.
     </p>
 
     <p>
-      In Java gibt es dafür im Paket <code>java.net</code> verschiedene Klassen.
-      Für den Einstieg sind vor allem diese Klassen wichtig:
+      Man kann sich das vereinfacht wie zwei Programme vorstellen, die über eine
+      Leitung miteinander sprechen. Das eine Programm schreibt Daten hinein,
+      das andere Programm liest sie wieder heraus.
+    </p>
+
+    <p>
+      In Java befinden sich die wichtigsten Klassen für Netzwerkprogrammierung
+      im Paket <code>java.net</code>. Für den Einstieg sind vor allem diese Klassen wichtig:
     </p>
 
     <ul>
@@ -73,8 +83,9 @@
     </ul>
 
     <p>
-      Man kann sich einen Socket wie eine Kommunikationsstelle vorstellen.
-      Ein Programm schreibt Daten hinein, ein anderes Programm liest sie wieder aus.
+      Wichtig ist: Einige Methoden warten auf ein Ereignis. Solche Methoden nennt
+      man <strong>blockierend</strong>. Das Programm bleibt dann an dieser Stelle stehen,
+      bis zum Beispiel ein Client verbunden ist oder Daten empfangen wurden.
     </p>
   </article>
 
@@ -87,20 +98,29 @@
     </p>
 
     <p>
-      TCP sorgt dafür, dass die Daten zuverlässig und in der richtigen Reihenfolge
-      ankommen. Deshalb wird TCP zum Beispiel bei Webseiten, E-Mails oder vielen
-      Datenbankverbindungen verwendet.
+      TCP sorgt dafür, dass Daten zuverlässig und in der richtigen Reihenfolge
+      ankommen. Deshalb eignet sich TCP für Anwendungen, bei denen nichts verloren
+      gehen darf, zum Beispiel Webseiten, Dateiübertragungen oder Datenbankzugriffe.
     </p>
 
 <pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);
 Socket socket = serverSocket.accept();</pre>
 
     <p>
-      <code>ServerSocket</code> öffnet einen Port am Server.
-      Die Methode <code>accept()</code> wartet auf eine Verbindung.
-      Währenddessen <strong>blockiert</strong> das Programm an dieser Stelle.
-      Sobald sich ein Client verbindet, liefert <code>accept()</code> ein
-      <code>Socket</code>-Objekt zurück.
+      <code>ServerSocket</code> öffnet auf dem Server einen Port. In diesem Beispiel
+      ist es der Port <code>5000</code>.
+    </p>
+
+    <p>
+      Die Methode <code>accept()</code> wartet auf einen Client. Während dieser Zeit
+      <strong>blockiert</strong> das Programm. Das bedeutet: Die nächste Codezeile wird
+      erst ausgeführt, wenn sich ein Client verbindet.
+    </p>
+
+    <p>
+      Sobald ein Client verbunden ist, liefert <code>accept()</code> ein
+      <code>Socket</code>-Objekt zurück. Über dieses Socket können Server und Client
+      anschließend Daten austauschen.
     </p>
   </article>
 
@@ -108,14 +128,15 @@ Socket socket = serverSocket.accept();</pre>
     <h2>3. UDP kurz erklärt</h2>
 
     <p>
-      UDP arbeitet verbindungslos. Der Sender schickt ein Paket an eine Adresse
-      und einen Port, ohne vorher eine Verbindung aufzubauen.
+      UDP arbeitet verbindungslos. Der Sender baut vorher keine feste Verbindung
+      zum Empfänger auf. Stattdessen wird ein einzelnes Paket an eine Adresse und
+      einen Port geschickt.
     </p>
 
     <p>
-      UDP ist einfacher und oft schneller als TCP. Dafür gibt es aber keine
-      Garantie, dass ein Paket wirklich ankommt oder dass mehrere Pakete in der
-      richtigen Reihenfolge ankommen.
+      UDP ist einfacher und oft schneller als TCP. Dafür gibt es keine Garantie,
+      dass ein Paket wirklich ankommt. Auch die Reihenfolge mehrerer Pakete ist
+      nicht garantiert.
     </p>
 
 <pre class="copyable">DatagramSocket socket = new DatagramSocket(5000);
@@ -123,8 +144,15 @@ DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 socket.receive(packet);</pre>
 
     <p>
-      <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese Methode
-      blockiert, bis ein Paket empfangen wurde.
+      <code>DatagramSocket</code> öffnet einen UDP-Socket. Mit
+      <code>DatagramPacket</code> wird ein Paket vorbereitet, in dem empfangene Daten
+      gespeichert werden können.
+    </p>
+
+    <p>
+      Die Methode <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese
+      Methode <strong>blockiert</strong>. Das Programm läuft also erst weiter, wenn
+      tatsächlich ein Paket empfangen wurde.
     </p>
   </article>
 
@@ -133,7 +161,7 @@ socket.receive(packet);</pre>
 
     <p>
       Beide Protokolle können Daten übertragen. Der wichtigste Unterschied ist,
-      ob vorher eine Verbindung aufgebaut wird.
+      ob vorher eine Verbindung aufgebaut wird und ob die Zustellung garantiert ist.
     </p>
 
     <table class="protocol-table">
@@ -155,7 +183,7 @@ socket.receive(packet);</pre>
       </tr>
       <tr>
         <td>Daten kommen geordnet an</td>
-        <td>Pakete können verloren gehen</td>
+        <td>Pakete können verloren gehen oder später ankommen</td>
       </tr>
       <tr>
         <td>gut für Dateiübertragung, Webseiten, Datenbanken</td>
@@ -165,8 +193,8 @@ socket.receive(packet);</pre>
 
     <p>
       <strong>Merksatz:</strong><br>
-      TCP ist sicherer und zuverlässiger. UDP ist einfacher und schneller,
-      garantiert aber keine erfolgreiche Zustellung.
+      TCP ist zuverlässiger. UDP ist einfacher und schneller, garantiert aber
+      nicht, dass ein Paket wirklich ankommt.
     </p>
   </article>
 
@@ -177,6 +205,11 @@ socket.receive(packet);</pre>
       In dieser Übung wird ein einfacher Rechner mit TCP erstellt.
       Der Client sendet eine Rechenaufgabe an den Server, zum Beispiel
       <code>5 + 3</code>. Der Server berechnet das Ergebnis und sendet es zurück.
+    </p>
+
+    <p>
+      Wichtig: Starte immer zuerst den Server. Der Server muss bereits warten,
+      bevor sich der Client verbinden kann.
     </p>
 
     <h3>Aufgabe</h3>
@@ -195,13 +228,14 @@ socket.receive(packet);</pre>
     </p>
 
     <ol>
-      <li>Der Server startet und wartet auf Port <code>5000</code>.</li>
+      <li>Der Server startet und öffnet Port <code>5000</code>.</li>
+      <li>Der Server wartet blockierend auf einen Client.</li>
       <li>Der Client verbindet sich mit dem Server.</li>
       <li>Der Client sendet eine Rechenaufgabe, zum Beispiel <code>5 + 3</code>.</li>
       <li>Der Server liest die Aufgabe.</li>
       <li>Der Server berechnet das Ergebnis.</li>
       <li>Der Server sendet das Ergebnis zurück.</li>
-      <li>Der Client gibt das Ergebnis aus.</li>
+      <li>Der Client wartet auf die Antwort und gibt sie aus.</li>
     </ol>
 
     <button onclick="toggleSolution('hint1')">Hinweis anzeigen</button>
@@ -210,8 +244,8 @@ socket.receive(packet);</pre>
       <h3>Hinweis</h3>
 
       <p>
-        Gehe in kleinen Schritten vor. Starte zuerst nur den Server und prüfe,
-        ob er auf eine Verbindung wartet.
+        Gehe in kleinen Schritten vor. Bei Sockets ist es besonders wichtig zu
+        verstehen, an welcher Stelle ein Programm wartet.
       </p>
 
       <h4>Schritt 1: ServerSocket erzeugen</h4>
@@ -219,7 +253,8 @@ socket.receive(packet);</pre>
 <pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);</pre>
 
       <p>
-        Damit öffnet der Server den Port <code>5000</code>.
+        Damit öffnet der Server den Port <code>5000</code>. Über diesen Port können
+        Clients später eine Verbindung zum Server herstellen.
       </p>
 
       <h4>Schritt 2: Auf Client warten</h4>
@@ -227,11 +262,12 @@ socket.receive(packet);</pre>
 <pre class="copyable">Socket socket = serverSocket.accept();</pre>
 
       <p>
-        <code>accept()</code> blockiert. Das bedeutet: Das Programm läuft an
-        dieser Stelle erst weiter, wenn sich ein Client verbindet.
+        <code>accept()</code> blockiert. Das Programm bleibt an dieser Stelle stehen,
+        bis sich ein Client verbindet. Deshalb sieht es so aus, als würde der Server
+        „warten“.
       </p>
 
-      <h4>Schritt 3: Text empfangen</h4>
+      <h4>Schritt 3: Text vom Client empfangen</h4>
 
 <pre class="copyable">BufferedReader in = new BufferedReader(
         new InputStreamReader(socket.getInputStream())
@@ -240,15 +276,28 @@ socket.receive(packet);</pre>
 String aufgabe = in.readLine();</pre>
 
       <p>
-        <code>readLine()</code> liest eine ganze Textzeile. Auch diese Methode
-        kann blockieren, wenn noch keine Zeile angekommen ist.
+        <code>getInputStream()</code> liefert den Eingabestrom des Sockets.
+        Mit <code>InputStreamReader</code> und <code>BufferedReader</code> kann daraus
+        bequem Text gelesen werden.
       </p>
 
-      <h4>Schritt 4: Antwort senden</h4>
+      <p>
+        <code>readLine()</code> liest eine ganze Textzeile. Auch diese Methode
+        <strong>blockiert</strong>, solange noch keine vollständige Zeile angekommen ist.
+        Eine Zeile ist hier erst vollständig, wenn der Client mit
+        <code>println(...)</code> einen Zeilenumbruch mitsendet.
+      </p>
+
+      <h4>Schritt 4: Antwort an den Client senden</h4>
 
 <pre class="copyable">PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
 out.println(ergebnis);</pre>
+
+      <p>
+        <code>getOutputStream()</code> liefert den Ausgabestrom des Sockets.
+        Mit <code>PrintWriter</code> kann Text an den Client gesendet werden.
+      </p>
 
       <p>
         Der zweite Parameter <code>true</code> aktiviert <strong>autoFlush</strong>.
@@ -256,15 +305,17 @@ out.println(ergebnis);</pre>
       </p>
 
       <p>
-        Ohne <code>true</code> müsste man selbst <code>flush()</code> aufrufen:
+        Ohne <code>true</code> könnte die Antwort im Puffer bleiben. Dann würde der
+        Client bei <code>readLine()</code> weiter warten, obwohl der Server scheinbar
+        schon geschrieben hat.
       </p>
 
 <pre class="copyable">out.println(ergebnis);
 out.flush();</pre>
 
       <p>
-        <code>flush()</code> leert den Puffer. Erst dadurch werden gepufferte
-        Daten wirklich hinausgeschrieben.
+        <code>flush()</code> leert den Puffer. Erst dadurch werden gepufferte Daten
+        wirklich hinausgeschrieben.
       </p>
     </div>
 
@@ -274,7 +325,8 @@ out.flush();</pre>
       <h3>Lösung: TCP-Rechner</h3>
 
       <p>
-        Starte zuerst den Server. Danach startest du den Client.
+        Starte zuerst den Server. Danach startest du den Client. Der Server wartet
+        bei <code>accept()</code>, bis sich der Client verbindet.
       </p>
 
       <h4>CalculatorServer.java</h4>
@@ -339,6 +391,30 @@ public class CalculatorServer {
     }
 }</pre>
 
+      <h4>Wichtige Stellen im Server</h4>
+
+      <p>
+        <code>new ServerSocket(5000)</code> öffnet den Port <code>5000</code>.
+        Der Server kann dadurch Verbindungen auf diesem Port annehmen.
+      </p>
+
+      <p>
+        <code>serverSocket.accept()</code> blockiert, bis sich ein Client verbindet.
+        Vorher läuft der Server an dieser Stelle nicht weiter.
+      </p>
+
+      <p>
+        <code>in.readLine()</code> blockiert ebenfalls, bis der Client eine vollständige
+        Zeile gesendet hat. Deshalb verwendet der Client später <code>println(...)</code>
+        und nicht nur <code>print(...)</code>.
+      </p>
+
+      <p>
+        <code>out.println(ergebnis)</code> sendet das Ergebnis als Textzeile zurück.
+        Durch <code>true</code> im <code>PrintWriter</code> wird danach automatisch
+        geflusht.
+      </p>
+
       <h4>CalculatorClient.java</h4>
 
 <pre class="copyable">import java.io.BufferedReader;
@@ -369,6 +445,29 @@ public class CalculatorClient {
     }
 }</pre>
 
+      <h4>Wichtige Stellen im Client</h4>
+
+      <p>
+        <code>new Socket("localhost", 5000)</code> baut die Verbindung zum Server auf.
+        <code>localhost</code> bedeutet: Der Server läuft auf demselben Rechner.
+      </p>
+
+      <p>
+        <code>out.println(aufgabe)</code> sendet die Rechenaufgabe an den Server.
+        Durch <code>println(...)</code> wird auch ein Zeilenumbruch gesendet. Das ist
+        wichtig, weil der Server mit <code>readLine()</code> auf eine ganze Zeile wartet.
+      </p>
+
+      <p>
+        <code>String antwort = in.readLine();</code> blockiert, bis der Server eine
+        Antwort sendet. Der Client wartet an dieser Stelle also auf Daten vom Server.
+      </p>
+
+      <p>
+        Wenn der Server keine Antwort sendet oder die Antwort nicht geflusht wird,
+        bleibt der Client bei <code>readLine()</code> stehen.
+      </p>
+
       <h4>Was passiert beim Ausführen?</h4>
 
       <p>
@@ -377,15 +476,15 @@ public class CalculatorClient {
       </p>
 
       <p>
-        Danach sendet der Client die Textzeile <code>5 + 3</code>. Der Server
-        liest diese Zeile mit <code>readLine()</code>, berechnet das Ergebnis und
-        sendet es mit <code>println(...)</code> zurück.
+        Danach sendet der Client die Textzeile <code>5 + 3</code>. Der Server liest
+        diese Zeile mit <code>readLine()</code>, berechnet das Ergebnis und sendet es
+        mit <code>println(...)</code> zurück.
       </p>
 
       <p>
-        Weil der <code>PrintWriter</code> mit <code>true</code> erzeugt wurde,
-        wird nach <code>println(...)</code> automatisch ein <code>flush()</code>
-        ausgeführt. Die Antwort bleibt also nicht im Puffer liegen.
+        Weil der <code>PrintWriter</code> mit <code>true</code> erzeugt wurde, wird nach
+        <code>println(...)</code> automatisch ein <code>flush()</code> ausgeführt. Die
+        Antwort bleibt also nicht im Puffer liegen.
       </p>
     </div>
   </article>
@@ -394,9 +493,14 @@ public class CalculatorClient {
     <h2>6. Zusatz: Gleicher Rechner mit UDP</h2>
 
     <p>
-      Das gleiche Beispiel kann auch mit UDP umgesetzt werden. Der Unterschied:
-      Es gibt keine feste Verbindung zwischen Client und Server. Der Client
-      sendet ein Paket, der Server antwortet mit einem Paket.
+      Das gleiche Beispiel kann auch mit UDP umgesetzt werden. Für den Benutzer
+      sieht das Programm fast gleich aus: Der Client sendet <code>5 + 3</code> und
+      bekommt normalerweise <code>8</code> zurück.
+    </p>
+
+    <p>
+      Der technische Unterschied liegt in der Übertragung: Bei TCP gibt es eine
+      Verbindung und Streams. Bei UDP werden einzelne Pakete gesendet und empfangen.
     </p>
 
     <button onclick="toggleSolution('solution2')">UDP-Lösung anzeigen</button>
@@ -509,38 +613,62 @@ public class UdpCalculatorClient {
     }
 }</pre>
 
-      <h4>Wichtiger Unterschied</h4>
+      <h4>Wichtige Stellen im UDP-Programm</h4>
 
       <p>
-        Bei TCP entsteht zuerst eine Verbindung. Bei UDP wird nur ein Paket an
-        eine Adresse und einen Port geschickt. Deshalb gibt es bei UDP keinen
-        <code>ServerSocket</code> und kein <code>accept()</code>.
+        Bei UDP gibt es keinen <code>ServerSocket</code> und kein <code>accept()</code>,
+        weil keine feste Verbindung aufgebaut wird.
+      </p>
+
+      <p>
+        Der Server wartet mit <code>socket.receive(packet)</code> auf ein Paket.
+        Diese Methode blockiert, bis ein Paket empfangen wurde.
+      </p>
+
+      <p>
+        Der Client sendet mit <code>socket.send(packet)</code> ein Paket an
+        <code>localhost</code> und Port <code>5000</code>.
+      </p>
+
+      <p>
+        Danach wartet der Client mit <code>socket.receive(response)</code> auf die
+        Antwort des Servers. Auch diese Methode blockiert, bis ein Antwortpaket
+        empfangen wurde.
+      </p>
+
+      <h4>Was ist beim UDP-Programm anders?</h4>
+
+      <p>
+        In diesem kleinen Beispiel liefern TCP und UDP normalerweise dasselbe Ergebnis.
+        Der Client erhält bei beiden Varianten die Antwort des Servers.
+      </p>
+
+      <p>
+        Für den Benutzer sieht die Ausgabe daher fast gleich aus:
+      </p>
+
+<pre class="copyable">Aufgabe: 5 + 3
+Ergebnis vom Server: 8</pre>
+
+      <p>
+        Der Unterschied liegt nicht im Ergebnis, sondern in der Übertragung:
+      </p>
+
+      <ul>
+        <li>TCP baut zuerst eine Verbindung auf.</li>
+        <li>UDP sendet Daten direkt als Datagramme.</li>
+        <li>TCP verwendet Streams wie <code>BufferedReader</code> und <code>PrintWriter</code>.</li>
+        <li>UDP arbeitet mit Byte-Arrays und <code>DatagramPacket</code>.</li>
+        <li>TCP garantiert die Zustellung und Reihenfolge der Daten.</li>
+        <li>UDP garantiert das nicht.</li>
+      </ul>
+
+      <p>
+        In kleinen lokalen Testprogrammen merkt man diesen Unterschied oft kaum.
+        In größeren Netzwerken oder bei vielen Paketen wird die unterschiedliche
+        Zuverlässigkeit aber wichtig.
       </p>
     </div>
-
-    <h3>Was ist beim UDP-Programm anders?</h3>
-
-    <p>
-      In diesem kleinen Beispiel liefern TCP und UDP normalerweise dasselbe Ergebnis.
-      Der Client erhält bei beiden Varianten die Antwort des Servers.
-    </p>
-    
-    <p>
-      Der Unterschied liegt hauptsächlich in der Art der Kommunikation:
-    </p>
-    
-    <ul>
-      <li>TCP baut zuerst eine Verbindung auf.</li>
-      <li>UDP sendet Daten direkt als Datagramme.</li>
-      <li>TCP verwendet Streams.</li>
-      <li>UDP arbeitet mit DatagramPacket.</li>
-    </ul>
-    
-    <p>
-      In kleinen lokalen Testprogrammen merkt man den Unterschied oft kaum.
-      In größeren Netzwerken wird die unterschiedliche Zuverlässigkeit aber wichtig.
-    </p>
-    
   </article>
 
 </section>
