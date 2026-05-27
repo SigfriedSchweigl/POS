@@ -99,28 +99,16 @@
 
     <p>
       TCP sorgt dafür, dass Daten zuverlässig und in der richtigen Reihenfolge
-      ankommen. Geht bei der Übertragung ein Paket verloren, versucht TCP die 
-      Daten automatisch erneut zu senden. Der Programmierer merkt davon oft nichts.
-      Deshalb eignet sich TCP für Anwendungen, bei denen nichts verloren gehen 
-      darf, zum Beispiel Webseiten, Dateiübertragungen oder Datenbankzugriffe.
+      ankommen. Deshalb eignet sich TCP für Anwendungen, bei denen nichts verloren
+      gehen darf, zum Beispiel Webseiten, Dateiübertragungen oder Datenbankzugriffe.
     </p>
 
 <pre class="copyable">ServerSocket serverSocket = new ServerSocket(5000);
 Socket socket = serverSocket.accept();</pre>
 
     <p>
-      Der Server öffnet den Port <code>5000</code> und wartet mit
-      <code>accept()</code> auf einen Client.
-      Die Methode blockiert, bis sich ein Client verbindet.
-    </p>
-    
-    <h3>Client-Seite</h3>
-    
-    <pre class="copyable">Socket socket = new Socket("localhost", 5000);</pre>
-    
-    <p>
-      Der Client verbindet sich mit dem Server auf Port <code>5000</code>.
-      Erst danach können beide Seiten Daten austauschen.
+      <code>ServerSocket</code> öffnet auf dem Server einen Port. In diesem Beispiel
+      ist es der Port <code>5000</code>.
     </p>
 
     <p>
@@ -156,24 +144,15 @@ DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 socket.receive(packet);</pre>
 
     <p>
-      Der UDP-Server wartet auf ein Paket am Port <code>5000</code>.
-      Die Methode <code>receive(...)</code> blockiert,
-      bis ein Paket empfangen wurde.
+      <code>DatagramSocket</code> öffnet einen UDP-Socket. Mit
+      <code>DatagramPacket</code> wird ein Paket vorbereitet, in dem empfangene Daten
+      gespeichert werden können.
     </p>
-    
-    <h3>Client-Seite</h3>
-    
-    <pre class="copyable">DatagramPacket packet = new DatagramPacket(
-            daten,
-            daten.length,
-            InetAddress.getByName("localhost"),
-            5000
-);
-socket.send(packet);</pre>
-    
+
     <p>
-      Der Client sendet ein Paket an den Server auf Port <code>5000</code>.
-      Anders als bei TCP wird dabei keine feste Verbindung aufgebaut.
+      Die Methode <code>receive(...)</code> wartet auf ein UDP-Paket. Auch diese
+      Methode <strong>blockiert</strong>. Das Programm läuft also erst weiter, wenn
+      tatsächlich ein Paket empfangen wurde.
     </p>
   </article>
 
