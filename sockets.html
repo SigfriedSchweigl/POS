@@ -7,6 +7,14 @@
 
   <link rel="stylesheet" href="style.css" />
   <script src="script.js" defer></script>
+  <style>
+    .protocol-table th,
+    .protocol-table td {
+      padding: 14px 20px;
+      line-height: 1.5;
+      vertical-align: top;
+    }
+  </style>
 </head>
 <body>
 
@@ -124,12 +132,6 @@ Socket socket = serverSocket.accept();</pre>
     </p>
 
     <p>
-      Beim TCP-Programm gibt es keine eigene Methode <code>send(...)</code>.
-      Gesendet wird über den Ausgabestrom des Sockets, zum Beispiel später mit
-      <code>out.println(aufgabe)</code>.
-    </p>
-
-    <p>
       Die Methode <code>accept()</code> wartet auf einen Client. Während dieser Zeit
       <strong>blockiert</strong> das Programm. Das bedeutet: Die nächste Codezeile wird
       erst ausgeführt, wenn sich ein Client verbindet.
@@ -165,8 +167,6 @@ socket.receive(packet);</pre>
       Der UDP-Server wartet auf ein Paket am Port <code>5000</code>.
       Die Methode <code>receive(...)</code> blockiert,
       bis ein Paket empfangen wurde.
-      Das Programm bleibt an dieser Stelle also stehen,
-      bis Daten eintreffen.
     </p>
     
     <h3>Client-Seite</h3>
@@ -180,8 +180,7 @@ socket.receive(packet);</pre>
 socket.send(packet);</pre>
     
     <p>
-      Der Client sendet mit <code>socket.send(packet)</code> ein Paket an den Server
-      auf Port <code>5000</code>.
+      Der Client sendet ein Paket an den Server auf Port <code>5000</code>.
       Anders als bei TCP wird dabei keine feste Verbindung aufgebaut.
     </p>
   </article>
@@ -220,6 +219,12 @@ socket.send(packet);</pre>
         <td>gut für Spiele, Streaming, schnelle Sensordaten</td>
       </tr>
     </table>
+
+    <p>
+      <strong>Kernaussage:</strong><br>
+      TCP arbeitet mit einer Verbindung und Streams.
+      UDP arbeitet mit einzelnen Paketen ohne feste Verbindung.
+    </p>
 
     <p>
       <strong>Merksatz:</strong><br>
@@ -344,9 +349,8 @@ out.println(ergebnis);</pre>
 out.flush();</pre>
 
       <p>
-        <code>PrintWriter</code> sammelt Daten zuerst in einem Puffer.
-        <code>flush()</code> sorgt dafür, dass diese Daten wirklich über das Netzwerk
-        gesendet werden.
+        <code>flush()</code> leert den Puffer. Erst dadurch werden gepufferte Daten
+        wirklich hinausgeschrieben.
       </p>
     </div>
 
@@ -466,11 +470,12 @@ public class CalculatorClient {
 
             String aufgabe = "5 + 3";
 
+            // Aufgabe an den Server senden
             out.println(aufgabe);
 
+            // Auf Antwort des Servers warten
+            // readLine() blockiert, bis eine Zeile empfangen wurde.
             String antwort = in.readLine();
-            // readLine() blockiert,
-            // bis der Server eine Antwort sendet.
 
             System.out.println("Aufgabe: " + aufgabe);
             System.out.println("Ergebnis vom Server: " + antwort);
@@ -487,21 +492,13 @@ public class CalculatorClient {
 
       <p>
         <code>out.println(aufgabe)</code> sendet die Rechenaufgabe an den Server.
-        Das ist beim TCP-Client die eigentliche Sende-Anweisung.
-        TCP verwendet hier keinen <code>send(...)</code>-Befehl wie UDP,
-        sondern schreibt die Daten in den Ausgabestrom des Sockets.
+        Durch <code>println(...)</code> wird auch ein Zeilenumbruch gesendet. Das ist
+        wichtig, weil der Server mit <code>readLine()</code> auf eine ganze Zeile wartet.
       </p>
 
       <p>
-        Durch <code>println(...)</code> wird zusätzlich ein Zeilenumbruch gesendet.
-        Das ist wichtig, weil der Server mit <code>readLine()</code> auf eine vollständige
-        Zeile wartet.
-      </p>
-
-      <p>
-        <code>String antwort = in.readLine();</code> blockiert,
-        bis der Server eine Antwort sendet.
-        Der Client wartet an dieser Stelle also auf Daten vom Server.
+        <code>String antwort = in.readLine();</code> blockiert, bis der Server eine
+        Antwort sendet. Der Client wartet an dieser Stelle also auf Daten vom Server.
       </p>
 
       <p>
@@ -635,11 +632,14 @@ public class UdpCalculatorClient {
                     5000
             );
 
+            // Paket an den Server senden
             socket.send(packet);
 
             byte[] buffer = new byte[1024];
             DatagramPacket response = new DatagramPacket(buffer, buffer.length);
 
+            // Auf Antwortpaket warten
+            // receive(...) blockiert, bis ein Paket empfangen wurde.
             socket.receive(response);
 
             String antwort = new String(
@@ -669,6 +669,7 @@ public class UdpCalculatorClient {
       <p>
         Der Client sendet mit <code>socket.send(packet)</code> ein Paket an
         <code>localhost</code> und Port <code>5000</code>.
+        Das ist bei UDP die eigentliche Sende-Anweisung.
       </p>
 
       <p>
@@ -692,7 +693,8 @@ public class UdpCalculatorClient {
 Ergebnis vom Server: 8</pre>
 
       <p>
-        Der Unterschied liegt nicht im Ergebnis, sondern in der Übertragung:
+        Der Unterschied liegt in diesem Beispiel also nicht im Ergebnis,
+        sondern in der Art der Übertragung:
       </p>
 
       <ul>
