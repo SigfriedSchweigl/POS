@@ -135,10 +135,8 @@ Socket socket = serverSocket.accept();</pre>
       Daten werden über den Ausgabestrom des Sockets gesendet.
     </p>
     
-    <pre class="copyable">PrintWriter out =
-            new PrintWriter(socket.getOutputStream(), true);
-    
-    out.println("5 + 3");</pre>
+    <pre class="copyable">PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+out.println("5 + 3");</pre>
     
     <p>
       Mit <code>out.println(...)</code> sendet der Client die Nachricht
@@ -309,7 +307,6 @@ socket.send(packet);</pre>
 <pre class="copyable">BufferedReader in = new BufferedReader(
         new InputStreamReader(socket.getInputStream())
 );
-
 String aufgabe = in.readLine();</pre>
 
       <p>
@@ -328,7 +325,6 @@ String aufgabe = in.readLine();</pre>
       <h4>Schritt 4: Antwort an den Client senden</h4>
 
 <pre class="copyable">PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
 out.println(ergebnis);</pre>
 
       <p>
@@ -375,39 +371,55 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class CalculatorServer {
+
     public static void main(String[] args) throws Exception {
+
+        // Öffnet den Port 5000 am Server
         try (ServerSocket serverSocket = new ServerSocket(5000)) {
+
             System.out.println("Server wartet auf Client...");
 
+            // Wartet blockierend auf einen Client
+            // Das Programm läuft hier erst weiter,
+            // wenn sich ein Client verbindet.
             try (Socket socket = serverSocket.accept();
+                 // Liest Text vom Client
                  BufferedReader in = new BufferedReader(
                          new InputStreamReader(socket.getInputStream())
                  );
-                 PrintWriter out = new PrintWriter(
-                         socket.getOutputStream(),
-                         true
-                 )) {
+                 // Sendet Text an den Client
+                 // true aktiviert autoFlush
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
                 System.out.println("Client verbunden.");
 
+                // Wartet auf eine Textzeile vom Client
+                // readLine() blockiert,
+                // bis eine vollständige Zeile empfangen wurde.
                 String aufgabe = in.readLine();
-                System.out.println("Empfangen: " + aufgabe);
 
+                System.out.println("Empfangen: " + aufgabe);
+  
                 int ergebnis = berechne(aufgabe);
 
+                // Sendet das Ergebnis zurück an den Client
                 out.println(ergebnis);
+
                 System.out.println("Gesendet: " + ergebnis);
             }
         }
     }
 
     private static int berechne(String aufgabe) {
+        // Zerlegt den Text:
+        // "5 + 3" -> ["5", "+", "3"]
         String[] teile = aufgabe.split(" ");
 
         int zahl1 = Integer.parseInt(teile[0]);
         String operator = teile[1];
         int zahl2 = Integer.parseInt(teile[2]);
 
+        // Führt die passende Rechenoperation aus
         if (operator.equals("+")) {
             return zahl1 + zahl2;
         }
@@ -424,7 +436,10 @@ public class CalculatorServer {
             return zahl1 / zahl2;
         }
 
-        throw new IllegalArgumentException("Unbekannter Operator: " + operator);
+        // Fehler bei unbekanntem Operator
+        throw new IllegalArgumentException(
+                "Unbekannter Operator: " + operator
+        );
     }
 }</pre>
 
@@ -461,22 +476,26 @@ import java.net.Socket;
 
 public class CalculatorClient {
     public static void main(String[] args) throws Exception {
+
+        // Verbindet sich mit dem Server auf localhost:5000
         try (Socket socket = new Socket("localhost", 5000);
+             // Liest Text vom Server
              BufferedReader in = new BufferedReader(
                      new InputStreamReader(socket.getInputStream())
              );
-             PrintWriter out = new PrintWriter(
-                     socket.getOutputStream(),
-                     true
-             )) {
+             // Sendet Text an den Server
+             // true aktiviert autoFlush
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
             String aufgabe = "5 + 3";
 
             // Aufgabe an den Server senden
+            // println(...) sendet zusätzlich einen Zeilenumbruch
             out.println(aufgabe);
 
-            // Auf Antwort des Servers warten
-            // readLine() blockiert, bis eine Zeile empfangen wurde.
+            // Wartet auf die Antwort des Servers
+            // readLine() blockiert,
+            // bis eine vollständige Zeile empfangen wurde.
             String antwort = in.readLine();
 
             System.out.println("Aufgabe: " + aufgabe);
@@ -559,42 +578,73 @@ public class CalculatorClient {
 import java.net.DatagramSocket;
 
 public class UdpCalculatorServer {
+
     public static void main(String[] args) throws Exception {
+
+        // Öffnet den UDP-Port 5000
         try (DatagramSocket socket = new DatagramSocket(5000)) {
+
+            // Speicherbereich für eingehende Daten
             byte[] buffer = new byte[1024];
 
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            // Paket zum Empfangen vorbereiten
+            DatagramPacket packet =
+                    new DatagramPacket(
+                            buffer,
+                            buffer.length
+                    );
 
             System.out.println("UDP-Server wartet auf Paket...");
+
+            // Wartet blockierend auf ein UDP-Paket
+            // Das Programm läuft hier erst weiter,
+            // wenn ein Paket empfangen wurde.
             socket.receive(packet);
 
+            // Wandelt die empfangenen Bytes in einen String um
             String aufgabe = new String(
                     packet.getData(),
                     0,
                     packet.getLength()
             );
 
-            int ergebnis = berechne(aufgabe);
-            byte[] antwort = String.valueOf(ergebnis).getBytes();
+            System.out.println("Empfangen: " + aufgabe);
 
-            DatagramPacket response = new DatagramPacket(
-                    antwort,
-                    antwort.length,
-                    packet.getAddress(),
-                    packet.getPort()
+            int ergebnis = berechne(aufgabe);
+
+            // Ergebnis in Bytes umwandeln
+            byte[] antwort =
+                    String.valueOf(ergebnis).getBytes();
+
+            // Antwortpaket vorbereiten
+            // Antwort geht an dieselbe Adresse
+            // und denselben Port wie das empfangene Paket
+            DatagramPacket response =
+                    new DatagramPacket(
+                            antwort,
+                            antwort.length,
+                            packet.getAddress(),
+                            packet.getPort()
             );
 
+            // Antwort an den Client senden
             socket.send(response);
+
+            System.out.println("Gesendet: " + ergebnis);
         }
     }
 
     private static int berechne(String aufgabe) {
+
+        // Zerlegt:
+        // "5 + 3" -> ["5", "+", "3"]
         String[] teile = aufgabe.split(" ");
 
         int zahl1 = Integer.parseInt(teile[0]);
         String operator = teile[1];
         int zahl2 = Integer.parseInt(teile[2]);
 
+        // Führt die passende Rechenoperation aus
         if (operator.equals("+")) {
             return zahl1 + zahl2;
         }
@@ -611,7 +661,10 @@ public class UdpCalculatorServer {
             return zahl1 / zahl2;
         }
 
-        throw new IllegalArgumentException("Unbekannter Operator: " + operator);
+        // Fehler bei unbekanntem Operator
+        throw new IllegalArgumentException(
+                "Unbekannter Operator: " + operator
+        );
     }
 }</pre>
 
@@ -622,34 +675,54 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class UdpCalculatorClient {
+
     public static void main(String[] args) throws Exception {
+
+        // Erzeugt einen UDP-Socket
+        // Es wird keine feste Verbindung aufgebaut.
         try (DatagramSocket socket = new DatagramSocket()) {
+
+            // Rechenaufgabe vorbereiten
             String aufgabe = "5 + 3";
+
+            // String in Bytes umwandeln
             byte[] daten = aufgabe.getBytes();
 
-            DatagramPacket packet = new DatagramPacket(
-                    daten,
-                    daten.length,
-                    InetAddress.getByName("localhost"),
-                    5000
-            );
+            // Paket für den Server vorbereiten
+            DatagramPacket packet =
+                    new DatagramPacket(
+                            daten,
+                            daten.length,
+                            InetAddress.getByName("localhost"),
+                            5000
+                    );
 
             // Paket an den Server senden
+            // Das ist bei UDP die eigentliche Sende-Anweisung.
             socket.send(packet);
 
+            // Speicherbereich für die Antwort vorbereiten
             byte[] buffer = new byte[1024];
-            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
 
-            // Auf Antwortpaket warten
-            // receive(...) blockiert, bis ein Paket empfangen wurde.
+            DatagramPacket response =
+                    new DatagramPacket(
+                            buffer,
+                            buffer.length
+                    );
+
+            // Wartet auf das Antwortpaket des Servers
+            // receive(...) blockiert,
+            // bis ein Paket empfangen wurde.
             socket.receive(response);
 
+            // Antwortpaket in String umwandeln
             String antwort = new String(
                     response.getData(),
                     0,
                     response.getLength()
             );
 
+            // Ausgabe anzeigen
             System.out.println("Aufgabe: " + aufgabe);
             System.out.println("Ergebnis vom Server: " + antwort);
         }
@@ -688,7 +761,7 @@ public class UdpCalculatorClient {
       </p>
 
       <p>
-        Für den Benutzer sieht die Ausgabe daher fast gleich aus:
+        Für den Benutzer sieht die Ausgabe daher identisch aus:
       </p>
 
 <pre class="copyable">Aufgabe: 5 + 3
