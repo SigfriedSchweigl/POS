@@ -123,24 +123,26 @@ Socket socket = serverSocket.accept();</pre>
     </p>
     
     <h3>Client-Seite</h3>
-    
+
     <pre class="copyable">Socket socket = new Socket("localhost", 5000);</pre>
     
     <p>
       Der Client verbindet sich mit dem Server auf Port <code>5000</code>.
-      Erst danach können beide Seiten Daten austauschen.
     </p>
-
+    
     <p>
-      Die Methode <code>accept()</code> wartet auf einen Client. Während dieser Zeit
-      <strong>blockiert</strong> das Programm. Das bedeutet: Die nächste Codezeile wird
-      erst ausgeführt, wenn sich ein Client verbindet.
+      Bei TCP gibt es keine eigene Methode <code>send(...)</code>.
+      Daten werden über den Ausgabestrom des Sockets gesendet.
     </p>
-
+    
+    <pre class="copyable">PrintWriter out =
+            new PrintWriter(socket.getOutputStream(), true);
+    
+    out.println("5 + 3");</pre>
+    
     <p>
-      Sobald ein Client verbunden ist, liefert <code>accept()</code> ein
-      <code>Socket</code>-Objekt zurück. Über dieses Socket können Server und Client
-      anschließend Daten austauschen.
+      Mit <code>out.println(...)</code> sendet der Client die Nachricht
+      an den Server.
     </p>
   </article>
 
