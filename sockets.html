@@ -517,6 +517,30 @@ public class UdpCalculatorClient {
         <code>ServerSocket</code> und kein <code>accept()</code>.
       </p>
     </div>
+
+    <h3>Was ist beim UDP-Programm anders?</h3>
+
+    <p>
+      In diesem kleinen Beispiel liefern TCP und UDP normalerweise dasselbe Ergebnis.
+      Der Client erhält bei beiden Varianten die Antwort des Servers.
+    </p>
+    
+    <p>
+      Der Unterschied liegt hauptsächlich in der Art der Kommunikation:
+    </p>
+    
+    <ul>
+      <li>TCP baut zuerst eine Verbindung auf.</li>
+      <li>UDP sendet Daten direkt als Datagramme.</li>
+      <li>TCP verwendet Streams.</li>
+      <li>UDP arbeitet mit DatagramPacket.</li>
+    </ul>
+    
+    <p>
+      In kleinen lokalen Testprogrammen merkt man den Unterschied oft kaum.
+      In größeren Netzwerken wird die unterschiedliche Zuverlässigkeit aber wichtig.
+    </p>
+    
   </article>
 
 </section>
